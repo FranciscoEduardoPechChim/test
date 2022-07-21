@@ -1,0 +1,75 @@
+.position {
+   position: absolute;
+   top: 95vh;
+}
+
+.sidebarposition {
+   position: relative;
+   height: auto;
+   min-height: 100vh;
+}
+
+.navbarCustom {
+   background-color: white;
+   padding: 25px 45px;
+   background-color: #1d1d1d;
+   box-shadow: 0px -6px 30px 3px rgba(0, 0, 0, 0.61);
+   -webkit-box-shadow: 0px -6px 30px 3px rgba(0, 0, 0, 0.61);
+   -moz-box-shadow: 0px -6px 30px 3px rgba(0, 0, 0, 0.61);
+}
+
+.hoja {
+   font-family: "Open Sans";
+   font-size: 22px;
+   font-weight: 600;
+   color: #7149bc;
+   position: relative;
+   float: left;
+   letter-spacing: 3px;
+}
+.navLinks {
+   font-family: "Open Sans";
+   font-size: 18px;
+   font-weight: 600;
+   color: white;
+   transition: 200ms;
+}
+
+.navLinks:hover {
+   color: #7149bc;
+   transition: 200ms;
+}
+
+.profileImg {
+   width: 50px;
+   height: 50px;
+   border-radius: 50px;
+}
+
+.profileImg:hover {
+   background-color: #7149bc;
+   color: #7149bc;
+   transition: 200ms;
+}
+
+.bgContainer {
+   padding: 25px;
+   background-color: #f1f1f1;
+   border-radius: 10px;
+   border: 1px solid rgba(201, 201, 201, 0.315);
+}
+.dashContain {
+   overflow-y: scroll;
+   height: 89vh;
+}
+
+@media (min-width: 769px) {
+   .burger {
+      display: none;
+   }
+}
+@media (max-width: 769px) {
+   .sidebarposition {
+      height: 100%;
+   }
+}

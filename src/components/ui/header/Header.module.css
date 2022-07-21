@@ -1,0 +1,279 @@
+.navStyle {
+  background: #ffffff;
+  box-shadow: 0px 0px 13px rgba(0, 0, 0, 0.25);
+}
+
+.navEnlace {
+  text-decoration: none;
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 21px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #000000;
+  background-color: rgba(255, 255, 255, 0);
+  border: none;
+  margin: 15px;
+  text-decoration: none;
+  transition: 80ms;
+}
+.navEnlace:hover {
+  text-shadow: -2px 1px 3px rgba(158, 35, 227, 0.52);
+  transition: 80ms;
+}
+.navPerfil {
+  text-decoration: none;
+  border: 4px solid #7149bc;
+  border-radius: 50%;
+  width: 58px;
+  background-color: #a4a8bb;
+}
+
+.sesionBtn {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 15px;
+  line-height: 21px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: linear-gradient(90deg, #e43d22 0%, #e65a1f 100%);
+  border: none;
+  border-radius: 40px;
+  padding: 14px 18px 14px 18px;
+  text-decoration: none;
+}
+.menu {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 13px rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  width: 175px;
+  margin-left: -30px;
+  margin-top: 65px;
+  z-index: 10;
+}
+
+.menuItem {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 21px;
+  color: #7a7a7a;
+  transition: 150ms;
+}
+.menuItem:hover {
+  color: slateblue;
+  transition: 150ms;
+  font-weight: 600;
+}
+.menuCerrar {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 21px;
+  color: #ff3030;
+  transition: 150ms;
+}
+.menuCerrar:hover {
+  font-weight: 600;
+  transition: 150ms;
+}
+.notifImg {
+  border-radius: 50%;
+  background-color: #7149bc;
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+}
+
+.notificacionContainer {
+  padding: 10px;
+  border-bottom: 1px solid lightblue;
+  font-family: "Open Sans";
+  font-weight: 400;
+  line-height: 19px;
+}
+
+.notificaciones {
+  border-radius: 10px;
+  box-shadow: 0px 0px 13px rgba(0, 0, 0, 0.25);
+  width: 400px;
+  margin-top: 83px;
+  z-index: 10;
+  margin-left: -360px;
+  background-color: white;
+}
+.pendiente {
+  background-color: #edf2f9;
+}
+.noPendiente {
+  background-color: white;
+}
+
+.pendiente :hover,
+.noPendiente :hover {
+  background-color: #dbe7f8;
+}
+.iconNoti:hover {
+  background: none;
+}
+
+.headerNotif {
+  width: 100%;
+  padding: 10px 20px;
+  border-bottom: 1px solid lightblue;
+  font-family: "Open Sans";
+  color: rgb(88, 88, 88);
+  font-size: 14px;
+  font-weight: 600;
+}
+.propH {
+  color: #7149bc;
+  font-weight: 650;
+  transition: 150ms;
+}
+.propH:hover {
+  color: #e65a1f;
+  transition: 150ms;
+}
+
+.propNotifi a {
+  color: #7149bc;
+  font-weight: 650;
+  text-decoration: none;
+  transition: 150ms;
+}
+.propNotifi a:hover {
+  color: #e65a1f;
+  transition: 150ms;
+}
+
+.btnApprove {
+  border: 1px solid #7149bc;
+  outline: none;
+  font-family: "Open Sans";
+  font-size: 21px;
+  padding: 5px 25px;
+  background-color: white;
+  border-radius: 20px;
+  color: #7149bc;
+  margin: 5px 0px;
+  transition: 200ms;
+}
+.btnReject {
+  border: 1px solid #7149bc;
+  outline: none;
+  font-family: "Open Sans";
+  font-size: 21px;
+  padding: 5px 25px;
+  background-color: white;
+  border-radius: 20px;
+  color: #7149bc;
+  margin: 5px 0px;
+  transition: 200ms;
+}
+.btnApprove:hover {
+  background-color: #7149bc;
+  color: #2fce07;
+  transition: 200ms;
+}
+.btnReject:hover {
+  background-color: #7149bc;
+  color: red;
+  transition: 200ms;
+}
+.footVer {
+  color: rgb(15, 99, 224);
+  font-weight: 500;
+}
+.footVer:hover {
+  color: rgb(5, 90, 218);
+  font-weight: 700;
+}
+.notContainer {
+  overflow-y: scroll;
+  width: 100%;
+  min-height: 0px;
+  max-height: 550px;
+}
+.notContainer::-webkit-scrollbar {
+  width: 5px;
+}
+.notContainer::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+.notContainer::-webkit-scrollbar-thumb {
+  background: slateblue;
+  border-radius: 5px;
+}
+.notContainer::-webkit-scrollbar-thumb:hover {
+  background: rgb(253, 69, 37);
+}
+
+.listIcon {
+  position: absolute;
+  left: 20px;
+  font-size: 35px;
+  transition: 300ms;
+  color: #7a7a7a;
+}
+
+.respNavbar {
+  position: relative;
+  z-index: 105;
+  background-color: white;
+  border: 1px solid white;
+  box-shadow: 0px 2px 8px -3px rgba(0, 0, 0, 0.83);
+}
+
+@media (max-width: 575px) {
+  .notificaciones {
+    margin-top: 260px;
+    margin-left: -60px;
+  }
+}
+@media (max-width: 430px) {
+  .notificaciones {
+    margin-left: -80px;
+    width: 315px;
+  }
+}
+
+/*Responsive header*/
+
+.resHeader {
+  background-color: #fff;
+  height: 100vh;
+  overflow: auto;
+  position: absolute;
+  transform: translateX(-100%);
+  transition: 300ms;
+  width: 100%;
+  z-index: 9;
+}
+
+.resHeaderAtive {
+  background-color: #fff;
+  height: 100vh;
+  overflow: auto;
+  position: absolute;
+  transition: 300ms;
+  width: 100%;
+  z-index: 9;
+}
+
+.headerLinkItem {
+  color: #0e0e0e;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 59px;
+  margin-left: 25px;
+}

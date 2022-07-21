@@ -1,0 +1,442 @@
+.whiteBBar {
+  position: fixed;
+  width: 100%;
+  height: auto;
+  background-color: white;
+  box-shadow: 0px 2px 31px 2px rgba(119, 119, 119, 0.21);
+  z-index: 99;
+  bottom: 0;
+}
+.btnContainer {
+  border-right: 1px solid #c7c7c7;
+}
+
+.whiteBBarImg {
+  width: 25px;
+}
+
+.notifi {
+  background-color: white;
+  width: 100%;
+  height: 95%;
+  z-index: 2;
+  top: 0;
+}
+
+.notifiContainer {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.notifiContent {
+  background-color: white;
+  padding: 15px 20px;
+  border-bottom: 1px solid #b4b4b44b;
+}
+.imgContainer {
+  background-color: blueviolet;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+}
+.notifiText {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  color: #7149bc;
+}
+.notifiTextAprobado {
+  color: #7a7a7a;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+}
+.aceptar {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  color: #13a407;
+  padding: 5px 15px;
+  border: 1px solid #13a407;
+  box-sizing: border-box;
+  border-radius: 49px;
+  margin-right: 5px;
+}
+.rechazar {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  color: #ff0000;
+  padding: 5px 15px;
+  border: 1px solid #ff0000;
+  box-sizing: border-box;
+  border-radius: 49px;
+  margin-right: 5px;
+}
+
+.aceptar:hover {
+  background: rgba(19, 164, 7, 0.22);
+}
+.rechazar:hover {
+  background: rgba(255, 0, 0, 0.22);
+}
+
+.hra {
+  position: absolute;
+  right: 20px;
+  transform: translateY(-12px);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  color: #7a7a7a;
+}
+
+.heightLogin {
+  height: 135px;
+}
+.heightLogOut {
+  height: 60px;
+}
+
+.listaRespInactive {
+  background: #ffffff;
+  box-shadow: 0px 0px 17px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 36px 36px 0px 0px;
+  width: 100%;
+  position: fixed;
+  z-index: 98;
+  bottom: 0;
+  transition: 300ms;
+}
+.listaRespActive {
+  background: #ffffff;
+  box-shadow: 0px 0px 17px 8px rgba(0, 0, 0, 0.05);
+  border-radius: none;
+  width: 100%;
+  height: 83vh;
+  position: fixed;
+  z-index: 98;
+  bottom: 0;
+  transition: 300ms;
+}
+.SlideLine {
+  width: 20vw;
+  height: 5px;
+  background-color: grey;
+  border-radius: 15px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 8px);
+}
+
+.LRtitle1 {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  color: #000000;
+  text-align: center;
+  padding: 25px 20px 10px 20px;
+}
+.LRtitle2 {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  color: #000000;
+  text-align: start;
+  padding: 20px 20px 10px 20px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.329);
+}
+
+/* ------ estilos de lista  -------- */
+.bodyList {
+  width: 100%;
+  height: 100%;
+  padding: 5px 15px 120px 15px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.bodyList::-webkit-scrollbar {
+  width: 5px;
+}
+.bodyList::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+.bodyList::-webkit-scrollbar-thumb {
+  background: slateblue;
+  border-radius: 5px;
+}
+.bodyList::-webkit-scrollbar-thumb:hover {
+  background: rgb(253, 69, 37);
+}
+
+.cardPropBody {
+  background: #ffffff;
+  box-shadow: 0px 2px 9px 1px rgba(0, 0, 0, 0.1);
+  border-radius: 22.7246px;
+  height: 220px;
+}
+
+.imgcontainer {
+  overflow: hidden;
+  height: 218px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+.cardImg {
+  width: 100%;
+  height: 100%;
+}
+
+.cardContenido {
+  padding: 10px;
+}
+.cardTitle {
+  font-family: "Open Sans";
+  font-size: 27px;
+  font-weight: 700;
+  color: black;
+  line-height: 54px;
+  white-space: pre-line;
+  display: -webkit-box;
+  max-width: calc(90%);
+  max-height: auto;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cardPrecio {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 40px;
+  color: #13a407;
+}
+.cardDescription {
+  font-family: "Open Sans";
+  font-size: 22px;
+  font-weight: 500;
+  line-height: auto;
+  color: #5e5e5e;
+  white-space: pre-line;
+  display: -webkit-box;
+  max-width: calc(100%);
+  max-height: auto;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 105px;
+}
+
+.tagTipoProp {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 42px;
+  color: #7149bc;
+  padding: 4px 13px;
+  border: 0.777778px solid #7149bc;
+  box-sizing: border-box;
+  border-radius: 31.1111px;
+  text-align: center;
+}
+.tagTipo {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 42px;
+  color: #e65a1f;
+  padding: 4px 13px;
+  border: 0.777778px solid #e65a1f;
+  box-sizing: border-box;
+  border-radius: 31.1111px;
+  text-align: center;
+}
+
+.topIcons1 {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+.topIcons2 {
+  position: absolute;
+  left: 162px;
+  top: 5px;
+}
+
+.iconShare {
+  padding-top: 25px;
+  padding-left: 18px;
+  /* border: 1px solid #dddddd;
+    background-color: white; */
+  box-sizing: border-box;
+  border-radius: 5px;
+  background-image: url("/images/icons/properties-icons/2-gray.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: 100ms;
+}
+
+.iconShare:hover {
+  /* background-color: #7149bc;
+    border: 1px solid #7149bc; */
+  background-image: url("/images/icons/properties-icons/2-gray.png");
+  transition: 100ms;
+}
+.iconFav {
+  padding-top: 25px;
+  padding-left: 18px;
+  /* border: 1px solid #dddddd; */
+  border: none;
+  /* background-color: white; */
+
+  box-sizing: border-box;
+  border-radius: 5px;
+  background-image: url("/images/icons/properties-icons/6-white.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: 100ms;
+}
+
+.iconFav:hover {
+  /* background-color: #7149bc; */
+  /* border: 1px solid #7149bc; */
+  background-image: url("/images/icons/properties-icons/6-white.png");
+  transition: 100ms;
+}
+
+.noImage {
+  width: 100%;
+  height: 200px;
+  background-color: #c5c5c5;
+}
+.textNoImage {
+  color: white;
+  font-size: 1vw;
+  font-family: "Open Sans";
+  font-weight: bold;
+  text-align: center;
+  position: relative;
+  padding-top: 45px;
+}
+
+@media (min-width: 992px) {
+  .whiteBBar {
+    display: none;
+  }
+  .listaRespInactive,
+  .listaRespActive {
+    display: none;
+  }
+  
+}
+@media (max-width:991px) {
+  .topIcons2{
+    left: 29%;
+    top: 2%;
+  }
+  .topIcons1{
+    right: 1%;
+    top: 10%;
+  }
+}
+
+@media (max-width: 767px) {
+  .cardPropBody {
+    height: auto;
+  }
+  .bodyList {
+    padding: 5px 10vw 120px 10vw;
+  }
+  .imgcontainer {
+    margin: 0px 12px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 0px;
+    height: 280px;
+  }
+  .topIcons2{
+    left: 93%;
+    top: 2%;
+  }
+  .topIcons1{
+    right: 2%;
+    top: 60%;
+  }
+}
+
+@media (max-width: 605px) {
+  .bodyList {
+    padding: 5px 5vw 120px 5vw;
+  }
+  .imgcontainer {
+    margin: 0px 12px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 0px;
+    height: 280px;
+  }
+  .tagTipo {
+    font-size: 3vw;
+  }
+  .tagTipoProp {
+    font-size: 3vw;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .topIcons2{
+    left: 92%;
+    top: 2%;
+  }
+  .topIcons1{
+    right: 2%;
+    top: 60%;
+  }
+}
+@media (max-width: 490px) {
+  .bodyList {
+    padding: 5px 0vw 120px 0vw;
+  }
+  .imgcontainer {
+    height: 250px;
+  }
+  .cardTitle {
+    font-size: 5vw;
+    max-width: calc(90%);
+  }
+  .cardDescription {
+    font-size: 4vw;
+    height: auto;
+  }
+  .cardPrecio {
+    font-size: 4.5vw;
+  }
+  .tagTipo {
+    font-size: 3vw;
+  }
+  .tagTipoProp {
+    font-size: 3vw;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .topIcons2{
+    left: 90%;
+    top: 2%;
+  }
+  .topIcons1{
+    right: 2%;
+    top: 63%;
+  }
+}
+@media (max-width: 375px) {
+  .cardDescription {
+    font-size: 4vw;
+    height: auto;
+  }
+  .topIcons2{
+    left: 88%;
+    top: 2%;
+  }
+}

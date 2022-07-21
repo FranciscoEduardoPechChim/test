@@ -1,0 +1,95 @@
+.barraCategorias {
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  height: 61px;
+  transition: 300ms;
+}
+
+.barraCategoriasInactive {
+  position: absolute;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  height: 61px;
+  padding: 13px 0;
+  transform: translateY(-61px);
+  transition: 300ms;
+}
+.btnContainer {
+  position: relative;
+  top: 17.5px;
+}
+
+.barraItemPropertyType {
+  padding: 4px 30px;
+  color: #7149bc;
+  border: 1.14407px solid #7149bc;
+  border-radius: 45.7627px;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  border: 1.14407px solid #7149bc;
+  box-sizing: border-box;
+  transition: 150ms;
+}
+.barraItemPropertyType:hover {
+  background: rgba(113, 73, 188, 0.22);
+  transition: 150ms;
+}
+
+.barraItemPropertyTypeSelected {
+  padding: 4px 30px;
+  color: #7149bc;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  border: 1.14407px solid #7149bc;
+  box-sizing: border-box;
+  border-radius: 45.7627px;
+  background: rgba(113, 73, 188, 0.22);
+}
+
+.barraItemCategory {
+  padding: 4px 30px;
+  color: #e65a1f;
+  border: 1.14407px solid #e65a1f;
+  box-sizing: border-box;
+  border-radius: 45.7627px;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  transition: 150ms;
+}
+.barraItemCategory:hover {
+  background: rgba(230, 90, 31, 0.22);
+  transition: 150ms;
+}
+.barraItemCategorySelected {
+  padding: 4px 30px;
+  color: #e65a1f;
+  border: 1.14407px solid #e65a1f;
+  box-sizing: border-box;
+  border-radius: 45.7627px;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  background: rgba(230, 90, 31, 0.22);
+}
+
+@media (max-width: 1330px) {
+  .barraCategorias {
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+  .barraCategorias::-webkit-scrollbar {
+    height: 5px;
+  }
+  .barraCategorias::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+  }
+  .barraCategorias::-webkit-scrollbar-thumb {
+    background: #7149bc;
+    border-radius: 5px;
+  }
+}

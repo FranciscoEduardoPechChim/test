@@ -1,0 +1,45 @@
+.subTitulo {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  color: #000000;
+}
+
+.content {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
+  color: #5e5e5e;
+}
+
+.MiniSub {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  color: #000000;
+  margin-bottom: 10px;
+}
+.line {
+  width: 95px;
+  height: 5px;
+  background-color: #e65a1f;
+}
+
+.labels {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #5e5e5e;
+  margin-top: 5px;
+}
+
+.btnicon {
+  position: absolute;
+  margin-left: 5px;
+  margin-top: 5px;
+  width: 22px;
+}

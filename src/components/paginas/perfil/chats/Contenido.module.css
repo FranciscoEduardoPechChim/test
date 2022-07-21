@@ -1,0 +1,150 @@
+.VentanaChat {
+  width: 400px;
+  position: fixed;
+  right: 20px;
+  bottom: 10px;
+  z-index: 400;
+}
+.header {
+  background-color: #7149bc;
+  padding: 10px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  box-sizing: border-box;
+}
+.perfilImg {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.nombre {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 22px;
+  color: white;
+}
+.conexion {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  color: white;
+  padding-right: 10px;
+}
+
+.dashIcon {
+  color: rgb(196, 196, 196);
+  font-size: 1.2rem;
+}
+
+.hora {
+  font-size: 9px;
+}
+
+.chatBox {
+  box-shadow: 0px 0px 17px 3px rgba(0, 0, 0, 0.29);
+  padding: 25px 10px;
+  height: 500px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background-color: white;
+  /* background-image: url('/images/content/backgorundChat.jpg');
+  background-size: cover; */
+}
+
+.chatBox::-webkit-scrollbar {
+  width: 5px;
+}
+.chatBox::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+.chatBox::-webkit-scrollbar-thumb {
+  background: #7149bc;
+  border-radius: 5px;
+}
+.chatBox::-webkit-scrollbar-thumb:hover {
+  background: rgb(253, 69, 37);
+}
+
+.sendMensajeFooter {
+  background-color: #7149bc;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  padding: 15px;
+}
+.btnEnviar {
+  border: 1px solid #7149bc;
+  background: none;
+}
+.iconSend {
+  border: none;
+  background: none;
+}
+
+.messageBox {
+  border-radius: 20px;
+}
+.messageBox:focus {
+  border: 1px solid tomato;
+  box-shadow: none;
+}
+
+.mensaje1 {
+  background-color: rgba(255, 99, 71, 0.11);
+  padding: 10px;
+  border-radius: 10px;
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: rgb(0, 0, 0);
+  text-align: left;
+  width: fit-content;
+  max-width: 80%;
+  float: left;
+  white-space:pre-line;
+  word-break: break-word;
+}
+.mensaje2 {
+  background-color: #7149bc11;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: rgb(0, 0, 0);
+  width: fit-content;
+  max-width: 80%;
+  float: right;
+  position: relative;
+  transform: translatex(25px);
+  white-space:pre-line;
+  word-break: break-word;
+}
+
+@media (max-width: 500px) {
+  .VentanaChat {
+    width: 350px;
+    right: 5px;
+    bottom: 5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .VentanaChat {
+    width: 320px;
+    right: 5px;
+    bottom: 5px;
+  }
+}
+
+@media (max-width: 330px) {
+  .VentanaChat {
+    width: 320px;
+    right: 0px;
+    bottom: 0px;
+  }
+}

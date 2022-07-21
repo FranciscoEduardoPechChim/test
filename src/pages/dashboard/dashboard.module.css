@@ -1,0 +1,159 @@
+.filtros {
+   background-color: white;
+   border-radius: 10px;
+   border: 1px solid rgba(201, 201, 201, 0.308);
+   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   -webkit-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   -moz-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   overflow: hidden;
+}
+.props {
+   background-color: white;
+   border-radius: 10px;
+   border: 1px solid rgba(201, 201, 201, 0.308);
+   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   -webkit-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   -moz-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   overflow: hidden;
+   padding: 15px;
+}
+.totales {
+   background-color: white;
+   border-radius: 10px;
+   border: 1px solid rgba(201, 201, 201, 0.308);
+   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   -webkit-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   -moz-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+   padding-right: 10px;
+   padding-left: 10px;
+   height: 100%;
+   overflow: hidden;
+}
+.headR {
+   background-color: #7149bc;
+}
+.headR2 {
+   background-color: #7149bc;
+}
+.textHeadR {
+   font-size: 22px;
+   font-weight: 600;
+   color: white;
+   margin-left: 10px;
+}
+.backprofile {
+   width: 150px;
+   height: 150px;
+   border-radius: 50%;
+   background-color: #7149bc;
+   overflow: hidden;
+   padding: 5px;
+   position: relative;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%);
+}
+.imgProfile {
+   border-radius: 50%;
+}
+
+.etiqueta {
+   font-family: "Open Sans";
+   font-weight: 600;
+   font-size: 15px;
+   line-height: 15px;
+   color: #7149bc;
+}
+.dato {
+   font-family: "Open Sans";
+   font-weight: 400;
+   font-size: 18px;
+   color: #383838;
+   padding-left: 7px;
+}
+.btnProps {
+   background-color: white;
+   border: 0.5px solid rgba(153, 153, 153, 0.315);
+   border-radius: 5px;
+   box-shadow: 4px 4px 5px 1px rgba(0, 0, 0, 0.12);
+   -webkit-box-shadow: 4px 4px 5px 1px rgba(0, 0, 0, 0.12);
+   -moz-box-shadow: 4px 4px 5px 1px rgba(0, 0, 0, 0.12);
+   font-weight: 600;
+   /* position: absolute;
+   transform: translate(170px, -30px); */
+   color: #7149bc;
+   transition: 150ms;
+   padding: 5px 15px;
+   width: auto;
+}
+.btnProps:hover {
+   background-color: #8447f7;
+   color: white;
+   transition: 150ms;
+}
+
+.propbody {
+   background: #ffffff;
+   box-shadow: 0px 0px 13px 5px rgba(0, 0, 0, 0.07);
+   border-radius: 15px;
+   overflow: hidden;
+}
+.propcontainer {
+   padding: 10px;
+}
+.propTitle {
+   font-style: normal;
+   font-weight: 700;
+   font-size: 22px;
+   color: #000000;
+}
+.propDesc {
+   font-style: normal;
+   font-weight: 400;
+   font-size: 16px;
+   line-height: 22px;
+   color: #5e5e5e;
+}
+.pLabels {
+   border: 1px solid #e65a1f;
+   border-radius: 20px;
+   padding: 2px 15px;
+   font-style: normal;
+   font-weight: 400;
+   font-size: 14px;
+   line-height: 42px;
+   color: #e65a1f;
+}
+.imgprop {
+   width: 100%;
+   height: 100%;
+}
+.propPrice {
+   font-style: normal;
+   font-weight: 700;
+   font-size: 19px;
+   color: #13a407;
+   position: relative;
+   top: 50%;
+   transform: translateY(-50%);
+}
+.Ttitle {
+   color: white;
+   font-family: "Open Sans";
+   font-weight: 500;
+   text-align: center;
+   padding: 5px 0;
+}
+
+.CTlabel {
+   font-family: "Open Sans";
+   font-weight: 600;
+   font-size: 15px;
+   color: #383838;
+}
+.CTuser {
+   font-family: "Open Sans";
+   font-weight: 600;
+   font-size: 20px;
+   color: #269604;
+}
