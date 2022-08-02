@@ -17,7 +17,11 @@
 }
 .btnContainer {
   position: relative;
-  top: 17.5px;
+  top: 13.5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 .barraItemPropertyType {
@@ -32,6 +36,22 @@
   box-sizing: border-box;
   transition: 150ms;
 }
+
+.barraItemPropertyType2 {
+  padding: 4px 30px;
+  color: #7149bc;
+  border: 1.14407px solid #7149bc;
+  border-radius: 45.7627px;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  border: 1.14407px solid #7149bc;
+  box-sizing: border-box;
+  transition: 150ms;
+  width: 190px;
+  margin-top: 7px;
+}
+
 .barraItemPropertyType:hover {
   background: rgba(113, 73, 188, 0.22);
   transition: 150ms;
@@ -47,6 +67,21 @@
   box-sizing: border-box;
   border-radius: 45.7627px;
   background: rgba(113, 73, 188, 0.22);
+
+}
+
+.barraItemPropertyTypeSelected2 {
+  padding: 4px 30px;
+  color: #7149bc;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  border: 1.14407px solid #7149bc;
+  box-sizing: border-box;
+  border-radius: 45.7627px;
+  background: rgba(113, 73, 188, 0.22);
+  width: 190px;
+  margin-top: 7px;
 }
 
 .barraItemCategory {
@@ -60,10 +95,26 @@
   line-height: 24px;
   transition: 150ms;
 }
-.barraItemCategory:hover {
+
+.barraItemCategory2 {
+  padding: 4px 30px;
+  color: #e65a1f;
+  border: 1.14407px solid #e65a1f;
+  box-sizing: border-box;
+  border-radius: 45.7627px;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  transition: 150ms;
+  width: 190px;
+  display: none;
+}
+
+.barraItemCategory:hover, .barraItemCategory2:hover {
   background: rgba(230, 90, 31, 0.22);
   transition: 150ms;
 }
+
 .barraItemCategorySelected {
   padding: 4px 30px;
   color: #e65a1f;
@@ -76,11 +127,176 @@
   background: rgba(230, 90, 31, 0.22);
 }
 
-@media (max-width: 1330px) {
-  .barraCategorias {
-    overflow-x: scroll;
-    overflow-y: hidden;
+.barraItemCategorySelected2 {
+  padding: 4px 30px;
+  color: #e65a1f;
+  border: 1.14407px solid #e65a1f;
+  box-sizing: border-box;
+  border-radius: 45.7627px;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  background: rgba(230, 90, 31, 0.22);
+  width: 190px;
+  display: none;
+}
+
+.app-drop-down-container {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.dropdown {
+  margin-right: 0.5rem!important;
+  margin-left: 0.5rem;
+}
+
+.ulDropdown {
+  margin: 0;
+  position: absolute;
+  top: calc(100% + 5px);
+  width: 435px;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  padding: 10px;
+  list-style: none;
+  background-color: #fff;
+  right: -148px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  z-index: 200;
+  flex-wrap: wrap;
+}
+
+.ulDropdown2 {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: calc(100% + 5px);
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  list-style: none;
+  background-color: #fff;
+  right: 220px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  z-index: 200;
+  width: 435px;
+  height: 313px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.app-drop-down-container ul li{
+  background-color: #fcfcfc;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color ease .2s;
+}
+.app-drop-down-container ul li:hover{
+  background-color: #000000;
+  color: #fcfcfc;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px; 
+  width: 400px;
+}
+
+.buttonContainer form label{
+  padding: 4px 15px;
+  color: #7149bc;
+  border: 1.14407px solid #7149bc;
+  border-radius: 45.7627px;
+  font-weight: 400;
+  font-size: 17.161px;
+  line-height: 24px;
+  border: 1.14407px solid #7149bc;
+  box-sizing: border-box;
+  transition: 150ms;
+  background-color: #fff;
+  margin: 5px;
+}
+
+.buttonContainer form input{
+  opacity: 0;
+}
+
+.buttonContainer form input[type="radio"]:checked + .checked{
+  background-color: rgba(113, 73, 188, 0.22);
+  color: #7149bc;
+  cursor: pointer;
+  transition: 150ms;
+}
+
+.buttonContainer form label:hover{
+  background-color: rgba(113, 73, 188, 0.22);
+  color: #7149bc;
+  cursor: pointer;
+  transition: 150ms;
+}
+
+.title {
+  margin: 5px auto 5px;
+  font-weight: bold;
+  color: #7149bc;
+}
+
+.TitleFiltros {
+  margin: 2px 0 2px 8px;
+  font-weight: bold;
+  color: #7149bc;
+  font-size: 15px;
+  opacity: 0.7;
+  text-align: left;
+}
+
+.form input {
+  border: #7149bc 1.5px solid;
+  width: 180px;
+  height: 40px;
+  font-size: 14px;
+  text-indent: 12px;
+  margin: 5px;
+}
+
+.form2 input {
+  border: #7149bc 1.5px solid;
+  width: 374px;
+  height: 40px;
+  font-size: 14px;
+  text-indent: 12px;
+  margin: 5px;
+}
+@media (max-width: 1900px) {
+  .ulDropdown2 {
+    right: 536px;
   }
+}
+
+@media (max-width: 1600px) {
+  .ulDropdown2 {
+    right: 385px;
+  }
+}
+
+@media (max-width: 1420px) {
+  .ulDropdown2 {
+    right: 220px;
+  }
+}
+
+@media (max-width: 1330px) {
   .barraCategorias::-webkit-scrollbar {
     height: 5px;
   }
@@ -91,5 +307,66 @@
   .barraCategorias::-webkit-scrollbar-thumb {
     background: #7149bc;
     border-radius: 5px;
+  }
+} 
+
+@media screen and (max-width: 1200px) {
+  .ulDropdown2 {
+    right: 190px
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .ulDropdown2 {
+    right: 130px;
+  }
+}
+
+@media screen and (max-width: 950px) {
+  .ulDropdown2 {
+    right: 10px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .barraItemCategorySelected, .barraItemCategory {
+    display: none;
+  }
+  .barraItemCategorySelected2, .barraItemCategory2 {
+    display: inline;
+  }
+  .ulDropdown, .ulDropdown2 {
+    margin: auto;
+    width: 340px;
+    height: 310px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  .ulDropdown {
+    left: -34%;
+  }
+  .barraItemCategory2, .barraItemCategorySelected2, .barraItemPropertyType2, .barraItemPropertyTypeSelected2 {
+    width: 140px;
+    padding: 4px 12px;
+  }
+  .buttonContainer form label{
+    margin: -2px;
+  }
+  .buttonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px; 
+    width: 315px;
+  }
+}
+
+@media screen and (max-width:360px) {
+  .ulDropdown {
+    right: 0;
+    left: -27%;
+  }
+  .ulDropdown2 {
+    right: -1px;
   }
 }

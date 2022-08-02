@@ -39,6 +39,18 @@ interface ContextProps {
   setFiltros: Dispatch<SetStateAction<boolean>>;
   ocultarBottomNav: boolean;
   setOcultarBottomNav: Dispatch<SetStateAction<boolean>>;
+  minimoTerreno: number;
+  maximoTerreno: number;
+  setMinimoTerreno: Dispatch<SetStateAction<number>>;
+  setMaximoTerreno: Dispatch<SetStateAction<number>>;
+  minimoConstruidos: number;
+  maximoConstruidos: number;
+  setMinimoConstruidos: Dispatch<SetStateAction<number>>;
+  setMaximoConstruidos: Dispatch<SetStateAction<number>>;
+  minimoPrecio: number;
+  maximoPrecio: number;
+  setMinimoPrecio: Dispatch<SetStateAction<number>>;
+  setMaximoPrecio: Dispatch<SetStateAction<number>>;
 }
 
 export interface Bounds {
@@ -97,6 +109,14 @@ export const MapProvider: FC = ({ children }) => {
       : setZoom(5);
   }, [coordenadas]);
 
+
+  const [minimoTerreno, setMinimoTerreno] = useState(0)
+  const [maximoTerreno, setMaximoTerreno] = useState(10000)
+  const [minimoConstruidos, setMinimoConstruidos] = useState(0)
+  const [maximoConstruidos, setMaximoConstruidos] = useState(10000)
+  const [minimoPrecio, setMinimoPrecio] = useState(0)
+  const [maximoPrecio, setMaximoPrecio] = useState(10000000)
+
   return (
     <MapContext.Provider
       value={{
@@ -128,6 +148,18 @@ export const MapProvider: FC = ({ children }) => {
         setFiltros,
         ocultarBottomNav,
         setOcultarBottomNav,
+        setMaximoTerreno,
+        setMinimoTerreno,
+        minimoTerreno,
+        maximoTerreno,
+        setMaximoConstruidos,
+        setMinimoConstruidos,
+        minimoConstruidos,
+        maximoConstruidos,
+        setMinimoPrecio,
+        minimoPrecio,
+        setMaximoPrecio,
+        maximoPrecio,
       }}
     >
       {children}

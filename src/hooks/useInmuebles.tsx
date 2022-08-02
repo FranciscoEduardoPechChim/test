@@ -93,10 +93,17 @@ export const useInmueblesCoordenadas = (
   northEast: google.maps.LatLngLiteral | undefined,
   coordenadas: Location,
   categoria: string,
-  tipoPropiedad: string
+  tipoPropiedad: string,
+  baños: number,
+  parking: number,
+  m2Terreno: number,
+  m2Construidos: number,
+  habitaciones: number,
+  precio: number,
 ) => {
   const [inmuebles, setInmuebles] = useState<InmueblesUsuario[]>([]);
   const [cargando, setCargando] = useState(true);
+  const { minimoTerreno, maximoTerreno, minimoConstruidos, maximoConstruidos, minimoPrecio, maximoPrecio} = useContext(MapContext);
 
   const obtenerInmueblesPorCoordenadas = async () => {
     try {
@@ -104,12 +111,38 @@ export const useInmueblesCoordenadas = (
         `${production}/inmuebles/inmuebles/coordenadas?lat_south_east=${southEast.lat}&lng_south_east=${southEast.lng}&lat_south_west=${southWest?.lat}&lng_south_west=${southWest?.lng}&lat_north_east=${northEast?.lat}&lng_north_east=${northEast?.lng}&lat_north_west=${northWest.lat}&lng_north_west=${northWest.lng}&categoria=${categoria}&tipoPropiedad=${tipoPropiedad}`
       );
       const data: InmueblesCoordenadas = await resp.json();
-      setInmuebles(data.inmuebles);
+      var inmueblesFiltrados = data.inmuebles;
+
+      if (habitaciones >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.habitaciones >= habitaciones);
+      }
+
+      if (baños >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.baños >= baños);
+      }
+
+      if (parking >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.parking >= parking);
+      }
+
+      if (precio >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.precio >= minimoPrecio && inmueble.precio <= maximoPrecio)
+      }
+
+      if (m2Terreno >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.m2Terreno >= minimoTerreno && inmueble.m2Terreno <= maximoTerreno);
+      }
+
+      if (m2Construidos >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.m2Construidos >= minimoConstruidos && inmueble.m2Construidos <= m2Construidos);
+      }
+
+      setInmuebles(inmueblesFiltrados);
       setCargando(false);
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   useEffect(() => {
     obtenerInmueblesPorCoordenadas();
@@ -121,6 +154,15 @@ export const useInmueblesCoordenadas = (
     coordenadas,
     tipoPropiedad,
     categoria,
+    baños,
+    parking,
+    habitaciones,
+    minimoTerreno,
+    maximoTerreno,
+    minimoConstruidos,
+    maximoConstruidos,
+    minimoPrecio,
+    maximoPrecio,
   ]);
 
   return { inmuebles, cargando };
