@@ -10,11 +10,13 @@ import Modaltitle from "../modaltitle/Modaltitle";
 import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
 import { googleClientId } from "credentials";
+import PasswordForgot from "./PasswordForgot";
 
 const LoginModal = () => {
+  const [modalShow, setModalShow] = useState(false);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, mostrarLogin, cerrarLogin, abrirRegistro, signInWithGoogle } =
+  const { login, mostrarLogin, cerrarLogin, abrirRegistro, signInWithGoogle, abrirPasswordForget, cerrarPasswordForget } =
     useContext(AuthContext);
   const { formulario, handleChange, setFormulario } = useForm({
     correo: "",
@@ -65,7 +67,13 @@ const LoginModal = () => {
     abrirRegistro();
   };
 
+  const handleModalPassword = () => {
+    cerrarLogin();
+    setModalShow(!modalShow)
+  };
+
   return (
+    <>
     <Modal
       show={mostrarLogin}
       onHide={cerrarLogin}
@@ -180,11 +188,21 @@ const LoginModal = () => {
               <span onClick={handleModals} className="pointer">
                 ¿Aún no tienes cuenta? ¡Regístrate!
               </span>
+              <br />
+              <span onClick={handleModalPassword} className="pointer">
+                ¿Has olvidado tu contraseña? Click aquí
+              </span>
             </div>
           </div>
         </Form>
       </Modal.Body>
     </Modal>
+    
+    <PasswordForgot
+      modalShow={modalShow}
+      setModalShow={setModalShow}
+    />
+    </>
   );
 };
 

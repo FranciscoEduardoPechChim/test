@@ -4,7 +4,7 @@ import SEO from "components/seo/SEO";
 import { AdminRoute } from "hooks/useAdminRoute";
 import { Form } from "react-bootstrap";
 import styleRef from "components/paginas/dashboard/Referencias.module.css";
-import styles from './dashboard.module.css'
+import styles from './dashboard.module.css';
 
 
 const Usuarios = () => {

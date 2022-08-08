@@ -52,6 +52,10 @@ interface ContextProps {
   cerrarLogin: () => void;
   abrirRegistro: () => void;
   cerrarRegistro: () => void;
+  mostrarPasswordForget: boolean;
+  setMostrarPasswordForget: Dispatch<SetStateAction<boolean>>;
+  abrirPasswordForget: () => void;
+  cerrarPasswordForget: () => void;
   actualizarRol: (
     data: any,
     uid: string | undefined | null
@@ -93,10 +97,13 @@ export const AuthProvider: FC = ({ children }) => {
   const router = useRouter();
   const [mostrarLogin, setMostrarLogin] = useState(false);
   const [mostrarRegistro, setMostrarRegistro] = useState(false);
+  const [mostrarPasswordForget, setMostrarPasswordForget] = useState(false);
   const abrirLogin = () => setMostrarLogin(true);
   const cerrarLogin = () => setMostrarLogin(false);
   const abrirRegistro = () => setMostrarRegistro(true);
   const cerrarRegistro = () => setMostrarRegistro(false);
+  const abrirPasswordForget = () => setMostrarPasswordForget(true);
+  const cerrarPasswordForget = () => setMostrarPasswordForget(false);
 
   const login = async (correo: string, password: string) => {
     const resp = await fetchSinToken(
@@ -565,6 +572,10 @@ export const AuthProvider: FC = ({ children }) => {
         cerrarRegistro,
         actualizarRol,
         crearUsuario,
+        mostrarPasswordForget,
+        setMostrarPasswordForget,
+        abrirPasswordForget,
+        cerrarPasswordForget,
       }}
     >
       {children}
