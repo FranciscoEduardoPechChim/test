@@ -8,12 +8,13 @@ export const AdminRoute = (Component: any) => {
     const { auth } = useContext(AuthContext);
     const router = useRouter();
 
-    if (auth.role !== "Administrador") {
-      useEffect(() => {
+    // @ts-ignore
+    useEffect(() => {
+      if (auth.role !== "Administrador") {
         router.replace("/");
-      }, []);
-      return <Loading />;
-    }
+        return <Loading />;
+      }
+    }, []);
 
     return <Component auth={auth} {...props} />;
   };

@@ -57,7 +57,7 @@
   border: none;
 }
 
-.mostrarContraseña {
+.mostrarContrasena {
   font-size: 19px;
   position: absolute;
   right: 70px;
@@ -82,7 +82,7 @@
   letter-spacing: 1px;
 }
 
-.mostrarContraseña2 {
+.mostrarContrasena2 {
   font-size: 19px;
   position: absolute;
   right: 395px;

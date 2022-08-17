@@ -4,6 +4,7 @@ import { Form, Modal } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import { GoogleLogin } from "react-google-login";
 import { AuthContext } from "../../../context/auth/AuthContext";
+// @ts-ignore
 import { useForm } from "../../../hooks/useForm";
 import Button from "../button/Button";
 import Modaltitle from "../modaltitle/Modaltitle";

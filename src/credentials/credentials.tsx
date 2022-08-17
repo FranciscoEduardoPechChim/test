@@ -1,6 +1,12 @@
 export const production = "https://red1a1-back.herokuapp.com/api";
 export const development = "http://localhost:8080/api";
 
+// export const production = `${process.env.REACT_APP_URL_PROD_API}`;
+// export const development = `${process.env.REACT_APP_URL_DEV_API}`;
+// export const googleClientId = `${process.env.REACT_APP_GOOGLE_CLIENT_ID}`;
+// export const googlesSecretId = `${process.env.REACT_APP_GOOGLE_SECRET_ID}`;
+// export const stripePublicId = `${process.env.REACT_APP_STRIPE_PUBLIC_ID}`;
+
 export const rentas = "61e99f0e0d3bd9163e4a4b42";
 export const ventas = "61e99f120d3bd9163e4a4b46";
 export const casasC = "61e99edd0d3bd9163e4a4b3a";

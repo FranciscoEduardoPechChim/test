@@ -6,9 +6,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import { obtenerUbicacionUsuario } from "helpers/obtenerUbicación";
+import { obtenerUbicacionUsuario } from "../../helpers";
 import { Location } from "../../interfaces/MapInterfaces";
-import { casasC, rentas } from "credentials";
+import { casasC, rentas } from "../../credentials";
 
 interface ContextProps {
   coordenadas: Location;

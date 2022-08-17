@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "context/auth/AuthContext";
 import { MensajesRespuesta, Mensaje } from "interfaces/MensajesInterface";
-import { production } from "../credentials/credentials";
+import { production } from "../credentials";
 // import { Conversacion } from "../interfaces/ChatInterface";
 
 export const useConversaciones = (uid: string | undefined | null) => {
@@ -19,47 +19,34 @@ export const useConversaciones = (uid: string | undefined | null) => {
   };
 
   useEffect(() => {
-    obtenerConversaciones();
+    if (uid !== null && uid !== undefined) {
+      obtenerConversaciones();
+    }
   }, [uid]);
 
   return { conversaciones, cargando, setConversaciones };
 };
 
-export const useUltimoMsg = (uid: string, id: string) => {
+export const useUltimoMsg = (uid: string | undefined | null, id: string | undefined | null) => {
   const { auth } = useContext(AuthContext);
   const [ultimoMsg, setUltimoMsg] = useState<Mensaje[]>([]);
 
   const token = localStorage.getItem("token") || "";
 
-  if (uid === auth.uid) {
-    const ultimoMensaje = async () => {
-      const res = await fetch(`${production}/mensajes/${id}`, {
-        headers: { "x-token": token },
-      });
+  const ultimoMensaje = async () => {
+    const res = await fetch(`${production}/mensajes/${id}`, {
+      headers: { "x-token": token },
+    });
 
-      const data: MensajesRespuesta = await res.json();
-      setUltimoMsg(data.mensajes);
-    };
+    const data: MensajesRespuesta = await res.json();
+    setUltimoMsg(data.mensajes);
+  };
 
-    useEffect(() => {
+  useEffect(() => {
+    if (id !== null && id !== undefined) {
       ultimoMensaje();
-    }, []);
-  }
-
-  if (uid !== auth.uid) {
-    const ultimoMensaje = async () => {
-      const res = await fetch(`${production}/mensajes/${uid}`, {
-        headers: { "x-token": token },
-      });
-
-      const data = await res.json();
-      setUltimoMsg(data.mensajes);
-    };
-
-    useEffect(() => {
-      ultimoMensaje();
-    }, []);
-  }
+    }
+  }, [id]);
 
   return { ultimoMsg };
 };

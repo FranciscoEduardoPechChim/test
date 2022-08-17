@@ -1,5 +1,4 @@
 import { FormEvent, useContext, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { Form, Modal } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from "../../../context/auth/AuthContext";
@@ -10,7 +9,7 @@ import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { development } from "credentials";
+import { production } from "credentials";
 
 interface Props {
     modalShow: boolean;
@@ -22,15 +21,16 @@ const PasswordForgot = (props: Props) => {
   const [correo, setCorreo] = useState("");
 	const [msg, setMsg] = useState("");
 	const [error, setError] = useState("");
-  const router = useRouter();
-  const { abrirPasswordForget, cerrarPasswordForget } =
-    useContext(AuthContext);
+  const { abrirPasswordForget, cerrarPasswordForget } = useContext(AuthContext);
 
   const handleSubmit = async (e: any) => {
 		e.preventDefault();
 		try {
-			const url = `${development}/auth/recuperarPassword`;
-			const { data } = await axios.post(url, { correo });
+			const url = `${production}/auth/forgot-password`;
+			const obj = {
+				"correo": correo
+			};
+			const { data } = await axios.post(url, obj);
 			setMsg(data.message);
 			setError("");
 		} catch (err: any) {

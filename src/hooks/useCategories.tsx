@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Categoria } from "../interfaces/InmueblesInterface";
+import { Categoria } from "../interfaces";
 import { TipoPropiedad } from "../interfaces/PropertyType";
 
 const devURL = "http://localhost:8080/api";
@@ -10,7 +10,7 @@ export const useCategories = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   const obtenerCategorias = async () => {
-    const resp = await fetch(baseURL + "/categorias/");
+    const resp = await fetch(`${baseURL}/categorias/`);
     const data = await resp.json();
 
     setCategorias(data.categorias);

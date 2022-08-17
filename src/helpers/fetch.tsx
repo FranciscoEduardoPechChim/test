@@ -1,7 +1,7 @@
 import { AprobadoRechazado, SolicitudResp } from "interfaces/SolicitudInteface";
 import { CrearChat } from "../context/chat/ChatContext";
 import { ActualizarInmueble } from "../context/inmuebles/InmuebleContext";
-import { development, production } from "../credentials/credentials";
+import { development, production } from "../credentials";
 import { RegisterData, Resp, SubirFoto } from "../interfaces/AuthInterface";
 import { CrearChatResponse, MensajesResp } from "../interfaces/ChatInterface";
 import {
