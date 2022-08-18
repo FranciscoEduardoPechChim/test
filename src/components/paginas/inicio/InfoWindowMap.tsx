@@ -29,6 +29,7 @@ const InfoWindowMap = ({ inmueble }: Props) => {
     await agregarHist("historial", data);
   };
 
+  // @ts-ignore
   return (
     <InfoWindow position={{ lat: inmueble.lat, lng: inmueble.lng }}>
       <div className={styles.contenedorCard}>

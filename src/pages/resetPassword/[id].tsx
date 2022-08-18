@@ -7,20 +7,19 @@ import styles from "../../components/ui/authmodal/AuthModal.module.css";
 import {production} from "../../credentials";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Loading from "../../components/ui/loading/Loading";
 import "react-toastify/dist/ReactToastify.css";
 
 const resetPassword = () => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { asPath, query } = useRouter();
+  const router = useRouter();
+  const { asPath, query } = router;
   const { id, email } = query;
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [showForm, setShowForm] = useState(false);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [showPassword, setShowPassword] = useState(false);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [showPassword2, setShowPassword2] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [load, setLoad] = useState(false);
   
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (id === undefined && email === undefined) {
       setShowForm(false);
@@ -30,6 +29,7 @@ const resetPassword = () => {
   }, [id, email]);
   
   const handleVerification = async () => {
+    setLoading(true);
     try {
       const url = `${production}/auth/token-verification`;
       const obj = {
@@ -41,6 +41,8 @@ const resetPassword = () => {
     } catch (err: any) {
       setShowForm(false);
     }
+  
+    setLoading(false);
   };
   
   const mostrarContrasena = () => setShowPassword(!showPassword);
@@ -65,6 +67,8 @@ const resetPassword = () => {
       return false;
     }
   
+    setLoad(true);
+  
     try {
       const url = `${production}/auth/password-reset`;
       const obj = {
@@ -83,9 +87,28 @@ const resetPassword = () => {
         showConfirmButton: true,
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'Aceptar'
-      })
+      });
+      router.push("/");
     } catch (err: any) {
+      if (
+        err.response &&
+        err.response.status >= 400 &&
+        err.response.status <= 500
+      ) {
+        Swal.fire({
+          title: 'Error',
+          html: err.response.data.msg,
+          icon: 'error',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar'
+        });
+      }
     }
+  
+    setLoad(false);
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -101,16 +124,23 @@ const resetPassword = () => {
       <SEO titulo="Recuperar contraseña" url={asPath} />
       <div className={styles.container}>
         <h1>Recuperar contraseña</h1>
-        {!showForm && (
+        {loading && (
           <div className="row d-flex justify-content-center mt-4 mb-4">
-            <div className="col-11 col-sm-9 col-md-7">
+            <div className="col-11 col-sm-9 col-md-7 text-center">
+              <Loading />
+            </div>
+          </div>
+        )}
+        {!loading && !showForm && (
+          <div className="row d-flex justify-content-center mt-4 mb-4">
+            <div className="col-11 col-sm-9 col-md-7 text-center">
               <div className="alert alert-danger">
                 Este link ha sido expirado por favor realice nuevamente la operación en la solicitud del cambio de contraseña
               </div>
             </div>
           </div>
         )}
-        {showForm && (
+        {!loading && showForm && (
           <form onSubmit={onSubmit}>
             <div className="row d-flex justify-content-center mt-4 mb-4">
               <div className="col-11 col-sm-9 col-md-7">
@@ -152,6 +182,9 @@ const resetPassword = () => {
                 </div>
               </div>
               <div className="col-11 col-sm-9 col-md-7 mt-4 text-center">
+                {load && (
+                  <Loading />
+                )}
                 <button
                   type="submit"
                   className={(password.length > 0 && password2.length > 0 && password === password2) ? styles.primary : styles.primary2}

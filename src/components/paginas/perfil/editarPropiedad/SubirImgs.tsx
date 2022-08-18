@@ -7,12 +7,12 @@ import {
 } from "react";
 import { Form } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
-import { AuthContext } from "context/auth/AuthContext";
+import { AuthContext } from "../../../../context/auth/AuthContext";
 import styles from "./Editar.module.css";
-import { InmuebleContext } from "context/inmuebles/InmuebleContext";
-import Button from "components/ui/button/Button";
-import Loading from "components/ui/loading/Loading";
-import { useInmueble } from "hooks/useInmuebles";
+import { InmuebleContext } from "../../../../context/inmuebles/InmuebleContext";
+import Button from "../../../ui/button/Button";
+import Loading from "../../../ui/loading/Loading";
+import { useInmueble } from "../../../../hooks";
 import { useRouter } from "next/router";
 
 const thumb: CSSProperties = {
