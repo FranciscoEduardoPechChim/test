@@ -1,15 +1,13 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import { Form, Modal } from "react-bootstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { AuthContext } from "../../../context/auth/AuthContext";
-import { useForm } from "../../../hooks/useForm";
 import Button from "../button/Button";
 import Modaltitle from "../modaltitle/Modaltitle";
 import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import Swal from "sweetalert2";
-import { production } from "credentials";
+import { production } from "../../../credentials";
 
 interface Props {
     modalShow: boolean;

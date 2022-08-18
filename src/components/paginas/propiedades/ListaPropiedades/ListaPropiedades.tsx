@@ -1,5 +1,5 @@
 import { Container, Row } from "react-bootstrap";
-import { Inmueble } from "../../../../interfaces/InmueblesInterface";
+import { Inmueble } from "../../../../interfaces";
 import Properties from "../../../ui/propertiescard/Properties";
 
 interface Resp {

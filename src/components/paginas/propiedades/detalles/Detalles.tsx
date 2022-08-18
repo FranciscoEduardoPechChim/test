@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { Accordion } from "react-bootstrap";
 import { AuthContext } from "../../../../context/auth/AuthContext";
-import { formatPrice } from "../../../../helpers/formatPrice";
-import { publicadoHace } from "../../../../helpers/horaMes";
+import { formatPrice } from "../../../../helpers";
+import { publicadoHace } from "../../../../helpers";
 import { InmueblesUsuario } from "../../../../interfaces/CrearInmuebleInterface";
 import styles from "./Inmueble.module.css";
 

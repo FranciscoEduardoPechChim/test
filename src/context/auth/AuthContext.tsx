@@ -16,7 +16,7 @@ import {
   fetchSinToken,
   googleLogin,
   subirFotoPerfil,
-} from "../../helpers/fetch";
+} from "../../helpers";
 import { Auth, Resp, SubirFoto } from "../../interfaces/AuthInterface";
 import { RespActualizar } from "../../interfaces/UserInterface";
 

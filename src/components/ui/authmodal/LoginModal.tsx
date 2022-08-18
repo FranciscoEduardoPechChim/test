@@ -10,7 +10,7 @@ import Button from "../button/Button";
 import Modaltitle from "../modaltitle/Modaltitle";
 import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
-import { googleClientId } from "credentials";
+import { googleClientId } from "../../../credentials";
 import PasswordForgot from "./PasswordForgot";
 
 const LoginModal = () => {

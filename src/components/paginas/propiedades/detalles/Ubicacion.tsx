@@ -10,9 +10,9 @@ import {
   agregarFav,
   fetchEnviarSolicitud,
   fetchSolicitud,
-} from "../../../../helpers/fetch";
-import { MapContext } from "context/map/MapContext";
-import { SocketContext } from "context/socket/SocketContext";
+} from "../../../../helpers";
+import { MapContext } from "../../../../context/map/MapContext";
+import { SocketContext } from "../../../../context/socket/SocketContext";
 
 interface Props {
   inmuebles: {

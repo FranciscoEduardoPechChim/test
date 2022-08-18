@@ -3,8 +3,8 @@ import {
   Referencia,
   ReferenciaNumero,
   ReferenciasUsuarioResp,
-} from "interfaces/ReferenciasInterface";
-import { production } from "credentials/credentials";
+} from "../interfaces/ReferenciasInterface";
+import { production } from "../credentials";
 
 export const useReferenciasUsuario = (
   uid: string | null | undefined,

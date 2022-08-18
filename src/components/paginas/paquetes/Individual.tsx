@@ -5,7 +5,7 @@ import { Form, Modal } from "react-bootstrap";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../context/auth/AuthContext";
-import { formatPrice } from "../../../helpers/formatPrice";
+import { formatPrice } from "../../../helpers";
 import { usePaqueteInd } from "../../../hooks/usePaquetes";
 import Button from "../../ui/button/Button";
 import Loading from "../../ui/loading/Loading";
@@ -16,10 +16,10 @@ import {
   generarRefInd,
   nuevoPedido,
   nuevoPedidoAdmin,
-} from "../../../helpers/fetch";
+} from "../../../helpers";
 import { Pedido } from "../../../interfaces/PedidosInterface";
-import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
-import { production } from "credentials/credentials";
+import { NuevoPedido, NuevoPedidoAdmin } from "../../../interfaces/ContactInterface";
+import { production } from "../../../credentials";
 
 const Individual = () => {
   const { auth, abrirLogin, actualizarRol } = useContext(AuthContext);

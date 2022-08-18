@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import Link from "next/link";
-import { MapContext } from "context/map/MapContext";
+import { MapContext } from "../../../context/map/MapContext";
 import { AuthContext } from "../../../context/auth/AuthContext";
 import Buscador from "../buscador/Buscador";
 import styles from "./PurpleHeader.module.css";

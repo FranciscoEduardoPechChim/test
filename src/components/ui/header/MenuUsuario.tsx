@@ -1,9 +1,9 @@
 import { Dispatch, MutableRefObject, SetStateAction, useContext } from "react";
 import Link from "next/link";
 import { Overlay } from "react-bootstrap";
-import { AuthContext } from "context/auth/AuthContext";
+import { AuthContext } from "../../../context/auth/AuthContext";
 import styles from "./Header.module.css";
-import { ChatContext } from "context/chat/ChatContext";
+import { ChatContext } from "../../../context/chat/ChatContext";
 
 interface Props {
   setMostrarMenu: Dispatch<SetStateAction<boolean>>;

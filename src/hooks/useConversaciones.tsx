@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "context/auth/AuthContext";
-import { MensajesRespuesta, Mensaje } from "interfaces/MensajesInterface";
+import { AuthContext } from "../context/auth/AuthContext";
+import { MensajesRespuesta, Mensaje } from "../interfaces/MensajesInterface";
 import { production } from "../credentials";
 // import { Conversacion } from "../interfaces/ChatInterface";
 

@@ -1,11 +1,11 @@
 import { Fragment, memo, useContext, useEffect, useRef, useState } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { MapContext } from "../../../context/map/MapContext";
-import { useInmueblesCoordenadas } from "../../../hooks/useInmuebles";
+import { useInmueblesCoordenadas } from "../../../hooks";
 import Loading from "../../ui/loading/Loading";
 import InfoWindowMap from "./InfoWindowMap";
 import BuscarZona from "./BuscarZona";
-import { useCategories, useTipoPropiedad } from "hooks/useCategories";
+import { useCategories, useTipoPropiedad } from "../../../hooks/useCategories";
 import BarraCategorias from "./BarraCategorias";
 import styles from "./BarraCategoria.module.css";
 
@@ -158,7 +158,7 @@ const MapaUbicacion = () => {
                     habitaciones={habitaciones}
                     setHabitaciones={setHabitaciones}
                   />
-                )} 
+                )}
               </div>
             </div>
 

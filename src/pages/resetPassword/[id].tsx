@@ -4,10 +4,10 @@ import { toast } from "react-toastify";
 import { useForm } from "../../hooks/useForm";
 import SEO from "../../components/seo/SEO";
 import styles from "../../components/ui/authmodal/AuthModal.module.css";
-import "react-toastify/dist/ReactToastify.css";
 import {production} from "../../credentials";
 import axios from "axios";
 import Swal from "sweetalert2";
+import "react-toastify/dist/ReactToastify.css";
 
 const resetPassword = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks

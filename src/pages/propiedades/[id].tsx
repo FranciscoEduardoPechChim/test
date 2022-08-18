@@ -37,7 +37,7 @@ interface Props {
 }
 
 const Ubicacion: any = dynamic(
-  () => import("../../components/paginas/propiedades/detalles/Ubicación"),
+  () => import("../../components/paginas/propiedades/detalles/Ubicacion"),
   { ssr: false }
 );
 

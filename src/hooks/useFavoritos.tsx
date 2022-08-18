@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 // import { InmuebleContext } from "../context/inmuebles/InmuebleContext";
-import { production } from "../credentials/credentials";
+import { production } from "../credentials";
 import { Favorito } from "../interfaces/Favoritos";
 
 export const useFavoritos = (uid: string | null | undefined) => {

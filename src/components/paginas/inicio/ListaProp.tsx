@@ -8,12 +8,12 @@ import {
 } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../context/auth/AuthContext";
-import { agregarFav, agregarHist } from "../../../helpers/fetch";
-import { useListaInmuebleCoords } from "../../../hooks/useInmuebles";
+import { agregarFav, agregarHist } from "../../../helpers";
+import { useListaInmuebleCoords } from "../../../hooks";
 import Loading from "../../ui/loading/Loading";
 import styles from "./ListaProp.module.css";
-import { MapContext } from "context/map/MapContext";
-import ListaPropCard from "components/ui/listaprop/ListaPropCard";
+import { MapContext } from "../../../context/map/MapContext";
+import ListaPropCard from "../../../components/ui/listaprop/ListaPropCard";
 
 function ContextAwareToggle({ children, eventKey, callback }: any) {
   const { activeEventKey } = useContext(AccordionContext);

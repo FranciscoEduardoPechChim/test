@@ -7,11 +7,11 @@ import {
 } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { Solicitud } from "interfaces/SolicitudInteface";
-import { fetchAceptarRechazarSolicitud } from "helpers/fetch";
-import { AuthContext } from "context/auth/AuthContext";
+import { Solicitud } from "../../../interfaces/SolicitudInteface";
+import { fetchAceptarRechazarSolicitud } from "../../../helpers";
+import { AuthContext } from "../../../context/auth/AuthContext";
 import NotificacionItem from "./NotificacionItem";
-import { production } from "credentials/credentials";
+import { production } from "../../../credentials";
 
 interface Props {
   notificaciones: boolean;

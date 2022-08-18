@@ -2,13 +2,13 @@ import { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { Col, Container, Pagination, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { AuthContext } from "context/auth/AuthContext";
-import { useCompartidas } from "hooks/useCompartidas";
+import { AuthContext } from "../../../../context/auth/AuthContext";
+import { useCompartidas } from "../../../../hooks/useCompartidas";
 import styles from "./Compartidas.module.css";
-import { InmuebleContext } from "context/inmuebles/InmuebleContext";
-import Loading from "components/ui/loading/Loading";
-import { fetchAceptarRechazarSolicitud } from "helpers/fetch";
-import { production } from "credentials/credentials";
+import { InmuebleContext } from "../../../../context/inmuebles/InmuebleContext";
+import Loading from "../../..//ui/loading/Loading";
+import { fetchAceptarRechazarSolicitud } from "../../../../helpers";
+import { production } from "../../../../credentials";
 import CopyToClipboard from "react-copy-to-clipboard";
 
 const CompartidasCard = () => {

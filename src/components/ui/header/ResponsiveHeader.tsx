@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import Link from "next/link";
 import styles from "./Header.module.css";
-import { AuthContext } from "context/auth/AuthContext";
+import { AuthContext } from "../../../context/auth/AuthContext";
 import LoginModal from "../authmodal/LoginModal";
 
 const ResponsiveHeader = () => {

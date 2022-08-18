@@ -1,4 +1,4 @@
-import { AprobadoRechazado, SolicitudResp } from "interfaces/SolicitudInteface";
+import { AprobadoRechazado, SolicitudResp } from "../interfaces/SolicitudInteface";
 import { CrearChat } from "../context/chat/ChatContext";
 import { ActualizarInmueble } from "../context/inmuebles/InmuebleContext";
 import { development, production } from "../credentials";
@@ -19,7 +19,7 @@ import { HistData, HistorialResp } from "../interfaces/Historial";
 import {
   InmueblesResponse,
   SubirImagenesInmueble,
-} from "../interfaces/InmueblesInterface";
+} from "../interfaces";
 import {
   CrearUsuarioResp,
   UsuariosPagado,

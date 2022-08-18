@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { Container } from "react-bootstrap";
-import SEO from "components/seo/SEO";
+import SEO from "../components/seo/SEO";
 
 const NoP = () => {
   const router = useRouter();

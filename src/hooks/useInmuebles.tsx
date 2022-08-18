@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import moment from "moment";
-import { Bounds, MapContext } from "context/map/MapContext";
+import { Bounds, MapContext } from "../context/map/MapContext";
 import {
   bodegasCat,
   casasC,
@@ -11,15 +11,15 @@ import {
   production,
   rentas,
   ventas,
-} from "credentials";
+} from "../credentials";
 import {
   InmueblesCoordenadas,
   InmueblesUsuario,
   InmuebleUsuarioRes,
   ListaInmuebles,
-} from "interfaces/CrearInmuebleInterface";
-import { Location } from "interfaces/MapInterfaces";
-import { AllInmuebles, Inmueble } from "interfaces";
+} from "../interfaces/CrearInmuebleInterface";
+import { Location } from "../interfaces/MapInterfaces";
+import { AllInmuebles, Inmueble } from "../interfaces";
 
 export const useInmuebles = () => {
   const { dirMapa } = useContext(MapContext);

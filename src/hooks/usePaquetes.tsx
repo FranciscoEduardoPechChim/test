@@ -1,6 +1,6 @@
 import { Console } from "console";
 import { useEffect, useState } from "react";
-import { development, production } from "../credentials/credentials";
+import { development, production } from "../credentials";
 import { Paquete, PaqueteIndividual } from "../interfaces/PaquetesInterface";
 
 export const usePaqueteInd = () => {

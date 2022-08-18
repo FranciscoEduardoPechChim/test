@@ -1,8 +1,8 @@
 import React, { Dispatch, SetStateAction, useContext, useState, useRef } from "react";
-import { Categoria } from "interfaces/InmueblesInterface";
-import { TipoPropiedad } from "interfaces/PropertyType";
+import { Categoria } from "../../../interfaces";
+import { TipoPropiedad } from "../../../interfaces/PropertyType";
 import styles from "./BarraCategoria.module.css";
-import { MapContext } from "context/map/MapContext";
+import { MapContext } from "../../../context/map/MapContext";
 
 interface Props {
   setTipoPropiedad: Dispatch<SetStateAction<string>>;
@@ -19,7 +19,7 @@ interface Props {
 
 const BarraCategorias = (props: Props) => {
   const {
-    setMinimoTerreno, 
+    setMinimoTerreno,
     setMaximoTerreno,
     setMinimoConstruidos,
     setMaximoConstruidos,
@@ -68,19 +68,19 @@ const BarraCategorias = (props: Props) => {
 
   const [selectedRadioBtn, setSelectedRadioBtn] = useState('value1')
   const isRadioSelected = (value: string): boolean => selectedRadioBtn === value;
-  const handleRadioClick = (e: React.ChangeEvent<HTMLInputElement>): void => { 
+  const handleRadioClick = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSelectedRadioBtn(e.currentTarget.value)
   }
 
   const [selectedRadioBtnBaños, setSelectedRadioBtnBaños] = useState('valueBaños1')
   const isRadioSelectedBaños = (value: string): boolean => selectedRadioBtnBaños === value;
-  const handleRadioClickBaños = (e: React.ChangeEvent<HTMLInputElement>): void => { 
+  const handleRadioClickBaños = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSelectedRadioBtnBaños(e.currentTarget.value)
   }
 
   const [selectedRadioBtnParking, setSelectedRadioBtnParking] = useState('valueParking1')
   const isRadioSelectedParking = (value: string): boolean => selectedRadioBtnParking === value;
-  const handleRadioClickParking = (e: React.ChangeEvent<HTMLInputElement>): void => { 
+  const handleRadioClickParking = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSelectedRadioBtnParking(e.currentTarget.value)
   }
 
@@ -90,7 +90,7 @@ const BarraCategorias = (props: Props) => {
       {categorias?.map((categoria) => (
           <span
             className={`${selectedCat === categoria._id
-              ? styles.barraItemCategorySelected 
+              ? styles.barraItemCategorySelected
               : styles.barraItemCategory
               } mx-2 pointer`}
             onClick={() => {
@@ -111,7 +111,7 @@ const BarraCategorias = (props: Props) => {
             {categorias?.map((categoria) => (
           <span
             className={`${selectedCat === categoria._id
-              ? styles.barraItemCategorySelected2 
+              ? styles.barraItemCategorySelected2
               : styles.barraItemCategory2
               } mx-2 pointer`}
             onClick={() => {
@@ -132,7 +132,7 @@ const BarraCategorias = (props: Props) => {
             key={propertyType._id}
           >
             {propertyType.nombre}
-          </li>  
+          </li>
         ))}
         </ul>
         )}
@@ -148,46 +148,46 @@ const BarraCategorias = (props: Props) => {
               <h4 className={styles.TitleFiltros}>Recamara(s)</h4>
               <div className={styles.buttonContainer}>
                 <form action="">
-                  <input 
-                    onChange={(e) => {setHabitaciones(0); handleRadioClick(e);}}  
-                    type="radio" 
-                    id="1" 
+                  <input
+                    onChange={(e) => {setHabitaciones(0); handleRadioClick(e);}}
+                    type="radio"
+                    id="1"
                     value="value1"
                     checked={isRadioSelected('value1')}
                     />
                   <label className={styles.checked} htmlFor="1">0+</label>
 
-                  <input 
-                    onChange={(e) => {setHabitaciones(1); handleRadioClick(e);}}  
-                    type="radio" 
-                    id="2" 
+                  <input
+                    onChange={(e) => {setHabitaciones(1); handleRadioClick(e);}}
+                    type="radio"
+                    id="2"
                     value="value2"
                     checked={isRadioSelected('value2')}
                     />
                   <label className={styles.checked} htmlFor="2">1+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setHabitaciones(2); handleRadioClick(e);}}
-                    type="radio" 
-                    id="3" 
+                    type="radio"
+                    id="3"
                     value="value3"
                     checked={isRadioSelected('value3')}
                     />
                   <label className={styles.checked} htmlFor="3">2+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setHabitaciones(3); handleRadioClick(e);}}
-                    type="radio" 
-                    id="4" 
+                    type="radio"
+                    id="4"
                     value="value4"
                     checked={isRadioSelected('value4')}
                     />
                   <label className={styles.checked} htmlFor="4">3+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setHabitaciones(4); handleRadioClick(e);}}
-                    type="radio" 
-                    id="5" 
+                    type="radio"
+                    id="5"
                     value="value5"
                     checked={isRadioSelected('value5')}
                     />
@@ -199,46 +199,46 @@ const BarraCategorias = (props: Props) => {
               <h4 className={styles.TitleFiltros}>Baños</h4>
               <div className={styles.buttonContainer}>
                 <form action="">
-                  <input 
-                    onChange={(e) => {setBaños(0); handleRadioClickBaños(e);}}  
-                    type="radio" 
-                    id="11" 
+                  <input
+                    onChange={(e) => {setBaños(0); handleRadioClickBaños(e);}}
+                    type="radio"
+                    id="11"
                     value="valueBaños1"
                     checked={isRadioSelectedBaños('valueBaños1')}
                     />
                   <label className={styles.checked} htmlFor="11">0+</label>
 
-                  <input 
-                    onChange={(e) => {setBaños(1); handleRadioClickBaños(e);}}  
-                    type="radio" 
-                    id="22" 
+                  <input
+                    onChange={(e) => {setBaños(1); handleRadioClickBaños(e);}}
+                    type="radio"
+                    id="22"
                     value="valueBaños2"
                     checked={isRadioSelectedBaños('valueBaños2')}
                     />
                   <label className={styles.checked} htmlFor="22">1+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setBaños(2); handleRadioClickBaños(e);}}
-                    type="radio" 
-                    id="33" 
+                    type="radio"
+                    id="33"
                     value="valueBaños3"
                     checked={isRadioSelectedBaños('valueBaños3')}
                     />
                   <label className={styles.checked} htmlFor="33">2+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setBaños(3); handleRadioClickBaños(e);}}
-                    type="radio" 
-                    id="44" 
+                    type="radio"
+                    id="44"
                     value="valueBaños4"
                     checked={isRadioSelectedBaños('valueBaños4')}
                     />
                   <label className={styles.checked} htmlFor="44">3+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setBaños(4); handleRadioClickBaños(e);}}
-                    type="radio" 
-                    id="55" 
+                    type="radio"
+                    id="55"
                     value="valueBaños5"
                     checked={isRadioSelectedBaños('valueBaños5')}
                     />
@@ -250,46 +250,46 @@ const BarraCategorias = (props: Props) => {
               <h4 className={styles.TitleFiltros}>Garage</h4>
               <div className={styles.buttonContainer}>
               <form action="">
-                  <input 
-                    onChange={(e) => {setParking(0); handleRadioClickParking(e);}}  
-                    type="radio" 
-                    id="111" 
+                  <input
+                    onChange={(e) => {setParking(0); handleRadioClickParking(e);}}
+                    type="radio"
+                    id="111"
                     value="valueParking1"
                     checked={isRadioSelectedParking('valueParking1')}
                     />
                   <label className={styles.checked} htmlFor="111">0+</label>
 
-                  <input 
-                    onChange={(e) => {setParking(1); handleRadioClickParking(e);}}  
-                    type="radio" 
-                    id="222" 
+                  <input
+                    onChange={(e) => {setParking(1); handleRadioClickParking(e);}}
+                    type="radio"
+                    id="222"
                     value="valueParking2"
                     checked={isRadioSelectedParking('valueParking2')}
                     />
                   <label className={styles.checked} htmlFor="222">1+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setParking(2); handleRadioClickParking(e);}}
-                    type="radio" 
-                    id="333" 
+                    type="radio"
+                    id="333"
                     value="valueParking3"
                     checked={isRadioSelectedParking('valueParking3')}
                     />
                   <label className={styles.checked} htmlFor="333">2+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setParking(3); handleRadioClickParking(e);}}
-                    type="radio" 
-                    id="444" 
+                    type="radio"
+                    id="444"
                     value="valueParking4"
                     checked={isRadioSelectedParking('valueParking4')}
                     />
                   <label className={styles.checked} htmlFor="444">3+</label>
 
-                  <input 
+                  <input
                     onChange={(e) => {setParking(4); handleRadioClickParking(e);}}
-                    type="radio" 
-                    id="555" 
+                    type="radio"
+                    id="555"
                     value="valueParking5"
                     checked={isRadioSelectedParking('valueParking5')}
                     />
@@ -303,18 +303,18 @@ const BarraCategorias = (props: Props) => {
                 onSubmit={e => {
                   e.preventDefault();
                 }}>
-                <input 
-                type="number" 
-                name="minimoPrecio" 
-                autoComplete="Off" 
+                <input
+                type="number"
+                name="minimoPrecio"
+                autoComplete="Off"
                 placeholder="Mínimo"
                 onChange={e => setMinimoPrecio(e.target.value)}></input>
                 
-                <input 
-                type="number" 
-                name="maximoPrecio" 
-                autoComplete="Off" 
-                placeholder="Máximo" 
+                <input
+                type="number"
+                name="maximoPrecio"
+                autoComplete="Off"
+                placeholder="Máximo"
                 onChange={e => setMaximoPrecio(e.target.value)}
                 ></input>
               </form>
@@ -325,18 +325,18 @@ const BarraCategorias = (props: Props) => {
                 onSubmit={e => {
                   e.preventDefault();
                 }}>
-                <input 
-                type="number" 
-                name="minimoTerreno" 
-                autoComplete="Off" 
+                <input
+                type="number"
+                name="minimoTerreno"
+                autoComplete="Off"
                 placeholder="Mínimo"
                 onChange={e => setMinimoTerreno(e.target.value)}></input>
                 
-                <input 
-                type="number" 
-                name="maximoTerreno" 
-                autoComplete="Off" 
-                placeholder="Máximo" 
+                <input
+                type="number"
+                name="maximoTerreno"
+                autoComplete="Off"
+                placeholder="Máximo"
                 onChange={e => setMaximoTerreno(e.target.value)}
                 ></input>
                 {/* <button type="submit">Aplicar</button> */}
@@ -348,18 +348,18 @@ const BarraCategorias = (props: Props) => {
                 onSubmit={e => {
                   e.preventDefault();
                 }}>
-                <input 
-                type="text" 
-                name="minimoConstruidos" 
-                autoComplete="Off" 
-                placeholder="Mínimo" 
+                <input
+                type="text"
+                name="minimoConstruidos"
+                autoComplete="Off"
+                placeholder="Mínimo"
                 onChange={e => setMinimoConstruidos(e.target.value)}></input>
                 
-                <input 
-                type="text" 
-                name="maximoConstruidos" 
-                autoComplete="Off" 
-                placeholder="Máximo" 
+                <input
+                type="text"
+                name="maximoConstruidos"
+                autoComplete="Off"
+                placeholder="Máximo"
                 onChange={e => setMaximoConstruidos(e.target.value)}
                 ></input>
                 {/* <button type="submit">Aplicar</button> */}

@@ -1,4 +1,4 @@
-import DashboardLayout from "components/layout/Dashboard";
+import DashboardLayout from "../../../components/layout/Dashboard";
 import styles from "./wallet.module.css"
 
 const wallet = () => {
@@ -41,7 +41,7 @@ const wallet = () => {
                     </div>
                   </div>
                   <div className="col-12">
-                    
+                  
                   </div>
                 </div>
               </div>
@@ -175,7 +175,7 @@ const wallet = () => {
                     </td>
                   </tr>
                 </table>
-                {/* 
+                {/*
               <h2 className="text-center py-5 text-secondary">
                 Aún no hay referencias
               </h2> */}

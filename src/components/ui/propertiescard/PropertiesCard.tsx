@@ -4,7 +4,7 @@ import { Col, Overlay } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import styles from "./PropertiesCard.module.css";
-import { InmuebleContext } from "context/inmuebles/InmuebleContext";
+import { InmuebleContext } from "../../../context/inmuebles/InmuebleContext";
 
 interface Props {
   id: string;
