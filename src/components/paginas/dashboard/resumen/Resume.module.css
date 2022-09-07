@@ -1,0 +1,116 @@
+.Rcard {
+  background-color: white;
+  border-radius: 15px;
+  padding: 15px;
+  border-left: 15px solid #7149bc;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+  -webkit-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+  -moz-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.08);
+  transition: 200ms;
+}
+.RcardTitle {
+  font-family: "Open Sans";
+  font-weight: 500;
+  color: grey;
+}
+.Rcard:hover {
+  border-left: 45px solid #7149bc;
+  transition: 200ms;
+}
+.Rcard:hover .cardName1 {
+  transform: translate(-100px, 60px);
+  display: flex;
+  transition: 200ms;
+}
+.Rcard:hover .cardName2 {
+  transform: translate(-135px, 60px);
+  display: flex;
+  transition: 200ms;
+}
+
+.Rcard:hover .cardName3 {
+  transform: translate(-140px, 120px);
+  display: flex;
+  transition: 200ms;
+}
+
+.Rcard:hover .cardName4 {
+  transform: translate(-118px, 110px);
+  display: flex;
+  transition: 200ms;
+}
+
+.labelC {
+  font-family: "Open Sans";
+  font-size: 15px;
+  color: grey;
+  font-weight: 500;
+}
+
+.ingreso {
+  font-family: "Open Sans";
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 35px;
+  color: rgb(37, 155, 1);
+}
+.ingresoIndividual {
+  font-family: "Open Sans";
+  font-size: 58px;
+  font-weight: 600;
+  line-height: 65px;
+  color: rgb(37, 155, 1);
+}
+.ingresoNegativo {
+  font-family: "Open Sans";
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 35px;
+  /* color: rgb(255, 0, 0); */
+  color: tomato;
+}
+.ingreso2 {
+  font-family: "Open Sans";
+  font-size: 23px;
+  line-height: 28px;
+  color: rgb(71, 71, 71);
+}
+.ingreso3 {
+  font-family: "Open Sans";
+  font-size: 17px;
+  color: rgb(8, 108, 189);
+  font-weight: 500;
+}
+
+.backText {
+  font-family: "Open Sans";
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+  transition: 200ms;
+  transform: rotate(270deg);
+}
+.cardName1 {
+  position: absolute;
+  transition: 200ms;
+  transform: translate(-100px, 60px);
+  display: none;
+}
+.cardName2 {
+  position: absolute;
+  transition: 200ms;
+  transform: translate(-135px, 60px);
+  display: none;
+}
+.cardName3 {
+  position: absolute;
+  transition: 200ms;
+  transform: translate(-100px, 60px);
+  display: none;
+}
+.cardName4 {
+  position: absolute;
+  transition: 200ms;
+  transform: translate(-100px, 60px);
+  display: none;
+}

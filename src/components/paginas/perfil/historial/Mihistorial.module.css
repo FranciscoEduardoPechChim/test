@@ -1,0 +1,53 @@
+.customTable {
+  width: 100%;
+  margin-bottom: 50px;
+  background-color: #fffdfd;
+}
+
+.customTable tr:nth-child(odd) {
+  background-color: #ececec;
+}
+/* .customTable td:nth-child(odd):hover {
+  background-color: #e65a1f;
+  color: white;
+} */
+
+.content {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  color: #5e5e5e;
+  padding-left: 10px;
+}
+
+.tNumber {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+  color: #5e5e5e;
+  padding: 8px;
+}
+.thover:hover {
+  background: #ffe5da !important;
+  outline: 1px solid #e65a1f;
+  box-sizing: border-box;
+}
+.deleteI {
+  color: grey;
+}
+.deleteI:hover {
+  color: red;
+}
+
+.titulo {
+  font-size: 70px;
+  color: #ccc;
+  margin: 150px 0;
+}
+
+.section {
+  min-height: 300px;
+}

@@ -1,0 +1,307 @@
+.inmuebleTitle {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: bold;
+   font-size: 45px;
+   color: #000000;
+}
+
+.inmueblePrecio {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: bold;
+   font-size: 38px;
+   color: #13a407;
+}
+
+.inmuebleTipo {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: normal;
+   font-size: 26px;
+   color: #e65a1f;
+   border: 1.42824px solid #e65a1f;
+   box-sizing: border-box;
+   border-radius: 57.1295px;
+   padding: 2px 37px 2px 37px;
+}
+.inmuebleTipo2 {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: normal;
+   font-size: 26px;
+   color: #7149bc;
+   border: 1.42824px solid #7149bc;
+   box-sizing: border-box;
+   border-radius: 57.1295px;
+   padding: 2px 37px 2px 37px;
+}
+
+.inmuebleTiempo {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: normal;
+   font-size: 23px;
+   color: #5e5e5e;
+}
+
+.inmuebleSubtitle {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: 500;
+   font-size: 30px;
+   color: #000000;
+   padding: 0;
+}
+
+.inmuebleContent {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: 500;
+   font-size: 18px;
+   line-height: 35px;
+   color: #5e5e5e;
+   word-break: break-word;
+   hyphens: auto;
+}
+
+.inmuebleSubcontent {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: 300;
+   font-size: 25px;
+   line-height: 35px;
+   color: #5e5e5e;
+   word-break: break-word;
+   hyphens: auto;
+}
+
+.acordionContent {
+   padding: 0;
+}
+.btnAccordion:not(.collapsed) {
+   box-shadow: none;
+   background: #ffffff;
+   box-shadow: none;
+   color: #e65a1f !important;
+   text-align: center;
+}
+
+.socialMiniCard {
+   background: #ffffff;
+   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.12);
+   border-radius: 12px 0px 0px 12px;
+   padding: 10px;
+   transform: translate(1.5px, -30px);
+   transition: 100ms;
+}
+
+.socialMiniCard:hover {
+   transform: translate(1.5px, -36px);
+   transition: 100ms;
+}
+
+.perfilCard {
+   background: #ffffff;
+   box-shadow: 0px 0px 18.9729px 7.29728px rgba(0, 0, 0, 0.07);
+   border-radius: 26px;
+   padding-bottom: 15px;
+}
+
+.perfilCardNombre {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: bold;
+   font-size: 23px;
+   color: #000000;
+   margin-top: 10px;
+   margin-bottom: 10px;
+}
+.perfilCardLine {
+   width: 85px;
+   background-color: #e65a1f;
+   height: 5px;
+   position: relative;
+   left: 50%;
+   transform: translateX(-50%);
+}
+.perfilCardCiudad {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: 300;
+   font-size: 20px;
+   color: #5e5e5e;
+   margin-top: 10px;
+}
+.contendorslide {
+   width: 100%;
+   height: 500px;
+   background-repeat: no-repeat;
+   background-size: cover;
+   position: absolute;
+   filter: blur(4px);
+   -webkit-filter: blur(4px);
+   z-index: -1;
+}
+.slideImg {
+   width: auto;
+   height: 500px;
+   background-color: #bb1212;
+   margin-bottom: 50px;
+}
+
+.contenidoContactoDerecha {
+   padding-top: 6vw;
+   padding-bottom: 5vw;
+   padding-left: 15vw;
+}
+.contenidoContactoIzquierda {
+   background-image: url("/images/icons/deatails-icons/dtosContacto.png");
+   background-size: 100%;
+   background-repeat: no-repeat;
+   height: 23vw;
+}
+.miniTutuloC {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: bold;
+   font-size: 2.5vw;
+   color: #000000;
+}
+.nombreC {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: bold;
+   font-size: 2vw;
+   color: #e65a1f;
+}
+.telefonoC {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: normal;
+   font-size: 1.7vw;
+   color: #5e5e5e;
+}
+.LeftTitulo {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: bold;
+   font-size: 2vw;
+   color: #ffffff;
+   padding-top: 6vw;
+   letter-spacing: -1.5px;
+}
+
+@media (max-width: 1550px) {
+   .contenidoContactoDerecha {
+      padding-left: 10vw;
+   }
+}
+@media (max-width: 1250px) {
+   .contenidoContactoDerecha {
+      padding-left: 5vw;
+   }
+}
+@media (max-width: 991px) {
+   .contenidoContactoDerecha {
+      text-align: center;
+   }
+   .miniTutuloC {
+      font-size: 6vw;
+   }
+   .nombreC {
+      font-size: 5vw;
+   }
+   .telefonoC {
+      font-size: 4vw;
+   }
+
+   .LeftTitulo {
+      font-family: "Open Sans";
+      font-style: normal;
+      font-weight: bold;
+      font-size: 4vw;
+      color: #ffffff;
+      padding-top: 4vw;
+      letter-spacing: -1.5px;
+   }
+
+   .contenidoContactoIzquierda {
+      height: 40vw;
+   }
+}
+@media (min-width: 768px) {
+   .inmuebleTipo2 {
+      display: none;
+   }
+}
+@media (max-width: 571px) {
+   .inmuebleTitle {
+      font-size: 33px;
+      line-height: normal;
+   }
+   .inmueblePrecio {
+      font-size: 35px;
+   }
+   .inmuebleTipo {
+      font-size: 20px;
+   }
+   .inmuebleTipo2 {
+      font-size: 20px;
+      display: inline-block;
+   }
+}
+
+.divisor{
+  width: 10px;
+  height: 10px;
+}
+
+.inmuebleTitleUbicacion {
+   font-family: "Open Sans";
+   font-style: normal;
+   font-weight: bold;
+   font-size: 30px;
+   color: #000000;
+}
+
+.modalHeader {
+   border: none;
+   color: white;
+}
+.modalBackG {
+   background-color: #000000be;
+}
+.contenedorimg {
+   width: 100%;
+   height: 100%;
+}
+.imagenes {
+   width: 69%;
+   max-height: 900px;
+}
+
+.boxVideo {
+   position: relative;
+   width: 100%;
+   overflow: hidden;
+   padding-top: 46.25%; /* 16:9 Aspect Ratio */
+}
+.video {
+   position: absolute;
+   top: 0;
+   left: 0;
+   bottom: 0;
+   right: 0;
+   width: 100%;
+   height: 100%;
+   border: none;
+}
+
+.noImage {
+   font-family: "Open Sans";
+   font-size: 3vw;
+   font-weight: bold;
+   margin: 150px 0px;
+   color: rgb(216, 216, 216);
+}
