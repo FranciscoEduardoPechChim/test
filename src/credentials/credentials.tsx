@@ -1,4 +1,4 @@
-export const production = "api.red1a1.com";
+export const production = "https://red1a1-back.herokuapp.com/api";
 export const development = "http://localhost:8080/api";
 
 export const rentas = "61e99f0e0d3bd9163e4a4b42";

@@ -41,8 +41,15 @@ const MapaUbicacion = () => {
     filtros,
   } = useContext(MapContext);
   const [seleccionado, setSeleccionado] = useState("");
+  const [baños, setBaños] = useState(-1)
+  const [parking, setParking] = useState(-1)
+  const [habitaciones, setHabitaciones] = useState(-1)
+  const [m2Terreno, setM2Terreno] = useState(0)
+  const [m2Construidos, setM2Construidos] = useState(0)
+  const [precio, setPrecio] = useState(0)
   const { loading, propertyTypes } = useTipoPropiedad();
   const { categorias } = useCategories();
+
 
   const mapRef = useRef<GoogleMap>(null);
   const { inmuebles, cargando } = useInmueblesCoordenadas(
@@ -52,9 +59,15 @@ const MapaUbicacion = () => {
     northEast,
     coordenadas,
     categoria,
-    tipoPropiedad
+    tipoPropiedad,
+    baños,
+    parking,
+    m2Terreno,
+    m2Construidos,
+    habitaciones,
+    precio,
   );
-
+  
   const propiedadSeleccionada = (id: string, lat: number, lng: number) => {
     setCoordenadas({ lat, lng });
     setSeleccionado(id);
@@ -138,8 +151,14 @@ const MapaUbicacion = () => {
                     propertyTypes={propertyTypes}
                     setCategoria={setCategoria}
                     categorias={categorias}
+                    baños={baños}
+                    setBaños={setBaños}
+                    parking={parking}
+                    setParking={setParking}
+                    habitaciones={habitaciones}
+                    setHabitaciones={setHabitaciones}
                   />
-                )}
+                )} 
               </div>
             </div>
 
