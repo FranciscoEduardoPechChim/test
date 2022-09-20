@@ -337,8 +337,7 @@ const BarraCategorias = (props: Props) => {
                 name="maximoTerreno" 
                 autoComplete="Off" 
                 placeholder="Máximo" 
-                onChange={e => setMaximoTerreno(e.target.value)}
-                ></input>
+                onChange={e => setMaximoTerreno(e.target.value)}></input>
                 {/* <button type="submit">Aplicar</button> */}
               </form>
             </li>

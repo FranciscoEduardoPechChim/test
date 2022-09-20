@@ -22,7 +22,7 @@ const ResponsiveHeader = () => {
 
   return (
     <div className={styles.respNavbar}>
-      <div>
+      <div className={styles.containerBi}>
         <i
           onClick={() => setMostrar(!mostrar)}
           className={`${styles.listIcon}  ${
