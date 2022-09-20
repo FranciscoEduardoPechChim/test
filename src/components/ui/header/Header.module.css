@@ -271,7 +271,7 @@
 }
 
 .resHeaderAtive {
-  background-color: #fff;
+  background-color: #7149bc;
   height: 100vh;
   overflow: auto;
   position: absolute;
@@ -281,7 +281,7 @@
 }
 
 .headerLinkItem {
-  color: #0e0e0e;
+  color: #f1f1f1;
   font-size: 25px;
   font-style: normal;
   font-weight: 400;

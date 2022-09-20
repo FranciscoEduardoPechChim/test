@@ -41,18 +41,6 @@ const BarraCategorias = (props: Props) => {
     setSelected(id);
   };
 
-  const [open, setOpen] = useState<boolean>(false);
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const handleDropDownFocus = (state: boolean) => {
-    setOpen(!state);
-  };
-  const handleClickOutsideDropdown =(e:any)=>{
-    if(open && !dropdownRef.current?.contains(e.target as Node)){
-      setOpen(false)
-    }
-  }
-  window.addEventListener("click",handleClickOutsideDropdown)
-
   // 2
   const [open2, setOpen2] = useState<boolean>(false);
   const dropdownRef2 = useRef<HTMLDivElement>(null)
@@ -85,29 +73,9 @@ const BarraCategorias = (props: Props) => {
   }
 
   return (
-    <div className={`text-center`}>
+    <div className={styles.textCenter}>
       <div className={styles.btnContainer}>
-      {categorias?.map((categoria) => (
-          <span
-            className={`${selectedCat === categoria._id
-              ? styles.barraItemCategorySelected 
-              : styles.barraItemCategory
-              } mx-2 pointer`}
-            onClick={() => {
-              seleccionarCategoria(categoria._id);
-            }}
-            key={categoria._id}
-          >
-            {categoria.nombre}
-          </span>
-        ))}
-
-        <div className="dropdown">
-        <div className="app-drop-down-container" ref={dropdownRef}>
-        <button onClick={(e) => handleDropDownFocus(open)} className={styles.barraItemPropertyType}>Categorías</button>
-        {open && (
           <ul className={styles.ulDropdown}>
-            <p className={styles.title}>¿Qué tipo de propiedad estás buscando?</p>
             {categorias?.map((categoria) => (
           <span
             className={`${selectedCat === categoria._id
@@ -135,10 +103,23 @@ const BarraCategorias = (props: Props) => {
           </li>  
         ))}
         </ul>
-        )}
-        </div>
-        </div>
 
+
+        <div className={styles.flexrow}>
+        {categorias?.map((categoria) => (
+          <span
+            className={`${selectedCat === categoria._id
+              ? styles.barraItemCategorySelected 
+              : styles.barraItemCategory
+              } mx-2 pointer`}
+            onClick={() => {
+              seleccionarCategoria(categoria._id);
+            }}
+            key={categoria._id}
+          >
+            {categoria.nombre}
+          </span>
+        ))}
         <div className={styles.dropdown}>
         <div className="app-drop-down-container" ref={dropdownRef2}>
         <button onClick={(e) => handleDropDownFocus2(open2)} className={styles.barraItemPropertyType}>Filtros</button>
@@ -366,6 +347,7 @@ const BarraCategorias = (props: Props) => {
             </li>
           </ul>
         )}
+        </div>
         </div>
         </div>
 
