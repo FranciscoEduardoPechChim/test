@@ -94,7 +94,7 @@ export const useInmueblesCoordenadas = (
   coordenadas: Location,
   categoria: string,
   tipoPropiedad: string,
-  baños: number,
+  banos: number,
   parking: number,
   m2Terreno: number,
   m2Construidos: number,
@@ -117,8 +117,8 @@ export const useInmueblesCoordenadas = (
         inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.habitaciones >= habitaciones);
       }
 
-      if (baños >= 0) {
-        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.baños >= baños);
+      if (banos >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.baños >= banos);
       }
 
       if (parking >= 0) {
@@ -144,6 +144,8 @@ export const useInmueblesCoordenadas = (
     }
   }
 
+  console.log(inmuebles)
+
   useEffect(() => {
     obtenerInmueblesPorCoordenadas();
   }, [
@@ -154,7 +156,7 @@ export const useInmueblesCoordenadas = (
     coordenadas,
     tipoPropiedad,
     categoria,
-    baños,
+    banos,
     parking,
     habitaciones,
     minimoTerreno,

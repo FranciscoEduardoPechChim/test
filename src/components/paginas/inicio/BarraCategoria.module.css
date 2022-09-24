@@ -40,6 +40,7 @@
   border: 1.14407px solid #7149bc;
   box-sizing: border-box;
   transition: 150ms;
+  margin-left: 0.5rem;
 }
 
 .barraItemPropertyType2 {
@@ -207,6 +208,7 @@
   align-items: center;
   margin-top: 10px; 
   width: 400px;
+  margin-left: -10px;
 }
 
 .buttonContainer form label{
@@ -233,6 +235,17 @@
   color: #7149bc;
   cursor: pointer;
   transition: 150ms;
+}
+
+.buttonContainer form input[type="radio"]:checked + .checked2{
+  background-color: rgba(113, 73, 188, 0.22);
+  color: #7149bc;
+  cursor: pointer;
+  transition: 150ms;
+}
+
+.checked2 {
+  width: 175px;
 }
 
 .buttonContainer form label:hover{
@@ -278,17 +291,29 @@
   .ulDropdown2 {
     right: 536px;
   }
+
+  .ulDropdown {
+    width: auto;
+  }
 }
 
 @media (max-width: 1600px) {
   .ulDropdown2 {
     right: 385px;
   }
+
+  .ulDropdown {
+    width: auto;
+  }
 }
 
 @media (max-width: 1420px) {
   .ulDropdown2 {
     right: 220px;
+  }
+
+  .ulDropdown {
+    width: auto;
   }
 }
 
@@ -303,6 +328,9 @@
   .barraCategorias::-webkit-scrollbar-thumb {
     background: #7149bc;
     border-radius: 5px;
+  }
+  .ulDropdown {
+    width: 100%;
   }
 } 
 

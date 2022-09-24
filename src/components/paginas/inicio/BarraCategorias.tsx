@@ -9,8 +9,8 @@ interface Props {
   propertyTypes: TipoPropiedad[];
   setCategoria: Dispatch<SetStateAction<string>>;
   categorias: Categoria[];
-  baños: number;
-  setBaños: Dispatch<SetStateAction<number>>;
+  banos: number;
+  setBanos: Dispatch<SetStateAction<number>>;
   parking: number;
   setParking: Dispatch<SetStateAction<number>>;
   habitaciones: number;
@@ -26,7 +26,7 @@ const BarraCategorias = (props: Props) => {
     setMinimoPrecio,
     setMaximoPrecio,
   } = useContext(MapContext);
-  const { setTipoPropiedad, propertyTypes, categorias, setCategoria, setBaños, setParking, setHabitaciones} = props;
+  const { setTipoPropiedad, propertyTypes, categorias, setCategoria, setBanos, setParking, setHabitaciones} = props;
   const { categoria, tipoPropiedad } = useContext(MapContext);
   const [selectedPro, setSelected] = useState(tipoPropiedad);
   const [selectedCat, setselectedCat] = useState(categoria);
@@ -60,16 +60,22 @@ const BarraCategorias = (props: Props) => {
     setSelectedRadioBtn(e.currentTarget.value)
   }
 
-  const [selectedRadioBtnBaños, setSelectedRadioBtnBaños] = useState('valueBaños1')
-  const isRadioSelectedBaños = (value: string): boolean => selectedRadioBtnBaños === value;
-  const handleRadioClickBaños = (e: React.ChangeEvent<HTMLInputElement>): void => { 
-    setSelectedRadioBtnBaños(e.currentTarget.value)
+  const [selectedRadioBtnBanos, setSelectedRadioBtnBanos] = useState('valueBanos1')
+  const isRadioSelectedBanos = (value: string): boolean => selectedRadioBtnBanos === value;
+  const handleRadioClickBanos = (e: React.ChangeEvent<HTMLInputElement>): void => { 
+    setSelectedRadioBtnBanos(e.currentTarget.value)
   }
 
   const [selectedRadioBtnParking, setSelectedRadioBtnParking] = useState('valueParking1')
   const isRadioSelectedParking = (value: string): boolean => selectedRadioBtnParking === value;
   const handleRadioClickParking = (e: React.ChangeEvent<HTMLInputElement>): void => { 
     setSelectedRadioBtnParking(e.currentTarget.value)
+  }
+
+  const [selectedRadioBtnConjunto, setSelectedRadioBtnConjunto] = useState('valueConjunto1')
+  const isRadioSelectedConjunto = (value: string): boolean => selectedRadioBtnConjunto === value;
+  const handleRadioClickConjunto = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setSelectedRadioBtnConjunto(e.currentTarget.value)
   }
 
   return (
@@ -181,47 +187,47 @@ const BarraCategorias = (props: Props) => {
               <div className={styles.buttonContainer}>
                 <form action="">
                   <input 
-                    onChange={(e) => {setBaños(0); handleRadioClickBaños(e);}}  
+                    onChange={(e) => {setBanos(0); handleRadioClickBanos(e);}}  
                     type="radio" 
                     id="11" 
-                    value="valueBaños1"
-                    checked={isRadioSelectedBaños('valueBaños1')}
+                    value="valueBanos1"
+                    checked={isRadioSelectedBanos('valueBanos1')}
                     />
                   <label className={styles.checked} htmlFor="11">0+</label>
 
                   <input 
-                    onChange={(e) => {setBaños(1); handleRadioClickBaños(e);}}  
+                    onChange={(e) => {setBanos(1); handleRadioClickBanos(e);}}  
                     type="radio" 
                     id="22" 
-                    value="valueBaños2"
-                    checked={isRadioSelectedBaños('valueBaños2')}
+                    value="valueBanos2"
+                    checked={isRadioSelectedBanos('valueBanos2')}
                     />
                   <label className={styles.checked} htmlFor="22">1+</label>
 
                   <input 
-                    onChange={(e) => {setBaños(2); handleRadioClickBaños(e);}}
+                    onChange={(e) => {setBanos(2); handleRadioClickBanos(e);}}
                     type="radio" 
                     id="33" 
-                    value="valueBaños3"
-                    checked={isRadioSelectedBaños('valueBaños3')}
+                    value="valueBanos3"
+                    checked={isRadioSelectedBanos('valueBanos3')}
                     />
                   <label className={styles.checked} htmlFor="33">2+</label>
 
                   <input 
-                    onChange={(e) => {setBaños(3); handleRadioClickBaños(e);}}
+                    onChange={(e) => {setBanos(3); handleRadioClickBanos(e);}}
                     type="radio" 
                     id="44" 
-                    value="valueBaños4"
-                    checked={isRadioSelectedBaños('valueBaños4')}
+                    value="valueBanos4"
+                    checked={isRadioSelectedBanos('valueBanos4')}
                     />
                   <label className={styles.checked} htmlFor="44">3+</label>
 
                   <input 
-                    onChange={(e) => {setBaños(4); handleRadioClickBaños(e);}}
+                    onChange={(e) => {setBanos(4); handleRadioClickBanos(e);}}
                     type="radio" 
                     id="55" 
-                    value="valueBaños5"
-                    checked={isRadioSelectedBaños('valueBaños5')}
+                    value="valueBanos5"
+                    checked={isRadioSelectedBanos('valueBanos5')}
                     />
                   <label className={styles.checked} htmlFor="55">4+</label>
                 </form>
@@ -322,6 +328,88 @@ const BarraCategorias = (props: Props) => {
                 {/* <button type="submit">Aplicar</button> */}
               </form>
             </li>
+
+            <li>
+              <h4 className={styles.TitleFiltros}>Conjunto</h4>
+              <div className={styles.buttonContainer}>
+              <form action="">
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}  
+                    type="radio" 
+                    id="1111" 
+                    value="valueConjunto1"
+                    checked={isRadioSelectedConjunto('valueConjunto1')}
+                    />
+                  <label className={styles.checked2} htmlFor="1111">Todos</label>
+
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}  
+                    type="radio" 
+                    id="2222" 
+                    value="valueConjunto2"
+                    checked={isRadioSelectedConjunto('valueConjunto2')}
+                    />
+                  <label className={styles.checked2} htmlFor="2222">Desarrollo</label>
+
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}
+                    type="radio" 
+                    id="3333" 
+                    value="valueConjunto3"
+                    checked={isRadioSelectedConjunto('valueConjunto3')}
+                    />
+                  <label className={styles.checked2} htmlFor="3333">Privada</label>
+
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}
+                    type="radio" 
+                    id="4444" 
+                    value="valueConjunto4"
+                    checked={isRadioSelectedConjunto('valueConjunto4')}
+                    />
+                  <label className={styles.checked2} htmlFor="4444">Condominios</label>
+
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}
+                    type="radio" 
+                    id="5555" 
+                    value="valueConjunto5"
+                    checked={isRadioSelectedConjunto('valueConjunto5')}
+                    />
+                  <label className={styles.checked2} htmlFor="5555">Club de golf</label>
+
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}
+                    type="radio" 
+                    id="6666" 
+                    value="valueConjunto6"
+                    checked={isRadioSelectedConjunto('valueConjunto6')}
+                    />
+                  <label className={styles.checked2} htmlFor="6666">Fraccionamiento</label>
+
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}
+                    type="radio" 
+                    id="7777" 
+                    value="valueConjunto7"
+                    checked={isRadioSelectedConjunto('valueConjunto7')}
+                    />
+                  <label className={styles.checked2} htmlFor="7777">Residencial</label>
+
+                  <input 
+                    onChange={(e) => {handleRadioClickConjunto(e);}}
+                    type="radio"
+                    id="8888" 
+                    value="valueConjunto8"
+                    checked={isRadioSelectedConjunto('valueConjunto8')}
+                    />
+                  <label className={styles.checked2} htmlFor="8888">Country club</label>
+
+                </form>
+              </div>
+            </li>
+
+
             <li>
             <h5 className={styles.TitleFiltros}>Construidos</h5>
               <form className={styles.form}

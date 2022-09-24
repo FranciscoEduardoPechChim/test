@@ -41,7 +41,7 @@ const MapaUbicacion = () => {
     filtros,
   } = useContext(MapContext);
   const [seleccionado, setSeleccionado] = useState("");
-  const [baños, setBaños] = useState(-1)
+  const [banos, setBanos] = useState(-1)
   const [parking, setParking] = useState(-1)
   const [habitaciones, setHabitaciones] = useState(-1)
   const [m2Terreno, setM2Terreno] = useState(0)
@@ -60,7 +60,7 @@ const MapaUbicacion = () => {
     coordenadas,
     categoria,
     tipoPropiedad,
-    baños,
+    banos,
     parking,
     m2Terreno,
     m2Construidos,
@@ -151,8 +151,8 @@ const MapaUbicacion = () => {
                     propertyTypes={propertyTypes}
                     setCategoria={setCategoria}
                     categorias={categorias}
-                    baños={baños}
-                    setBaños={setBaños}
+                    banos={banos}
+                    setBanos={setBanos}
                     parking={parking}
                     setParking={setParking}
                     habitaciones={habitaciones}
