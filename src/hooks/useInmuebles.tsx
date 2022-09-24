@@ -144,7 +144,6 @@ export const useInmueblesCoordenadas = (
     }
   }
 
-  console.log(inmuebles)
 
   useEffect(() => {
     obtenerInmueblesPorCoordenadas();
