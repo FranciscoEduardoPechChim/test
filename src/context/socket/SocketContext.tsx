@@ -16,7 +16,7 @@ export const SocketProvider: FC = ({ children }) => {
   const { dispatch } = useContext(ChatContext);
   const { socket, online, conectarSocket, desconectarSocket } = useSocket(
     "https://red1a1-back.herokuapp.com"
-    // "http://localhost:8080"
+    //"http://localhost:8080"
   );
 
   useEffect(() => {
