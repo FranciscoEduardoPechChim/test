@@ -10,6 +10,7 @@ import Modaltitle from "../modaltitle/Modaltitle";
 import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
 import { googleClientId } from "credentials";
+import PasswordForgot from "../authmodal/PasswordForgot";
 
 const LoginModal = () => {
   const router = useRouter();
@@ -198,10 +199,10 @@ const LoginModal = () => {
         </Modal.Body>
       </Modal>
 
-      {/* <PasswordForgot
-        modalShow={modalShow}
-        setModalShow={setModalShow}
-      /> */}
+       <PasswordForgot
+          modalShow={modalShow}
+          setModalShow={setModalShow}
+        /> 
     </>
   );
 };
