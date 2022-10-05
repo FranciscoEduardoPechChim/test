@@ -1,9 +1,9 @@
 import { ReactText, useContext } from "react";
-import { formatPrice } from "../../../helpers";
-import { InmueblesUsuario } from "../../../interfaces/CrearInmuebleInterface";
+import { formatPrice } from "helpers";
+import { InmueblesUsuario } from "interfaces/CrearInmuebleInterface";
 import CopyToClipboard from "react-copy-to-clipboard";
 import styles from "./Listaprop.module.css";
-import { AuthContext } from "../../../context/auth/AuthContext";
+import { AuthContext } from "context/auth/AuthContext";
 
 interface Props {
   inmueble: InmueblesUsuario;

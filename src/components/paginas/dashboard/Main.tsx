@@ -1,7 +1,7 @@
 import { FC, useContext } from "react";
 import Link from "next/link";
 import styles from "./Dashboard.module.css";
-import { AuthContext } from "../../../context/auth/AuthContext";
+import { AuthContext } from "context/auth/AuthContext";
 
 interface Props {
   handleCollapsedChange: (checked: boolean) => void;

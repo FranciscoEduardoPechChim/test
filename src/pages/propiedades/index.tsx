@@ -1,5 +1,5 @@
 import { GetStaticProps } from "next";
-import { production } from "../../credentials";
+import { production } from "../../credentials/credentials";
 import NotFound from "../404";
 
 export const getStaticProps: GetStaticProps = async () => {

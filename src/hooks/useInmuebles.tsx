@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import moment from "moment";
-import { Bounds, MapContext } from "../context/map/MapContext";
+import { Bounds, MapContext } from "context/map/MapContext";
 import {
   bodegasCat,
   casasC,
@@ -11,15 +11,15 @@ import {
   production,
   rentas,
   ventas,
-} from "../credentials";
+} from "credentials";
 import {
   InmueblesCoordenadas,
   InmueblesUsuario,
   InmuebleUsuarioRes,
   ListaInmuebles,
-} from "../interfaces/CrearInmuebleInterface";
-import { Location } from "../interfaces/MapInterfaces";
-import { AllInmuebles, Inmueble } from "../interfaces";
+} from "interfaces/CrearInmuebleInterface";
+import { Location } from "interfaces/MapInterfaces";
+import { AllInmuebles, Inmueble } from "interfaces";
 
 export const useInmuebles = () => {
   const { dirMapa } = useContext(MapContext);
@@ -94,7 +94,7 @@ export const useInmueblesCoordenadas = (
   coordenadas: Location,
   categoria: string,
   tipoPropiedad: string,
-  baños: number,
+  banos: number,
   parking: number,
   m2Terreno: number,
   m2Construidos: number,
@@ -117,8 +117,8 @@ export const useInmueblesCoordenadas = (
         inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.habitaciones >= habitaciones);
       }
 
-      if (baños >= 0) {
-        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.baños >= baños);
+      if (banos >= 0) {
+        inmueblesFiltrados = inmueblesFiltrados.filter((inmueble) => inmueble.baños >= banos);
       }
 
       if (parking >= 0) {
@@ -154,7 +154,7 @@ export const useInmueblesCoordenadas = (
     coordenadas,
     tipoPropiedad,
     categoria,
-    baños,
+    banos,
     parking,
     habitaciones,
     minimoTerreno,

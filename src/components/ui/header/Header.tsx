@@ -8,11 +8,11 @@ import LoginModal from "../authmodal/LoginModal";
 import RegisterModal from "../authmodal/AuthModal";
 import { AuthContext } from "../../../context/auth/AuthContext";
 import MisChats from "../../paginas/perfil/chats/MisChats";
-import { SocketContext } from "../../../context/socket/SocketContext";
-import { useSolicitudes } from "../../../hooks/useSolicitudes";
+import { SocketContext } from "context/socket/SocketContext";
+import { useSolicitudes } from "hooks/useSolicitudes";
 import MenuUsuario from "./MenuUsuario";
 import Notificaciones from "./Notificaciones";
-import { ChatContext } from "../../../context/chat/ChatContext";
+import { ChatContext } from "context/chat/ChatContext";
 
 // interface Notificacion {
 //   de: string;

@@ -6,7 +6,7 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { AuthContext } from "../../../context/auth/AuthContext";
-import { formatPrice } from "../../../helpers";
+import { formatPrice } from "../../../helpers/formatPrice";
 import { useForm } from "../../../hooks/useForm";
 import Button from "../../ui/button/Button";
 import Modaltitle from "../../ui/modaltitle/Modaltitle";
@@ -17,10 +17,10 @@ import {
   generarRefMul,
   nuevoPedido,
   nuevoPedidoAdmin,
-} from "../../../helpers";
+} from "../../../helpers/fetch";
 import Loading from "../../ui/loading/Loading";
-import { NuevoPedido, NuevoPedidoAdmin } from "../../../interfaces/ContactInterface";
-import { production } from "../../../credentials";
+import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
+import { production } from "credentials/credentials";
 
 interface Props {
   id: string;

@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
-import Sidebar from "../paginas/dashboard/Sidebar";
-import Main from "../paginas/dashboard/Main";
+import Sidebar from "components/paginas/dashboard/Sidebar";
+import Main from "components/paginas/dashboard/Main";
 
 interface Props {
   titulo: string;

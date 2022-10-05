@@ -123,7 +123,7 @@
 .SlideLine {
   width: 20vw;
   height: 5px;
-  background-color: grey;
+  background-color: #f1f1f1;
   border-radius: 15px;
   position: absolute;
   left: 50%;
@@ -134,18 +134,22 @@
   font-style: normal;
   font-weight: 500;
   font-size: 18px;
-  color: #000000;
+  color: #f1f1f1;
   text-align: center;
   padding: 25px 20px 10px 20px;
+  background-color: #7149bc;
+  border-top-left-radius: 35px;
+  border-top-right-radius: 35px;
 }
 .LRtitle2 {
   font-style: normal;
   font-weight: 500;
   font-size: 18px;
-  color: #000000;
+  color: #f1f1f1;
   text-align: start;
   padding: 20px 20px 10px 20px;
   border-bottom: 1px solid rgba(128, 128, 128, 0.329);
+  background-color: #7149bc;
 }
 
 /* ------ estilos de lista  -------- */
@@ -155,6 +159,7 @@
   padding: 5px 15px 120px 15px;
   overflow-y: scroll;
   overflow-x: hidden;
+  background-color: #7149bc;
 }
 .bodyList::-webkit-scrollbar {
   width: 5px;
@@ -164,11 +169,11 @@
   border-radius: 10px;
 }
 .bodyList::-webkit-scrollbar-thumb {
-  background: slateblue;
+  background: #f1f1f1;
   border-radius: 5px;
 }
 .bodyList::-webkit-scrollbar-thumb:hover {
-  background: rgb(253, 69, 37);
+  background: #f1f1f1;
 }
 
 .cardPropBody {

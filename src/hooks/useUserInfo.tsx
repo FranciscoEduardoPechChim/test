@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { InmuebleContext } from '../context/inmuebles/InmuebleContext';
-import { production } from '../credentials';
+import { production } from '../credentials/credentials';
 import { InmueblesUsuario } from '../interfaces/CrearInmuebleInterface';
 import { HistorialUsuario, PedidosUsuario } from '../interfaces/Historial';
 import { Usuario, UsuariosDir } from '../interfaces/UserInterface';
@@ -16,7 +16,7 @@ export const useUserInfo = (uid: string | undefined | null) => {
   const getUserInfo = async () => {
     setLoading(true);
 
-    const data = await fetch(`${baseURL}/usuarios/${uid}`);
+    const data = await fetch(baseURL + '/usuarios/' + uid);
     const resp = await data.json();
 
     setLoading(false);
@@ -24,9 +24,7 @@ export const useUserInfo = (uid: string | undefined | null) => {
   };
 
   useEffect(() => {
-    if (uid !== null && uid !== undefined) {
-      getUserInfo();
-    }
+    getUserInfo();
   }, [uid]);
 
   return { user, loading };
@@ -49,9 +47,7 @@ export const useUserInmuebles = (uid: string | undefined | null, desde = 0) => {
   };
 
   useEffect(() => {
-    if (uid !== null && uid !== undefined) {
-      obtenerInmueblesDeUsuario();
-    }
+    obtenerInmueblesDeUsuario();
   }, [orden, desde, uid]);
 
   return { inmuebles, cargando, total, setInmuebles };
@@ -77,9 +73,7 @@ export const useUltimoInmueble = (
   };
 
   useEffect(() => {
-    if (uid !== null && uid !== undefined) {
-      obtenerInmueblesDeUsuario();
-    }
+    obtenerInmueblesDeUsuario();
   }, [orden, desde, uid]);
 
   return { ultimoInmueble, cargando, total, setUltimoInmueble };
@@ -101,9 +95,7 @@ export const useHistorial = (uid: string | undefined | null, desde: number) => {
   };
 
   useEffect(() => {
-    if (uid !== null && uid !== undefined) {
-      obtenerHistorial();
-    }
+    obtenerHistorial();
   }, [desde, uid]);
 
   return { historial, isLoading, setHistorial, total };
@@ -129,9 +121,7 @@ export const useHistorialPagos = (
   };
 
   useEffect(() => {
-    if (uid !== null && uid !== undefined) {
-      obtenerHistorialPagos();
-    }
+    obtenerHistorialPagos();
   }, [desde, uid]);
 
   return { historialPago, cargando, total };
@@ -151,9 +141,7 @@ export const useMisUsuarios = (uid: string | undefined | null) => {
   };
 
   useEffect(() => {
-    if (uid !== null && uid !== undefined) {
-      obtenerMisUsuarios();
-    }
+    obtenerMisUsuarios();
   }, [uid]);
 
   return { misUsuarios, cargando, setMisUsuarios };

@@ -6,9 +6,10 @@ import Slider from "../../components/paginas/propiedades/detalles/Slider";
 import Contact from "../../components/paginas/propiedades/detalles/Contact";
 import SEO from "../../components/seo/SEO";
 import { AuthContext } from "../../context/auth/AuthContext";
-import { production } from "../../credentials";
+import { production } from "../../credentials/credentials";
 import { InmueblesUsuario } from "../../interfaces/CrearInmuebleInterface";
 import NotFound from "../404";
+
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const resp = await fetch(`${production}/inmuebles/`);
@@ -37,7 +38,7 @@ interface Props {
 }
 
 const Ubicacion: any = dynamic(
-  () => import("../../components/paginas/propiedades/detalles/Ubicacion"),
+  () => import("../../components/paginas/propiedades/detalles/Ubicación"),
   { ssr: false }
 );
 

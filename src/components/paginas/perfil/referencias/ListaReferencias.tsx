@@ -1,11 +1,11 @@
 import { useContext, useRef, useState } from "react";
 import { Container, Pagination } from "react-bootstrap";
-import { AuthContext } from "../../../../context/auth/AuthContext";
-import { useReferenciasUsuario } from "../../../../hooks/useReferencias";
-import Loading from "../../../ui/loading/Loading";
-import { formatPrice } from "../../../../helpers";
+import { AuthContext } from "context/auth/AuthContext";
+import { useReferenciasUsuario } from "hooks/useReferencias";
+import Loading from "components/ui/loading/Loading";
+import { formatPrice } from "helpers/formatPrice";
 import styles from "./Referencias.module.css";
-import { subirComprobanteFetch } from "../../../../helpers";
+import { subirComprobanteFetch } from "../../../../helpers/fetch";
 import { toast } from "react-toastify";
 
 const ListaReferencias = () => {

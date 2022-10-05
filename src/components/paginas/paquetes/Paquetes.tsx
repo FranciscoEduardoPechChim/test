@@ -1,6 +1,6 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { stripePublicId } from "../../../credentials";
+import { stripePublicId } from "credentials";
 import { usePaquetes } from "../../../hooks/usePaquetes";
 import Individual from "./Individual";
 import PaqueteMultiple from "./PaqueteMultiple";

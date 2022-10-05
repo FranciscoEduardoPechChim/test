@@ -6,22 +6,27 @@
   transition: 300ms;
 }
 
+.textCenter {
+  text-align: center;
+}
+
 .barraCategoriasInactive {
   position: absolute;
   background-color: rgb(255, 255, 255);
   width: 100%;
   height: 61px;
   padding: 13px 0;
-  transform: translateY(-61px);
+  transform: translateY(-117px);
   transition: 300ms;
 }
 .btnContainer {
   position: relative;
-  top: 13.5px;
+  top: 0.5px;
   display: flex;
   justify-content: center;
   align-items: center;
-
+  flex-direction: column;
+  background-color: #f1f1f1;
 }
 
 .barraItemPropertyType {
@@ -35,6 +40,7 @@
   border: 1.14407px solid #7149bc;
   box-sizing: border-box;
   transition: 150ms;
+  margin-left: 0.5rem;
 }
 
 .barraItemPropertyType2 {
@@ -48,8 +54,8 @@
   border: 1.14407px solid #7149bc;
   box-sizing: border-box;
   transition: 150ms;
-  width: 190px;
   margin-top: 7px;
+  list-style: none;
 }
 
 .barraItemPropertyType:hover {
@@ -80,8 +86,8 @@
   box-sizing: border-box;
   border-radius: 45.7627px;
   background: rgba(113, 73, 188, 0.22);
-  width: 190px;
   margin-top: 7px;
+  list-style: none;
 }
 
 .barraItemCategory {
@@ -149,34 +155,25 @@
   position: relative;
 }
 
-.dropdown {
-  margin-right: 0.5rem!important;
-  margin-left: 0.5rem;
+.flexrow {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 12px;
 }
 
 .ulDropdown {
-  margin: 0;
-  position: absolute;
-  top: calc(100% + 5px);
-  width: 435px;
   display: flex;
   flex-direction: row;
-  gap: 2px;
-  padding: 10px;
-  list-style: none;
-  background-color: #fff;
-  right: -148px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  z-index: 200;
-  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 7px;
+  padding-bottom: 5px;
 }
 
 .ulDropdown2 {
   margin: 0;
   padding: 0;
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 0px);
   width: max-content;
   display: flex;
   flex-direction: column;
@@ -211,6 +208,7 @@
   align-items: center;
   margin-top: 10px; 
   width: 400px;
+  margin-left: -10px;
 }
 
 .buttonContainer form label{
@@ -237,6 +235,17 @@
   color: #7149bc;
   cursor: pointer;
   transition: 150ms;
+}
+
+.buttonContainer form input[type="radio"]:checked + .checked2{
+  background-color: rgba(113, 73, 188, 0.22);
+  color: #7149bc;
+  cursor: pointer;
+  transition: 150ms;
+}
+
+.checked2 {
+  width: 175px;
 }
 
 .buttonContainer form label:hover{
@@ -282,17 +291,29 @@
   .ulDropdown2 {
     right: 536px;
   }
+
+  .ulDropdown {
+    width: auto;
+  }
 }
 
 @media (max-width: 1600px) {
   .ulDropdown2 {
     right: 385px;
   }
+
+  .ulDropdown {
+    width: auto;
+  }
 }
 
 @media (max-width: 1420px) {
   .ulDropdown2 {
     right: 220px;
+  }
+
+  .ulDropdown {
+    width: auto;
   }
 }
 
@@ -308,12 +329,29 @@
     background: #7149bc;
     border-radius: 5px;
   }
+  .ulDropdown {
+    width: 100%;
+  }
 } 
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1220px) {
   .ulDropdown2 {
     right: 190px
   }
+
+  .ulDropdown {
+  overflow-x: scroll;
+}
+
+.ulDropdown::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.ulDropdown::-webkit-scrollbar-thumb {
+  background: #7149bc;
+  border-radius: 5px;
+}
 }
 
 @media screen and (max-width: 1100px) {
@@ -328,22 +366,25 @@
   }
 }
 
-@media screen and (max-width: 600px) {
-  .barraItemCategorySelected, .barraItemCategory {
-    display: none;
+@media screen and (max-width: 850px) {
+  .ulDropdown2 {
+    right: 10px;
   }
-  .barraItemCategorySelected2, .barraItemCategory2 {
+}
+
+@media screen and (max-width: 600px) {
+  /* .barraItemCategorySelected, .barraItemCategory {
+    display: none;
+  } */
+  .barraItemCategorySelected, .barraItemCategory {
     display: inline;
   }
-  .ulDropdown, .ulDropdown2 {
+  .ulDropdown2 {
     margin: auto;
     width: 340px;
     height: 310px;
     overflow-y: scroll;
     overflow-x: hidden;
-  }
-  .ulDropdown {
-    left: -34%;
   }
   .barraItemCategory2, .barraItemCategorySelected2, .barraItemPropertyType2, .barraItemPropertyTypeSelected2 {
     width: 140px;
@@ -362,10 +403,6 @@
 }
 
 @media screen and (max-width:360px) {
-  .ulDropdown {
-    right: 0;
-    left: -27%;
-  }
   .ulDropdown2 {
     right: -1px;
   }

@@ -5,6 +5,7 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../context/auth/AuthContext";
 import { ChatContext, CrearChat } from "../../../context/chat/ChatContext";
+import { eliminarFavorito } from "../../../helpers/fetch";
 import styles from "./FavsCard.module.css";
 
 type Solicitud = "Pendiente" | "Aprobado" | "Rechazado";

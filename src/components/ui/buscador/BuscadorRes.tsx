@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { MapContext } from "../../../context/map/MapContext";
+import { MapContext } from "context/map/MapContext";
 import Buscador from "./Buscador";
 import styles from "./Buscador.module.css";
 

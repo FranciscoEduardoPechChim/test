@@ -5,7 +5,7 @@ import { useForm } from "../../../hooks/useForm";
 import Button from "../../ui/button/Button";
 import styles from "./contactform.module.css";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchContactForm } from "../../../helpers";
+import { fetchContactForm } from "../../../helpers/fetch";
 
 const ContactForm = () => {
   const { formulario, handleChange, setFormulario } = useForm({

@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
-import SEO from "../../components/seo/SEO";
-import NotificacionResp from "../../components/ui/responsive/NotificacionResp";
-import Titulo from "../../components/ui/titulo/Titulo";
-import { PrivateRoute } from "../../hooks/usePrivateRoute";
+import SEO from "components/seo/SEO";
+import NotificacionResp from "components/ui/responsive/NotificacionResp";
+import Titulo from "components/ui/titulo/Titulo";
+import { PrivateRoute } from "hooks/usePrivateRoute";
 
 const Solicitudes = () => {
   const router = useRouter();

@@ -1,11 +1,11 @@
 import { Fragment, memo, useContext, useEffect, useRef, useState } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { MapContext } from "../../../context/map/MapContext";
-import { useInmueblesCoordenadas } from "../../../hooks";
+import { useInmueblesCoordenadas } from "../../../hooks/useInmuebles";
 import Loading from "../../ui/loading/Loading";
 import InfoWindowMap from "./InfoWindowMap";
 import BuscarZona from "./BuscarZona";
-import { useCategories, useTipoPropiedad } from "../../../hooks/useCategories";
+import { useCategories, useTipoPropiedad } from "hooks/useCategories";
 import BarraCategorias from "./BarraCategorias";
 import styles from "./BarraCategoria.module.css";
 
@@ -41,7 +41,7 @@ const MapaUbicacion = () => {
     filtros,
   } = useContext(MapContext);
   const [seleccionado, setSeleccionado] = useState("");
-  const [baños, setBaños] = useState(-1)
+  const [banos, setBanos] = useState(-1)
   const [parking, setParking] = useState(-1)
   const [habitaciones, setHabitaciones] = useState(-1)
   const [m2Terreno, setM2Terreno] = useState(0)
@@ -60,7 +60,7 @@ const MapaUbicacion = () => {
     coordenadas,
     categoria,
     tipoPropiedad,
-    baños,
+    banos,
     parking,
     m2Terreno,
     m2Construidos,
@@ -151,14 +151,14 @@ const MapaUbicacion = () => {
                     propertyTypes={propertyTypes}
                     setCategoria={setCategoria}
                     categorias={categorias}
-                    baños={baños}
-                    setBaños={setBaños}
+                    banos={banos}
+                    setBanos={setBanos}
                     parking={parking}
                     setParking={setParking}
                     habitaciones={habitaciones}
                     setHabitaciones={setHabitaciones}
                   />
-                )}
+                )} 
               </div>
             </div>
 

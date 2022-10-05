@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import Link from "next/link";
 import styles from "./Header.module.css";
-import { AuthContext } from "../../../context/auth/AuthContext";
+import { AuthContext } from "context/auth/AuthContext";
 import LoginModal from "../authmodal/LoginModal";
 
 const ResponsiveHeader = () => {
@@ -22,7 +22,7 @@ const ResponsiveHeader = () => {
 
   return (
     <div className={styles.respNavbar}>
-      <div>
+      <div className={styles.containerBi}>
         <i
           onClick={() => setMostrar(!mostrar)}
           className={`${styles.listIcon}  ${

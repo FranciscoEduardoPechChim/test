@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { production } from "../credentials";
-import { ObtenerSolicitud, Solicitud } from "../interfaces/SolicitudInteface";
+import { production } from "credentials/credentials";
+import { ObtenerSolicitud, Solicitud } from "interfaces/SolicitudInteface";
 
 export const useSolicitudes = (uid: string | undefined | null) => {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);

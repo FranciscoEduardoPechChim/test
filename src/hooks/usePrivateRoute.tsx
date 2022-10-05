@@ -8,13 +8,12 @@ export const PrivateRoute = (Component: any) => {
     const { auth } = useContext(AuthContext);
     const router = useRouter();
 
-    // @ts-ignore
-    useEffect(() => {
-      if (!auth.logged) {
+    if (!auth.logged) {
+      useEffect(() => {
         router.replace("/");
-        return <Loading />;
-      }
-    }, []);
+      }, []);
+      return <Loading />;
+    }
 
     return <Component auth={auth} {...props} />;
   };

@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { production } from "../credentials";
+import { production } from "credentials/credentials";
 import {
   Compartida,
   ObtenerInmueblesCompartidosResp,
   ObtenerSolicitud,
   Solicitud,
-} from "../interfaces/SolicitudInteface";
-import { AuthContext } from "../context/auth/AuthContext";
+} from "interfaces/SolicitudInteface";
+import { AuthContext } from "context/auth/AuthContext";
 
 export const useCompartidas = (
   uid: string | undefined | null,

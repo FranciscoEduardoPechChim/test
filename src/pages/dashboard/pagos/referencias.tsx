@@ -4,25 +4,25 @@ import { Form, Pagination } from "react-bootstrap";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
-import DashboardLayout from "../../../components/layout/Dashboard";
-import SEO from "../../../components/seo/SEO";
-import { useForm } from "../../../hooks/useForm";
-import { useReferenciaNumero, useReferencias } from "../../../hooks/useReferencias";
-import Loading from "../../../components/ui/loading/Loading";
-import styles from "../../../components/paginas/dashboard/Dashboard.module.css";
-import styleRef from "../../../components/paginas/dashboard/Referencias.module.css";
-import { formatPrice } from "../../../helpers";
-import { horaMes } from "../../../helpers";
+import DashboardLayout from "components/layout/Dashboard";
+import SEO from "components/seo/SEO";
+import { useForm } from "hooks/useForm";
+import { useReferenciaNumero, useReferencias } from "hooks/useReferencias";
+import Loading from "components/ui/loading/Loading";
+import styles from "components/paginas/dashboard/Dashboard.module.css";
+import styleRef from "components/paginas/dashboard/Referencias.module.css";
+import { formatPrice } from "helpers/formatPrice";
+import { horaMes } from "helpers/horaMes";
 import {
   aprobarRef,
   anadirPaqueteInv,
   nuevoPedido,
-} from "../../../helpers";
-import { Pedido } from "../../../interfaces/PedidosInterface";
-import { AuthContext } from "../../../context/auth/AuthContext";
-import { NuevoPedido } from "../../../interfaces/ContactInterface";
-import { AdminRoute } from "../../../hooks/useAdminRoute";
-import { actualizarRolUsuario } from "../../../helpers";
+} from "../../../helpers/fetch";
+import { Pedido } from "interfaces/PedidosInterface";
+import { AuthContext } from "context/auth/AuthContext";
+import { NuevoPedido } from "interfaces/ContactInterface";
+import { AdminRoute } from "hooks/useAdminRoute";
+import { actualizarRolUsuario } from "../../../helpers/fetch";
 
 const Referencias = () => {
   const router = useRouter();

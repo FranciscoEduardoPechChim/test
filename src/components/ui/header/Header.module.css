@@ -217,12 +217,23 @@
   background: rgb(253, 69, 37);
 }
 
-.listIcon {
+.containerBi {
   position: absolute;
+  background-color: #7149bc;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   left: 20px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.listIcon {
   font-size: 35px;
   transition: 300ms;
-  color: #7a7a7a;
+  color: #f1f1f1;
 }
 
 .respNavbar {
@@ -260,7 +271,7 @@
 }
 
 .resHeaderAtive {
-  background-color: #fff;
+  background-color: #7149bc;
   height: 100vh;
   overflow: auto;
   position: absolute;
@@ -270,7 +281,7 @@
 }
 
 .headerLinkItem {
-  color: #0e0e0e;
+  color: #f1f1f1;
   font-size: 25px;
   font-style: normal;
   font-weight: 400;

@@ -9,7 +9,7 @@ import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../../../context/auth/AuthContext";
 import GoogleLogin from "react-google-login";
-import { production, googleClientId } from "../../../credentials";
+import { production, googleClientId } from "credentials/credentials";
 
 const RegisterModal = () => {
   const router = useRouter();

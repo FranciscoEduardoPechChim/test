@@ -5,7 +5,7 @@ import {
   useFechaInmueble,
   useTipoInmueble,
 } from "../../../../hooks";
-import Loading from "../../../../components/ui/loading/Loading";
+import Loading from "components/ui/loading/Loading";
 
 const PropiedadesCard = () => {
   const { cargando, total } = useAllInmuebles();

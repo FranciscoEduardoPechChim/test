@@ -28,7 +28,6 @@ const Home: NextPage = () => {
     onEnter: ({ unobserve }) => unobserve(),
   });
 
-  // @ts-ignore
   return (
     <>
       <SEO titulo="Inicio" url={asPath} />

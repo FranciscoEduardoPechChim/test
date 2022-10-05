@@ -6,11 +6,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-cube";
 import "swiper/css/pagination";
-import { formatPrice } from "../../../helpers";
+import { formatPrice } from "../../../helpers/formatPrice";
 import styles from "./MapCards.module.css";
 import { AuthContext } from "../../../context/auth/AuthContext";
-import { agregarHist } from "../../../helpers";
-import { InmueblesUsuario } from "../../../interfaces/CrearInmuebleInterface";
+import { agregarHist } from "../../../helpers/fetch";
+import { InmueblesUsuario } from "interfaces/CrearInmuebleInterface";
 
 SwiperCore.use([EffectCube, Pagination, Autoplay]);
 
@@ -29,7 +29,6 @@ const InfoWindowMap = ({ inmueble }: Props) => {
     await agregarHist("historial", data);
   };
 
-  // @ts-ignore
   return (
     <InfoWindow position={{ lat: inmueble.lat, lng: inmueble.lng }}>
       <div className={styles.contenedorCard}>

@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { AuthContext } from "../../../context/auth/AuthContext";
-import { useSolicitudes } from "../../../hooks/useSolicitudes";
+import { AuthContext } from "context/auth/AuthContext";
+import { useSolicitudes } from "hooks/useSolicitudes";
 import styles from "./ResposiveStyles.module.css";
-import { useWindowWide } from "../../../hooks/useWindowWide";
+import { useWindowWide } from "hooks/useWindowWide";
 import { fetchAceptarRechazarSolicitud, hora } from "helpers";
-import { production } from "../../../credentials";
-import { Solicitud } from "../../../interfaces/SolicitudInteface";
+import { production } from "credentials/credentials";
+import { Solicitud } from "interfaces/SolicitudInteface";
 import Loading from "../loading/Loading";
 
 const NotificacionResp = () => {

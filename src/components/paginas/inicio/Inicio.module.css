@@ -45,7 +45,7 @@
   max-width: 250px;
 }
 .buscarZonaWithFilter {
-  margin-top: 71px;
+  margin-top: 114px;
   position: absolute;
   right: 50px;
   background: #ffffff;
@@ -73,7 +73,7 @@
   }
   .buscarZonaWithFilter {
     left: 50%;
-    margin-top: 71px;
+    margin-top: 120px;
     transform: translateX(-50%);
     width: auto;
     min-width: 200px;

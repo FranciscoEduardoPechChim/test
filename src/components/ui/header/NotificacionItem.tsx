@@ -1,6 +1,6 @@
 import { FC, MutableRefObject } from "react";
 import { Overlay } from "react-bootstrap";
-import { Solicitud } from "../../../interfaces/SolicitudInteface";
+import { Solicitud } from "interfaces/SolicitudInteface";
 import Loading from "../loading/Loading";
 import styles from "./Header.module.css";
 import Link from "next/link";
