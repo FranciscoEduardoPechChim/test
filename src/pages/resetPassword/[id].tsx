@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import Loading from "../../components/ui/loading/Loading";
 import "react-toastify/dist/ReactToastify.css";
 
-const resetPassword = () => {
+const ResetPassword = () => {
   const router = useRouter();
   const { asPath, query } = router;
   const { id, email } = query;
@@ -201,4 +201,4 @@ const resetPassword = () => {
   );
 };
 
-export default resetPassword;
+export default ResetPassword;

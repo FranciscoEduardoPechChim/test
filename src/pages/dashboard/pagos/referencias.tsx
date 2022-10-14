@@ -24,6 +24,9 @@ import { NuevoPedido } from "interfaces/ContactInterface";
 import { AdminRoute } from "hooks/useAdminRoute";
 import { actualizarRolUsuario } from "../../../helpers/fetch";
 
+//Material UI
+import TablePagination from '@material-ui/core/TablePagination';
+
 const Referencias = () => {
   const router = useRouter();
   const { actualizarRol } = useContext(AuthContext);
@@ -37,10 +40,28 @@ const Referencias = () => {
   const { referencia, setReferencia } = useReferenciaNumero(seleccionado);
   const {
     referencias,
+    setOffset,
     total,
     cargando: loading,
     setReferencias,
   } = useReferencias(desde);
+
+  const [page, setPage]                 = useState(0);
+  const [rowsPerPage, setRowsPerPage]   = useState(10);
+
+  const handleChangePage                = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);  
+    setDesde(newPage * rowsPerPage);
+  };
+
+  const handleChangeRowsPerPage         = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setOffset(parseInt(event.target.value));
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+    setDesde(0);
+  };
 
   const seleccionarReferencia = (ref: string) => {
     setSeleccionado(ref);
@@ -525,14 +546,17 @@ const Referencias = () => {
             </div>
           </section>
 
-          {referencias && total > 15 ? (
-            <div className="d-flex justify-content-center">
-              <Pagination>
-                <Pagination.Prev onClick={handlePrevPage} />
-                <Pagination.Next onClick={handleNextPage} />
-              </Pagination>
-            </div>
-          ) : null}
+          <TablePagination
+              component             = "div"
+              count                 = {total}
+              page                  = {page}
+              onPageChange          = {handleChangePage}
+              rowsPerPage           = {rowsPerPage}
+              onRowsPerPageChange   = {handleChangeRowsPerPage}
+              rowsPerPageOptions    = {[10, 25, 50, 100]}
+              labelRowsPerPage      = {'Cantidad'}
+              labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to}`}
+          />
         </section>
       </DashboardLayout>
     </>

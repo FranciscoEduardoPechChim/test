@@ -19,7 +19,7 @@ import {
 } from "../../../helpers/fetch";
 import { Pedido } from "../../../interfaces/PedidosInterface";
 import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
-import { production } from "credentials/credentials";
+import { development, production } from "credentials/credentials";
 
 const Individual = () => {
   const { auth, abrirLogin, actualizarRol } = useContext(AuthContext);

@@ -1,4 +1,6 @@
-export const production = "https://red1a1-back.herokuapp.com/api";
+export const production = "https://reda1adev.herokuapp.com/api";
+
+//export const production = "http://localhost:8080/api";
 export const development = "http://localhost:8080/api";
 
 export const rentas = "61e99f0e0d3bd9163e4a4b42";
@@ -11,7 +13,7 @@ export const oficinasCat = "6213cb430d7c145fa7ae62b4";
 export const bodegasCat = "6213cb480d7c145fa7ae62b8";
 
 export const googleClientId =
-  "AIzaSyBP50cyzSXWCQ-yOj7ElAcHtZZagYhw_SU";
+  "809530655280-sfv9hs2l45tcd16joedrrgvh11bc42l5.apps.googleusercontent.com";
 
 export const stripePublicId =
   "pk_test_51KlHyqITJUOVXM1TTiuTj9Nbl5UjpkOdn4j3nl42D64lUaV9TnNkMgCPMaSzPJm68LtLmLTPiC2O8ZOKbEWncRs100hxibM6CC";

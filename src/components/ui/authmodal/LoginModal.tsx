@@ -42,22 +42,20 @@ const LoginModal = () => {
     setFormulario({ ...formulario, rememberme: !rememberme });
   };
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+
+  const onSubmit                      = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    rememberme
-      ? localStorage.setItem("correo", correo)
-      : localStorage.removeItem("correo");
+    (rememberme) ? localStorage.setItem("correo", correo): localStorage.removeItem("correo");
 
-    const resp = await login(correo, password);
-    if (!resp.ok) {
-      toast.error(resp.msg);
-    }
+    const response                    = await login(correo, password);
+    const isContinuo                  = !response.ok;
 
-    if (resp.ok) {
+    if(isContinuo) {
       router.push("/perfil");
       cerrarLogin();
     }
+
   };
 
   const mostrarContraseña = () => setShowPassword(!showPassword);

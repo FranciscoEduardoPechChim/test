@@ -47,14 +47,14 @@ const FormStepOne = (props: Props) => {
     <>
       <Form.Group className="mb-3">
         <Form.Label className={`${styles.subTitulo}`}>
-          Título del inmueble
+          Título del inmueble 
         </Form.Label>
         <Form.Control
           type="text"
           value={titulo}
           name="titulo"
           minLength={15}
-          maxLength={75}
+          maxLength={100}
           required
           onChange={handleChange}
         />
@@ -67,12 +67,12 @@ const FormStepOne = (props: Props) => {
           <Col className="d-flex justify-content-end">
             <span
               style={{
-                color: longitudTitulo > 75 ? "red" : "black",
+                color: longitudTitulo > 100 ? "red" : "black",
               }}
             >
               {longitudTitulo}
             </span>
-            /75
+            /100
           </Col>
         </Row>
       </Form.Group>

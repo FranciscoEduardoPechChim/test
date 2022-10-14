@@ -6,10 +6,12 @@ import Button from "../button/Button";
 import Modaltitle from "../modaltitle/Modaltitle";
 import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
-import { production } from "../../../credentials";
+import { production, development } from "../../../credentials";
 import Loading from "../loading/Loading";
 import axios from "axios";
 import Swal from "sweetalert2";
+
+
 
 interface Props {
     modalShow: boolean;
@@ -19,51 +21,21 @@ interface Props {
 const PasswordForgot = (props: Props) => {
   const { modalShow, setModalShow } = props;
   const [correo, setCorreo] = useState("");
-  const { abrirPasswordForget, cerrarPasswordForget } = useContext(AuthContext);
+  const { abrirPasswordForget, cerrarPasswordForget, forgotPassword } = useContext(AuthContext);
 	const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit                = async (e: any) => {
 		e.preventDefault();
-	  setLoading(true);
-		
-		try {
-			const url = `${production}/auth/forgot-password`;
-			const obj = {
-				"correo": correo
-			};
-			const response  = await axios.post(url, obj);
-			
-			Swal.fire({
-				title: response.status === 200 ? '' : 'Error',
-				html: response.data.msg,
-				icon: response.status === 200 ? 'success' : 'error',
-				allowOutsideClick: false,
-				allowEscapeKey: false,
-				showConfirmButton: true,
-				confirmButtonColor: '#3085d6',
-				confirmButtonText: 'Aceptar'
-			});
-			setCorreo('');
-		} catch (err: any) {
-			if (
-				err.response &&
-				err.response.status >= 400 &&
-				err.response.status <= 500
-			) {
-				Swal.fire({
-					title: 'Error',
-					html: err.response.data.msg,
-					icon: 'error',
-					allowOutsideClick: false,
-					allowEscapeKey: false,
-					showConfirmButton: true,
-					confirmButtonColor: '#3085d6',
-					confirmButtonText: 'Aceptar'
-				});
-			}
-		}
-	
-	  setLoading(false);
+    setLoading(true);
+
+    const response                  = await forgotPassword(correo);
+    const isContinuo                = !response.ok;
+
+    if(isContinuo) {
+      setCorreo('');
+    }
+
+    setLoading(false);
 	};
 
   return (

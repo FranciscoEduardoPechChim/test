@@ -11,11 +11,12 @@ export const useReferenciasUsuario = (
   desde: number
 ) => {
   const [referencias, setReferencias] = useState<Referencia[]>([]);
-  const [cargando, setCargando] = useState(true);
-  const [total, setTotal] = useState(0);
+  const [cargando, setCargando]       = useState(true);
+  const [total, setTotal]             = useState(0);
+  const [offset, setOffset]           = useState(10);
 
   const obtenerReferencias = async () => {
-    const res = await fetch(`${production}/referencias/${uid}?desde=${desde}`);
+    const res = await fetch(`${production}/referencias/${uid}?desde=${desde}&limite=${offset}`);
     const data: ReferenciasUsuarioResp = await res.json();
 
     setReferencias(data.referencias);
@@ -25,9 +26,9 @@ export const useReferenciasUsuario = (
 
   useEffect(() => {
     obtenerReferencias();
-  }, [desde]);
+  }, [desde, offset]);
 
-  return { referencias, cargando, total, setReferencias };
+  return { referencias, cargando, total, setReferencias, setOffset };
 };
 
 export const useReferenciaNumero = (numero: string) => {
@@ -74,11 +75,12 @@ export const useReferenciaNumero = (numero: string) => {
 
 export const useReferencias = (desde: number) => {
   const [referencias, setReferencias] = useState<Referencia[]>([]);
-  const [cargando, setCargando] = useState(true);
-  const [total, setTotal] = useState(0);
+  const [cargando, setCargando]       = useState(true);
+  const [total, setTotal]             = useState(0);
+  const [offset, setOffset]           = useState(10);
 
   const obtenerReferencias = async () => {
-    const res = await fetch(`${production}/referencias?desde=${desde}`);
+    const res = await fetch(`${production}/referencias?desde=${desde}&limite=${offset}`);
     const data: ReferenciasUsuarioResp = await res.json();
 
     setReferencias(data.referencias);
@@ -88,7 +90,7 @@ export const useReferencias = (desde: number) => {
 
   useEffect(() => {
     obtenerReferencias();
-  }, [desde]);
+  }, [desde, offset]);
 
-  return { referencias, cargando, total, setReferencias };
+  return { referencias, cargando, total, setReferencias, setOffset };
 };

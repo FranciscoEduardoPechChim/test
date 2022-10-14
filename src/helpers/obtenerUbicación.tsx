@@ -15,5 +15,6 @@ export const obtenerUbicacionUsuario = async (): Promise<UbicacionUsuario> => {
         reject();
       }
     );
+
   });
 };

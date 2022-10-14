@@ -50,7 +50,6 @@ const MapaUbicacion = () => {
   const { loading, propertyTypes } = useTipoPropiedad();
   const { categorias } = useCategories();
 
-
   const mapRef = useRef<GoogleMap>(null);
   const { inmuebles, cargando } = useInmueblesCoordenadas(
     southEast,
@@ -184,7 +183,7 @@ const MapaUbicacion = () => {
                     }
                   >
                     {seleccionado === inmueble._id ? (
-                      <InfoWindowMap inmueble={inmueble} />
+                     <InfoWindowMap inmueble={inmueble} />
                     ) : null}
                   </Marker>
                 </Fragment>

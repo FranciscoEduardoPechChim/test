@@ -20,17 +20,20 @@ import {
 import { Auth, Resp, SubirFoto } from "../../interfaces/AuthInterface";
 import { RespActualizar } from "../../interfaces/UserInterface";
 
+//Services
+import { session, signup, sendPassword} from '../../services/authService';
+//Helpers
+import { validate } from '../../helpers/response';
+//Extras
+import Swal from "sweetalert2";
+
 interface ContextProps {
   auth: Auth;
-  login: (correo: string, password: string) => Promise<Resp>;
-  logOut: () => void;
-  register: (
-    nombre: string,
-    apellido: string,
-    correo: string,
-    password: string,
-    role: string
-  ) => Promise<Resp>;
+  login:            (email: string, password: string) => any;
+  forgotPassword :  (email: string) => any;
+  logOut:           () => void;
+  register:         (name: string, lastName: string, email: string, password: string, role: string) => any;
+  validRole:        () =>  boolean;
   crearUsuario: (
     nombre: string,
     apellido: string,
@@ -52,6 +55,10 @@ interface ContextProps {
   cerrarLogin: () => void;
   abrirRegistro: () => void;
   cerrarRegistro: () => void;
+  mostrarPasswordForget: boolean;
+  setMostrarPasswordForget: Dispatch<SetStateAction<boolean>>;
+  abrirPasswordForget: () => void;
+  cerrarPasswordForget: () => void;
   actualizarRol: (
     data: any,
     uid: string | undefined | null
@@ -91,99 +98,168 @@ const initialState: Auth = {
 export const AuthProvider: FC = ({ children }) => {
   const [auth, setAuth] = useState(initialState);
   const router = useRouter();
-  const [mostrarLogin, setMostrarLogin] = useState(false);
-  const [mostrarRegistro, setMostrarRegistro] = useState(false);
-  const abrirLogin = () => setMostrarLogin(true);
-  const cerrarLogin = () => setMostrarLogin(false);
-  const abrirRegistro = () => setMostrarRegistro(true);
-  const cerrarRegistro = () => setMostrarRegistro(false);
+  const [mostrarLogin, setMostrarLogin]                     = useState(false);
+  const [mostrarRegistro, setMostrarRegistro]               = useState(false);
+  const [mostrarPasswordForget, setMostrarPasswordForget]   = useState(false);
 
-  const login = async (correo: string, password: string) => {
-    const resp = await fetchSinToken(
-      "auth/login",
-      { correo, password },
-      "POST"
-    );
-    if (resp.token) {
-      localStorage.setItem("token", resp.token);
-      const { usuario } = resp;
-      setAuth({
-        uid: usuario.uid,
-        checking: false,
-        logged: true,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        correo: usuario.correo,
-        direccionFisica: usuario.direccionFisica,
-        sitioweb: usuario.sitioweb,
-        facebookpage: usuario.facebookpage,
-        instagram: usuario.instagram,
-        nombreInmobiliaria: usuario.nombreInmobiliaria,
-        telefonoOficina: usuario.telefonoOficina,
-        telefonoPersonal: usuario.telefonoPersonal,
-        twitter: usuario.twitter,
-        youtube: usuario.youtube,
-        perfilEmpresarial: usuario.perfilEmpresarial,
-        linkedin: usuario.linkedin,
-        img: usuario.img,
-        logo: usuario.logo,
-        role: usuario.role,
-        paqueteAdquirido: usuario.paqueteAdquirido,
-        usuarios: usuario.usuarios,
-        propietario: usuario.propietario,
-        google: undefined,
-        recibirCorreo: usuario.recibirCorreo,
-      });
-    }
-    return resp;
-  };
+  const abrirLogin                                          = () => setMostrarLogin(true);
+  const cerrarLogin                                         = () => setMostrarLogin(false);
+  const abrirRegistro                                       = () => setMostrarRegistro(true);
+  const cerrarRegistro                                      = () => setMostrarRegistro(false);
+  const abrirPasswordForget                                 = () => setMostrarPasswordForget(true);
+  const cerrarPasswordForget                                = () => setMostrarPasswordForget(false);
 
-  const register = async (
-    nombre: string,
-    apellido: string,
-    correo: string,
-    password: string,
-    role: string
-  ) => {
-    const resp = await fetchSinToken(
-      "usuarios",
-      { nombre, apellido, correo, password, role },
-      "POST"
-    );
-    if (resp.token) {
-      localStorage.setItem("token", resp.token);
-      const { usuario } = resp;
-      setAuth({
-        uid: usuario.uid,
-        checking: false,
-        logged: true,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        correo: usuario.correo,
-        direccionFisica: usuario.direccionFisica,
-        sitioweb: usuario.sitioweb,
-        facebookpage: usuario.facebookpage,
-        instagram: usuario.instagram,
-        nombreInmobiliaria: usuario.nombreInmobiliaria,
-        telefonoOficina: usuario.telefonoOficina,
-        telefonoPersonal: usuario.telefonoPersonal,
-        twitter: usuario.twitter,
-        youtube: usuario.youtube,
-        perfilEmpresarial: usuario.perfilEmpresarial,
-        linkedin: auth.linkedin,
-        img: usuario.img,
-        logo: usuario.logo,
-        role: usuario.role,
-        paqueteAdquirido: usuario.paqueteAdquirido,
-        usuarios: usuario.usuarios,
-        propietario: usuario.propietario,
-        google: undefined,
-        recibirCorreo: usuario.recibirCorreo,
-      });
+  const login                                               = async (email: string, password: string) => {
+
+    const response                                          = await session(email, password);
+
+    //Validation 
+    if(response && response.errors) {
+      return validate(response.errors);
     }
 
-    return resp;
-  };
+    if(response && response.ok) {
+      return toast.error(response.msg);
+    }
+
+    if(response && response.data) {
+      const { data }                                        = response;
+
+      const auth                                            = {
+        uid:                                                data.user.uid,
+        checking:                                           false,
+        logged:                                             true,
+        nombre:                                             data.user.nombre,
+        apellido:                                           data.user.apellido,
+        correo:                                             data.user.correo,
+        direccionFisica:                                    data.user.direccionFisica,
+        sitioweb:                                           data.user.sitioweb,
+        facebookpage:                                       data.user.facebookpage,
+        instagram:                                          data.user.instagram,
+        nombreInmobiliaria:                                 data.user.nombreInmobiliaria,
+        telefonoOficina:                                    data.user.telefonoOficina,
+        telefonoPersonal:                                   data.user.telefonoPersonal,
+        twitter:                                            data.user.twitter,
+        youtube:                                            data.user.youtube,
+        perfilEmpresarial:                                  data.user.perfilEmpresarial,
+        linkedin:                                           data.user.linkedin,
+        img:                                                data.user.img,
+        logo:                                               data.user.logo,
+        role:                                               data.user.role,
+        paqueteAdquirido:                                   data.user.paqueteAdquirido,
+        usuarios:                                           data.user.usuarios,
+        propietario:                                        data.user.propietario,
+        google:                                             undefined,
+        recibirCorreo:                                      data.user.recibirCorreo,
+      };
+      
+      localStorage.setItem("role", "Usuario");
+      localStorage.setItem("token", data.access_token);
+      setAuth(auth);
+
+      return {
+        token:    data.access_token,
+        ok:       response.ok,
+        usuario:  data.user
+      };
+    }
+  }
+  const forgotPassword                                      = async (email: string) => {
+
+    const response                                          = await sendPassword(email);
+
+    //Validation 
+    if(response && response.errors) {
+      return validate(response.errors);
+    }
+
+
+    if(response) {
+      Swal.fire({
+        title: '',
+        html: response.msg,
+        icon: 'success',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: true,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Aceptar'
+      });
+    }
+
+    return {
+      ok:       response?.ok,
+      msg:      response?.msg
+    };
+  }
+  const register                                            = async (name: string, lastName: string, email: string, password: string, role: string ) => {
+
+    const response                                          = await signup(name, lastName, email, password, role);
+  
+    //Validation 
+    if(response && response.errors) {
+      return validate(response.errors);
+    }
+
+    if(response && response.ok) {
+      return toast.error(response.msg);
+    }
+
+    if(response && response.data) {
+      const { data }                                        = response;
+
+      const auth                                            = {
+        uid:                                                data.user.uid,
+        checking:                                           false,
+        logged:                                             true,
+        nombre:                                             data.user.nombre,
+        apellido:                                           data.user.apellido,
+        correo:                                             data.user.correo,
+        direccionFisica:                                    data.user.direccionFisica,
+        sitioweb:                                           data.user.sitioweb,
+        facebookpage:                                       data.user.facebookpage,
+        instagram:                                          data.user.instagram,
+        nombreInmobiliaria:                                 data.user.nombreInmobiliaria,
+        telefonoOficina:                                    data.user.telefonoOficina,
+        telefonoPersonal:                                   data.user.telefonoPersonal,
+        twitter:                                            data.user.twitter,
+        youtube:                                            data.user.youtube,
+        perfilEmpresarial:                                  data.user.perfilEmpresarial,
+        linkedin:                                           data.user.linkedin,
+        img:                                                data.user.img,
+        logo:                                               data.user.logo,
+        role:                                               data.user.role,
+        paqueteAdquirido:                                   data.user.paqueteAdquirido,
+        usuarios:                                           data.user.usuarios,
+        propietario:                                        data.user.propietario,
+        google:                                             undefined,
+        recibirCorreo:                                      data.user.recibirCorreo,
+      };
+      
+      localStorage.setItem("role", 'Usuario');
+      localStorage.setItem("token", data.access_token);
+      setAuth(auth);
+
+      return {
+        token:    data.access_token,
+        ok:       response.ok,
+        usuario:  data.user
+      };
+    }
+  }
+  const validRole                                           = () => {
+    const role                                              = localStorage.getItem("role");
+
+    if(!role) {
+      return false;
+    }
+
+    if(role == 'Usuario') {
+      return false;
+    }
+
+    return true;
+  }
 
   const crearUsuario = async (
     nombre: string,
@@ -550,6 +626,7 @@ export const AuthProvider: FC = ({ children }) => {
         login,
         logOut,
         register,
+        validRole,
         signInWithGoogle,
         signInWithFacebook,
         verificaToken,
@@ -565,6 +642,11 @@ export const AuthProvider: FC = ({ children }) => {
         cerrarRegistro,
         actualizarRol,
         crearUsuario,
+        mostrarPasswordForget,
+        setMostrarPasswordForget,
+        abrirPasswordForget,
+        cerrarPasswordForget,
+        forgotPassword
       }}
     >
       {children}

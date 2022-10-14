@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from "react";
-import { Container, Pagination } from "react-bootstrap";
+import { Container} from "react-bootstrap";
 import { AuthContext } from "context/auth/AuthContext";
 import { useReferenciasUsuario } from "hooks/useReferencias";
 import Loading from "components/ui/loading/Loading";
@@ -8,6 +8,9 @@ import styles from "./Referencias.module.css";
 import { subirComprobanteFetch } from "../../../../helpers/fetch";
 import { toast } from "react-toastify";
 
+//Material UI
+import TablePagination from '@material-ui/core/TablePagination';
+
 const ListaReferencias = () => {
   const { auth } = useContext(AuthContext);
   const refAdjuntar = useRef<HTMLInputElement>(null);
@@ -15,23 +18,24 @@ const ListaReferencias = () => {
   const [subiendo, setSubiendo] = useState(false);
   const [comprobante, setcomprobante] = useState("");
   const [seleccionado, setSeleccionado] = useState("");
-  const { cargando, referencias, total, setReferencias } =
+  const { cargando, referencias, total, setReferencias, setOffset } =
     useReferenciasUsuario(auth.uid, desde);
 
-  const handlePrevPage = () => {
-    if (desde === 0) {
-      return;
-    } else {
-      setDesde(desde - 15);
-    }
+  const [page, setPage]                 = useState(0);
+  const [rowsPerPage, setRowsPerPage]   = useState(10);
+
+  const handleChangePage                = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);  
+    setDesde(newPage * rowsPerPage);
   };
 
-  const handleNextPage = () => {
-    if (desde < total - 15) {
-      setDesde(desde + 15);
-    } else {
-      return;
-    }
+  const handleChangeRowsPerPage         = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setOffset(parseInt(event.target.value));
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+    setDesde(0);
   };
 
   const handleAdjuntar = (id: string) => {
@@ -213,14 +217,17 @@ const ListaReferencias = () => {
               </div>
             </div>
           )}
-          {total > 15 ? (
-            <div className="d-flex justify-content-center">
-              <Pagination>
-                <Pagination.Prev onClick={handlePrevPage} />
-                <Pagination.Next onClick={handleNextPage} />
-              </Pagination>
-            </div>
-          ) : null}
+          <TablePagination
+              component             = "div"
+              count                 = {total}
+              page                  = {page}
+              onPageChange          = {handleChangePage}
+              rowsPerPage           = {rowsPerPage}
+              onRowsPerPageChange   = {handleChangeRowsPerPage}
+              rowsPerPageOptions    = {[10, 25, 50, 100]}
+              labelRowsPerPage      = {'Cantidad'}
+              labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to}`}
+          />
         </div>
       )}
     </Container>

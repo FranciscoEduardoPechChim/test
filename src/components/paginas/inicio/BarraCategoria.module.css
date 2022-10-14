@@ -307,6 +307,16 @@
   }
 }
 
+@media (min-width: 1600px) {
+  .ulDropdown2 {
+    right: 385px;
+  }
+
+  .ulDropdown {
+    width: auto;
+  }
+}
+
 @media (max-width: 1420px) {
   .ulDropdown2 {
     right: 220px;

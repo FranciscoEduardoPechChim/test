@@ -29,13 +29,14 @@ export const useMisFavoritos = (
   desde?: number
 ) => {
   const [misFavoritos, setMisFavoritos] = useState<Favorito[]>([]);
+  const [offset, setOffset]             = useState(12);
   const [cargando, setCargando] = useState(true);
   const [total, setTotal] = useState(0);
 
   const obtenerFavoritos = async () => {
     try {
       const resp = await fetch(
-        `${production}/favoritos/usuario/${uid}?desde=${desde}&limite=20&dueño=${dueño}`
+        `${production}/favoritos/usuario/${uid}?desde=${desde}&limite=${offset}&dueño=${dueño}`
       );
       const data = await resp.json();
 
@@ -50,9 +51,9 @@ export const useMisFavoritos = (
 
   useEffect(() => {
     obtenerFavoritos();
-  }, [uid, desde, dueño]);
+  }, [uid, desde, dueño, offset]);
 
-  return { misFavoritos, cargando, total, setMisFavoritos };
+  return { misFavoritos, cargando, total, setMisFavoritos, setOffset };
 };
 
 // export const useFavoritosSol = (uid: string | null | undefined) => {

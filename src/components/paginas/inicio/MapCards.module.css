@@ -3,19 +3,29 @@
 }
 .containerimg {
   width: 100%;
-  max-height: 200px;
+  max-height: 180px;
   margin-bottom: 8px;
   overflow: hidden;
 }
+
+/* @media (max-width: 1199px ) {
+  .containerimg {
+    width: 100%;
+    max-height: 180px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+}  */
+
 .imgCard {
   width: 300px;
-  height: over;
+  height: cover;
 }
 .title {
   font-family: "Open Sans";
   font-style: normal;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   color: #000000;
   line-height: 20px;
   padding: 0px 8px;
@@ -85,3 +95,81 @@
   background-color: #7149bc;
   transition: 250ms;
 }
+
+  .imageflip:hover .backside, .imageflip.hover .backside {
+    -webkit-transform: rotateY(0deg);
+    -moz-transform: rotateY(0deg);
+    -o-transform: rotateY(0deg);
+    -ms-transform: rotateY(0deg);
+    transform: rotateY(0deg);
+  }
+  .imageflip:hover .frontside, .imageflip.hover .frontside {
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+  }
+  .imageflip {
+    width: 300px;
+    height: 260px;
+  }
+  .mainflip {
+    -webkit-transition: 1s;
+    -webkit-transform-style: preserve-3d;
+    -ms-transition: 1s;
+    -moz-transition: 1s;
+    -moz-transform: perspective(1000px);
+    -moz-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    transition: 1s;
+    transform-style: preserve-3d;
+    position: relative;
+  }
+  .frontside, .backside {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transition: 1s;
+    -webkit-transform-style: preserve-3d;
+    -moz-transition: 1s;
+    -moz-transform-style: preserve-3d;
+    -o-transition: 1s;
+    -o-transform-style: preserve-3d;
+    -ms-transition: 1s;
+    -ms-transform-style: preserve-3d;
+    transition: 1s;
+    transform-style: preserve-3d;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .frontside {
+    -webkit-transform: rotateY(0deg);
+    -ms-transform: rotateY(0deg);
+    z-index: 2;
+  }
+  .backside {
+    background: white;
+    -webkit-transform: rotateY(-180deg);
+    -moz-transform: rotateY(-180deg);
+    -o-transform: rotateY(-180deg);
+    -ms-transform: rotateY(-180deg);
+    transform: rotateY(-180deg);
+  }
+  .card, .cardimgtop {
+    border-radius: 0;
+  }
+
+  .center {
+    text-align:       center;
+    justify-content:  center;
+    align-items:      center;
+    width:            300px;
+    margin-bottom:    8px;
+    overflow:         hidden;
+    border-radius:    0;
+    border:           0;
+  }
+
+ 

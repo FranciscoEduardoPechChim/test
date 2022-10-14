@@ -5,9 +5,9 @@ import { InmueblesUsuario } from '../interfaces/CrearInmuebleInterface';
 import { HistorialUsuario, PedidosUsuario } from '../interfaces/Historial';
 import { Usuario, UsuariosDir } from '../interfaces/UserInterface';
 
-//const devURL = 'http://localhost:8080/api';
-//const baseURL = devURL;
-const baseURL = "https://red1a1-back.herokuapp.com/api";
+const devURL = 'http://localhost:8080/api';
+const baseURL = devURL;
+//const baseURL = "https://red1a1-back.herokuapp.com/api";
 
 export const useUserInfo = (uid: string | undefined | null) => {
   const [user, setUser] = useState<Usuario>();
@@ -32,13 +32,14 @@ export const useUserInfo = (uid: string | undefined | null) => {
 
 export const useUserInmuebles = (uid: string | undefined | null, desde = 0) => {
   const [inmuebles, setInmuebles] = useState<InmueblesUsuario[]>();
+  const [offset, setOffset]       = useState(12);
   const [cargando, setCargando] = useState(true);
   const [total, setTotal] = useState(0);
   const { orden } = useContext(InmuebleContext);
 
   const obtenerInmueblesDeUsuario = async () => {
     const data = await fetch(
-      `${baseURL}/inmuebles/usuario/${uid}?orden=${orden}&limite=20&desde=${desde}`
+      `${baseURL}/inmuebles/usuario/${uid}?orden=${orden}&limite=${offset}&desde=${desde}`
     );
     const resp = await data.json();
     setInmuebles(resp.inmueblesUsuario);
@@ -48,9 +49,9 @@ export const useUserInmuebles = (uid: string | undefined | null, desde = 0) => {
 
   useEffect(() => {
     obtenerInmueblesDeUsuario();
-  }, [orden, desde, uid]);
+  }, [orden, desde, uid, offset]);
 
-  return { inmuebles, cargando, total, setInmuebles };
+  return { inmuebles, cargando, total, setInmuebles, setOffset };
 };
 
 export const useUltimoInmueble = (
@@ -82,10 +83,12 @@ export const useUltimoInmueble = (
 export const useHistorial = (uid: string | undefined | null, desde: number) => {
   const [historial, setHistorial] = useState<HistorialUsuario[]>();
   const [isLoading, setIsLoading] = useState(true);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal]         = useState(0);
+  const [offset, setOffset]       = useState(10);
+
   const obtenerHistorial = async () => {
     const resp = await fetch(
-      `${baseURL}/historial/usuario/${uid}?desde=${desde}&limite=15`
+      `${baseURL}/historial/usuario/${uid}?desde=${desde}&limite=${offset}`
     );
     const data = await resp.json();
 
@@ -96,9 +99,9 @@ export const useHistorial = (uid: string | undefined | null, desde: number) => {
 
   useEffect(() => {
     obtenerHistorial();
-  }, [desde, uid]);
+  }, [desde, uid, offset]);
 
-  return { historial, isLoading, setHistorial, total };
+  return { historial, isLoading, setHistorial, total, setOffset };
 };
 
 export const useHistorialPagos = (
@@ -106,12 +109,13 @@ export const useHistorialPagos = (
   desde: number
 ) => {
   const [historialPago, setHistorialPago] = useState<PedidosUsuario[]>([]);
-  const [cargando, setCargando] = useState(true);
-  const [total, setTotal] = useState(0);
+  const [cargando, setCargando]           = useState(true);
+  const [total, setTotal]                 = useState(0);
+  const [offset, setOffset]               = useState(10);
 
   const obtenerHistorialPagos = async () => {
     const resp = await fetch(
-      `${production}/pedidos/usuarios/${uid}?desde=${desde}&limite=15`
+      `${production}/pedidos/usuarios/${uid}?desde=${desde}&limite=${offset}`
     );
     const data = await resp.json();
 
@@ -122,9 +126,9 @@ export const useHistorialPagos = (
 
   useEffect(() => {
     obtenerHistorialPagos();
-  }, [desde, uid]);
+  }, [desde, uid, offset]);
 
-  return { historialPago, cargando, total };
+  return { historialPago, cargando, total, setOffset };
 };
 
 export const useMisUsuarios = (uid: string | undefined | null) => {

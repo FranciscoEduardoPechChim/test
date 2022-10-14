@@ -1,6 +1,6 @@
 import { InmuebleContext } from "context/inmuebles/InmuebleContext";
 import { useContext, useState } from "react";
-import { Container, Pagination, Row } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { eliminarFavorito } from "../../../../helpers/fetch";
@@ -9,30 +9,34 @@ import Loading from "../../../ui/loading/Loading";
 import FavPropertiesCard from "../../../ui/propertiescard/FavPropertiesCard";
 import styles from "./FiltrosFavs.module.css";
 
+//Material UI
+import TablePagination from '@material-ui/core/TablePagination';
+
 const MiListaFavoritos = () => {
   const { auth } = useContext(AuthContext);
   const { dueño } = useContext(InmuebleContext);
   const [desde, setDesde] = useState(0);
-  const { misFavoritos, cargando, total, setMisFavoritos } = useMisFavoritos(
+  const { misFavoritos, cargando, total, setMisFavoritos, setOffset } = useMisFavoritos(
     auth.uid,
     dueño,
     desde
   );
 
-  const handlePrevPage = () => {
-    if (desde === 0) {
-      return;
-    } else {
-      setDesde(desde - 20);
-    }
+  const [page, setPage]                 = useState(0);
+  const [rowsPerPage, setRowsPerPage]   = useState(12);
+
+  const handleChangePage                = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);  
+    setDesde(newPage * rowsPerPage);
   };
 
-  const handleNextPage = () => {
-    if (desde < total - 20) {
-      setDesde(desde + 20);
-    } else {
-      return;
-    }
+  const handleChangeRowsPerPage         = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setOffset(parseInt(event.target.value));
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+    setDesde(0);
   };
 
   const handleDelete = async (id: string) => {
@@ -77,14 +81,17 @@ const MiListaFavoritos = () => {
                     handleDelete={handleDelete}
                   />
                 ))}
-                {total > 20 ? (
-                  <div className="d-flex justify-content-center">
-                    <Pagination>
-                      <Pagination.Prev onClick={handlePrevPage} />
-                      <Pagination.Next onClick={handleNextPage} />
-                    </Pagination>
-                  </div>
-                ) : null}
+                <TablePagination
+                  component             = "div"
+                  count                 = {total}
+                  page                  = {page}
+                  onPageChange          = {handleChangePage}
+                  rowsPerPage           = {rowsPerPage}
+                  onRowsPerPageChange   = {handleChangeRowsPerPage}
+                  rowsPerPageOptions    = {[12, 24, 48, 98]}
+                  labelRowsPerPage      = {'Cantidad'}
+                  labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to}`}
+                />
               </>
             )}
           </>

@@ -1,5 +1,4 @@
 import { useContext, useState } from "react";
-import { Pagination } from "react-bootstrap";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { formatPrice } from "../../../../helpers/formatPrice";
 import { horaMes } from "../../../../helpers/horaMes";
@@ -7,25 +6,29 @@ import { useHistorialPagos } from "../../../../hooks/useUserInfo";
 import Loading from "../../../ui/loading/Loading";
 import styles from "./HistorialPagos.module.css";
 
+//Material UI
+import TablePagination from '@material-ui/core/TablePagination';
+
 const HistorialPagos = () => {
   const { auth } = useContext(AuthContext);
   const [desde, setDesde] = useState(0);
-  const { cargando, historialPago, total } = useHistorialPagos(auth.uid, desde);
+  const { cargando, historialPago, total, setOffset } = useHistorialPagos(auth.uid, desde);
 
-  const handlePrevPage = () => {
-    if (desde === 0) {
-      return;
-    } else {
-      setDesde(desde - 15);
-    }
+  const [page, setPage]                 = useState(0);
+  const [rowsPerPage, setRowsPerPage]   = useState(10);
+  
+  const handleChangePage                = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);  
+    setDesde(newPage * rowsPerPage);
   };
 
-  const handleNextPage = () => {
-    if (desde < total - 15) {
-      setDesde(desde + 15);
-    } else {
-      return;
-    }
+  const handleChangeRowsPerPage         = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setOffset(parseInt(event.target.value));
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+    setDesde(0);
   };
 
   return (
@@ -76,14 +79,17 @@ const HistorialPagos = () => {
               </div>
             </div>
           )}
-          {total > 15 ? (
-            <div className="d-flex justify-content-center">
-              <Pagination>
-                <Pagination.Prev onClick={handlePrevPage} />
-                <Pagination.Next onClick={handleNextPage} />
-              </Pagination>
-            </div>
-          ) : null}
+          <TablePagination
+              component             = "div"
+              count                 = {total}
+              page                  = {page}
+              onPageChange          = {handleChangePage}
+              rowsPerPage           = {rowsPerPage}
+              onRowsPerPageChange   = {handleChangeRowsPerPage}
+              rowsPerPageOptions    = {[10, 25, 50, 100]}
+              labelRowsPerPage      = {'Cantidad'}
+              labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to}`}
+          />
         </div>
       )}
     </div>

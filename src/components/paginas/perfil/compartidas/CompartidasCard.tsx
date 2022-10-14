@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useRouter } from "next/router";
-import { Col, Container, Pagination, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { AuthContext } from "context/auth/AuthContext";
 import { useCompartidas } from "hooks/useCompartidas";
@@ -10,18 +10,37 @@ import Loading from "components/ui/loading/Loading";
 import { fetchAceptarRechazarSolicitud } from "helpers/fetch";
 import { production } from "credentials/credentials";
 import CopyToClipboard from "react-copy-to-clipboard";
+//Material UI
+import TablePagination from '@material-ui/core/TablePagination';
 
 const CompartidasCard = () => {
   const { auth } = useContext(AuthContext);
   const { estado, misCompUser } = useContext(InmuebleContext);
   const [totall, setTotall] = useState(0);
   const router = useRouter();
-  const { total, cargando, compartidas, setCompartidas } = useCompartidas(
+  const { total, cargando, compartidas, setCompartidas, setOffset } = useCompartidas(
     misCompUser,
     estado,
     totall
   );
 
+  const [page, setPage]                 = useState(0);
+  const [rowsPerPage, setRowsPerPage]   = useState(12);
+
+  const handleChangePage                = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);  
+    setTotall(newPage * rowsPerPage);
+  };
+
+  const handleChangeRowsPerPage         = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setOffset(parseInt(event.target.value));
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+    setTotall(0);
+  };
+  
   const compartir = () => toast.success(`Se ha copiado al portapapeles`);
 
   const goToProperty = (slug: string) => router.push(`/propiedades/${slug}`);
@@ -108,21 +127,6 @@ const CompartidasCard = () => {
       });
       setCompartidas(solicitudRechazada);
       toast.success(res.msg);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (totall === 0) {
-      return;
-    } else {
-      setTotall(totall - 15);
-    }
-  };
-  const handleNextPage = () => {
-    if (totall < total - 15) {
-      setTotall(totall + 15);
-    } else {
-      return;
     }
   };
 
@@ -306,14 +310,17 @@ const CompartidasCard = () => {
               ))}
             </>
           )}
-          {total > 20 ? (
-            <div className="d-flex justify-content-center">
-              <Pagination>
-                <Pagination.Prev onClick={handlePrevPage} />
-                <Pagination.Next onClick={handleNextPage} />
-              </Pagination>
-            </div>
-          ) : null}
+            <TablePagination
+                component             = "div"
+                count                 = {total}
+                page                  = {page}
+                onPageChange          = {handleChangePage}
+                rowsPerPage           = {rowsPerPage}
+                onRowsPerPageChange   = {handleChangeRowsPerPage}
+                rowsPerPageOptions    = {[12, 24, 48, 98]}
+                labelRowsPerPage      = {'Cantidad'}
+                labelDisplayedRows    = {({ from, to, count }) => `${from}-${to} de ${count}`}
+            />
         </Row>
       )}
     </Container>

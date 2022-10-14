@@ -17,14 +17,15 @@ export const useCompartidas = (
   const [compartidas, setCompartidas] = useState<Compartida[] | Solicitud[]>(
     []
   );
-  const [cargando, setCargando] = useState(true);
-  const [total, setTotal] = useState(0);
+  const [cargando, setCargando]   = useState(true);
+  const [total, setTotal]         = useState(0);
+  const [offset, setOffset]       = useState(12);
 
   const obtenerCopartidas = async () => {
     if (uid === auth.uid) {
       try {
         const res = await fetch(
-          `${production}/solicitud/usuario/${uid}?estado=${estado}&desde=${desde}&limite=20`
+          `${production}/solicitud/usuario/${uid}?estado=${estado}&desde=${desde}&limite=${offset}`
         );
         const data: ObtenerInmueblesCompartidosResp = await res.json();
 
@@ -39,7 +40,7 @@ export const useCompartidas = (
     if (uid === "") {
       try {
         const res = await fetch(
-          `${production}/solicitud/${auth.uid}?estado=${estado}&desde=${desde}&limite=20`
+          `${production}/solicitud/${auth.uid}?estado=${estado}&desde=${desde}&limite=${offset}`
         );
         const data: ObtenerSolicitud = await res.json();
 
@@ -54,7 +55,7 @@ export const useCompartidas = (
 
   useEffect(() => {
     obtenerCopartidas();
-  }, [estado, desde, uid]);
+  }, [estado, desde, uid, offset]);
 
-  return { compartidas, cargando, total, setCompartidas };
+  return { compartidas, cargando, total, setCompartidas, setOffset };
 };

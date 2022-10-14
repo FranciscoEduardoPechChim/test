@@ -5,8 +5,8 @@ import SEO from "../../components/seo/SEO";
 import Titulo from "../../components/ui/titulo/Titulo";
 import { PrivateRoute } from "../../hooks/usePrivateRoute";
 
-const MisPropiedades = () => {
-  const { asPath } = useRouter();
+const MisPropiedades    = () => {
+  const { asPath }      = useRouter();
 
   return (
     <>

@@ -1,10 +1,13 @@
 import { useContext, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { Col, Overlay } from "react-bootstrap";
+import { Col, Overlay} from "react-bootstrap";
 import { toast } from "react-toastify";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import styles from "./PropertiesCard.module.css";
 import { InmuebleContext } from "context/inmuebles/InmuebleContext";
+
+//Material UI
+import { Tooltip } from "@material-ui/core";
 
 interface Props {
   id: string;
@@ -93,15 +96,25 @@ const PropertiesCard = (props: Props) => {
           aria-label="Basic mixed styles example"
         >
           {isActive ? (
-            <button
-              onClick={() => handleDesactivar(id)}
-              className={`${styles.customBtn1} btn`}
-            />
+            <Tooltip
+              title="Pausar"
+              placement="top"
+            >
+              <button
+                onClick={() => handleDesactivar(id)}
+                className={`${styles.customBtn1} btn`}
+              />
+            </Tooltip>
           ) : (
-            <button
-              onClick={() => handleActivar(id)}
-              className={`${styles.customBtn1} btn`}
-            />
+            <Tooltip
+              title="Desausar"
+              placement="top"
+            >
+              <button
+                onClick={() => handleActivar(id)}
+                className={`${styles.customBtn1} btn`}
+              />
+            </Tooltip>
           )}
 
           {isActive ? (
@@ -109,51 +122,67 @@ const PropertiesCard = (props: Props) => {
               onCopy={compartir}
               text={`https://red1a1.com/app/propiedades/${slug}`}
             >
-              <button type="button" className={`${styles.customBtn2} btn`} />
+              <Tooltip
+                title="Copiar"
+                placement="top"
+              >
+                <button type="button" className={`${styles.customBtn2} btn`} />
+              </Tooltip>
             </CopyToClipboard>
           ) : null}
 
-          <button
-            ref={target}
-            onClick={() => setMostrarMenu(!mostrarMenu)}
-            type="button"
-            className={`${styles.customBtn3} btn`}
+          <Tooltip
+            title="Editar"
+            placement="top"
           >
-            <Overlay
-              target={target.current}
-              show={mostrarMenu}
-              placement="right"
+            <button
+              ref={target}
+              onClick={() => setMostrarMenu(!mostrarMenu)}
+              type="button"
+              className={`${styles.customBtn3} btn`}
             >
-              {({ placement, arrowProps, show: _show, popper, ...props }) => (
-                <div
-                  className={styles.menu}
-                  {...props}
-                  style={{
-                    ...props.style,
-                  }}
-                >
-                  <div
-                    className={`${styles.menuItem} pointer mx-3 my-2`}
-                    onClick={() => editarInmuebleInfo(id)}
+              <Overlay
+                    target={target.current}
+                    show={mostrarMenu}
+                    placement="right"
                   >
-                    Editar información
-                  </div>
+                    {({ placement, arrowProps, show: _show, popper, ...props }) => (
+                      <div
+                        className={styles.menu}
+                        {...props}
+                        style={{
+                          ...props.style,
+                        }}
+                      >
+                        <div
+                          className={`${styles.menuItem} pointer mx-3 my-2`}
+                          onClick={() => editarInmuebleInfo(id)}
+                        >
+                          Editar información
+                        </div>
 
-                  <div
-                    className={`${styles.menuItem} pointer mx-3 my-2`}
-                    onClick={() => editarInmuebleImg(id)}
-                  >
-                    Editar imágenes
-                  </div>
-                </div>
-              )}
-            </Overlay>
-          </button>
-          <button
-            onClick={() => handleDelete(id)}
-            type="button"
-            className={`${styles.customBtn4} btn`}
-          />
+                        <div
+                          className={`${styles.menuItem} pointer mx-3 my-2`}
+                          onClick={() => editarInmuebleImg(id)}
+                        >
+                          Editar imágenes
+                        </div>
+                      </div>
+                    )}
+                </Overlay>
+            </button>
+          </Tooltip>
+
+          <Tooltip
+            title="Eliminar"
+            placement="top"
+          >
+            <button
+              onClick={() => handleDelete(id)}
+              type="button"
+              className={`${styles.customBtn4} btn`}
+            />
+          </Tooltip>
         </div>
       </div>
     </Col>

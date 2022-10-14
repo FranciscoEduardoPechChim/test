@@ -34,7 +34,7 @@ export interface Resp {
   errors: Errors[];
 }
 
-interface Errors {
+export interface Errors {
   msg: string;
   param: string;
   location: string;

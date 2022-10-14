@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { Container, Pagination, Row } from "react-bootstrap";
+import { useContext, useState, useEffect } from "react";
+import { Container, Row } from "react-bootstrap";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { InmuebleContext } from "../../../../context/inmuebles/InmuebleContext";
 import { useUserInmuebles } from "../../../../hooks/useUserInfo";
@@ -7,29 +7,40 @@ import Loading from "../../../ui/loading/Loading";
 import PropertiesCard from "../../../ui/propertiescard/PropertiesCard";
 import styles from "./MisPropiedades.module.css";
 
+//Material UI
+import TablePagination from '@material-ui/core/TablePagination';
+
+
 const MiListaPropiedades = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, validRole } = useContext(AuthContext);
   const { eliminarInmueble, actualizarInmueble } = useContext(InmuebleContext);
   const [desde, setDesde] = useState(0);
-  const { cargando, inmuebles, total, setInmuebles } = useUserInmuebles(
+  const { cargando, inmuebles, total, setInmuebles, setOffset } = useUserInmuebles(
     auth.uid,
     desde
   );
 
-  const handlePrevPage = () => {
-    if (desde === 0) {
-      return;
-    } else {
-      setDesde(desde - 20);
-    }
+  useEffect(() => {
+    console.log(validRole());
+    console.log('---------');
+  }, [validRole]);
+
+
+  const [page, setPage]                 = useState(0);
+  const [rowsPerPage, setRowsPerPage]   = useState(12);
+
+  const handleChangePage                = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);  
+    setDesde(newPage * rowsPerPage);
   };
 
-  const handleNextPage = () => {
-    if (desde < total - 20) {
-      setDesde(desde + 20);
-    } else {
-      return;
-    }
+  const handleChangeRowsPerPage         = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setOffset(parseInt(event.target.value));
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+    setDesde(0);
   };
 
   const handleDelete = async (pid: string) => {
@@ -94,14 +105,17 @@ const MiListaPropiedades = () => {
                     handleDesactivar={handleDesactivar}
                   />
                 ))}
-                {total > 20 ? (
-                  <div className="d-flex justify-content-center">
-                    <Pagination>
-                      <Pagination.Prev onClick={handlePrevPage} />
-                      <Pagination.Next onClick={handleNextPage} />
-                    </Pagination>
-                  </div>
-                ) : null}
+                <TablePagination
+                  component             = "div"
+                  count                 = {total}
+                  page                  = {page}
+                  onPageChange          = {handleChangePage}
+                  rowsPerPage           = {rowsPerPage}
+                  onRowsPerPageChange   = {handleChangeRowsPerPage}
+                  rowsPerPageOptions    = {[12, 24, 48, 98]}
+                  labelRowsPerPage      = {'Cantidad'}
+                  labelDisplayedRows    = {({ from, to, count }) => `${from}-${to} de ${count}`}
+                />
               </>
             )}
           </>
