@@ -27,13 +27,14 @@ export const session                            = async (email:string, password:
         console.log('Error: ' + error);
     }
 }
-export const signup                             = async (name: string, lastName: string, email: string, password: string, role: string):Promise<loginResponse | undefined> => {
+export const signup                             = async (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string):Promise<loginResponse | undefined> => {
     try {
         let body                                = { 
             name:                               name,
             lastName:                           lastName,
             email:                              email, 
             password:                           password,
+            confirmPassword:                    confirmPassword,
             role:                               role
         };
 

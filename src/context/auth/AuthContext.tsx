@@ -32,8 +32,8 @@ interface ContextProps {
   login:            (email: string, password: string) => any;
   forgotPassword :  (email: string) => any;
   logOut:           () => void;
-  register:         (name: string, lastName: string, email: string, password: string, role: string) => any;
-  validRole:        () =>  boolean;
+  register:         (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string) => any;
+  validRole:        () =>  Promise<boolean>;
   crearUsuario: (
     nombre: string,
     apellido: string,
@@ -192,9 +192,9 @@ export const AuthProvider: FC = ({ children }) => {
       msg:      response?.msg
     };
   }
-  const register                                            = async (name: string, lastName: string, email: string, password: string, role: string ) => {
+  const register                                            = async (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string ) => {
 
-    const response                                          = await signup(name, lastName, email, password, role);
+    const response                                          = await signup(name, lastName, email, password, confirmPassword, role);
   
     //Validation 
     if(response && response.errors) {

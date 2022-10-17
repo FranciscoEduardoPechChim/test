@@ -92,22 +92,25 @@ const RegisterModal                       = () => {
       return false;
     }
 
-    const resp                                                      = await register(name, lastName, email, password, role);
+    const resp                                                      = await register(name, lastName, email, password, confirmPassword, role);
 
+    console.log(resp);
     if (resp.ok) {
-        const bienvida = {
-          nombre: resp.usuario.nombre,
-          apellido: resp.usuario.apellido,
-          correo: resp.usuario.correo,
-        };
-
-        await fetch(`${production}/correos/bienvenida`, {
-          method: "POST",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify(bienvida),
-        });
-        router.push("/perfil/actualizar-perfil");
         cerrarRegistro();
+
+        // const bienvida = {
+        //   nombre: resp.usuario.nombre,
+        //   apellido: resp.usuario.apellido,
+        //   correo: resp.usuario.correo,
+        // };
+
+        // await fetch(`${production}/correos/bienvenida`, {
+        //   method: "POST",
+        //   headers: { "Content-type": "application/json" },
+        //   body: JSON.stringify(bienvida),
+        // });
+        router.push("/perfil/actualizar-perfil");
+   
     }
   };
 
