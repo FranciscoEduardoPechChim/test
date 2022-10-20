@@ -33,14 +33,15 @@ const options = {
   fullscreenControl: true,
 };
 
-const Ubicacion = ({ inmuebles }: Props) => {
-  const { auth } = useContext(AuthContext);
-  const { ubicacionUsuario } = useContext(MapContext);
-  const [comoLLegar, setComoLLegar] = useState(false);
-  const [direcciones, setDirecciones] = useState<any>();
-  const { socket } = useContext(SocketContext);
+const Ubicacion                                 = ({ inmuebles }: Props) => {
+  const { auth, validRole }                      = useContext(AuthContext);
+  const { ubicacionUsuario }                    = useContext(MapContext);
+  const [comoLLegar, setComoLLegar]             = useState(false);
+  const [direcciones, setDirecciones]           = useState<any>();
+  const { socket }                              = useContext(SocketContext);
+  const [isRole, setIsRole]                     = useState(false);
 
-  const agregarFavorito = async (inmuebleId: string) => {
+  const agregarFavorito                         = async (inmuebleId: string) => {
     const favorito = {
       usuario: auth.uid,
       inmueble: inmuebleId,
@@ -65,7 +66,7 @@ const Ubicacion = ({ inmuebles }: Props) => {
     }
   };
 
-  const solicitarCompartir = async () => {
+  const solicitarCompartir                      = async () => {
     const solicitudCorreo = {
       nombre: auth.nombre,
       apellido: auth.apellido,
@@ -96,17 +97,23 @@ const Ubicacion = ({ inmuebles }: Props) => {
     if (!resSolicitud.ok) toast.error(resSolicitud.msg);
   };
 
-  const comoLlegar = () => setComoLLegar(!comoLLegar);
+  const comoLlegar                              = () => setComoLLegar(!comoLLegar);
 
-  const destination = {
+  const destination                             = {
     lat: inmuebles.inmueble.lat,
     lng: inmuebles.inmueble.lng,
   };
 
-  const origin = { lat: ubicacionUsuario.lat, lng: ubicacionUsuario.lng };
+  const origin                                  = { lat: ubicacionUsuario.lat, lng: ubicacionUsuario.lng };
 
   useEffect(() => {
-    const directionsService = new google.maps.DirectionsService();
+    const initRole                              = async () => {
+      const role                                = await validRole();
+      setIsRole(role);
+    }
+
+    const directionsService                     = new google.maps.DirectionsService();
+
     directionsService.route(
       {
         origin: new google.maps.LatLng(origin.lat, origin.lng),
@@ -121,7 +128,10 @@ const Ubicacion = ({ inmuebles }: Props) => {
         }
       }
     );
-  }, [direcciones]);
+
+    initRole();
+  }, [direcciones, validRole]);
+
 
   return (
     <section className="mt-5">
@@ -199,26 +209,29 @@ const Ubicacion = ({ inmuebles }: Props) => {
                 : "Aún no hay descripción para este inmueble"}
             </div>
           </div>
-          <div className="d-flex justify-content-center col-12 text-center my-5">
-            {auth.uid ? (
-              <>
-                {auth.uid !== inmuebles.inmueble.usuario._id ? (
-                  <Button
-                    titulo="Solicitar compartir"
-                    onClick={solicitarCompartir}
-                  />
-                ) : null}
-              </>
-            ) : null}
 
-            <div className="px-2" />
-            {auth.uid ? (
-              <Button
-                titulo="Añadir a favoritos"
-                onClick={() => agregarFavorito(inmuebles.inmueble._id)}
-              />
-            ) : null}
-          </div>
+          {isRole &&
+                <div className="d-flex justify-content-center col-12 text-center my-5">
+                 {auth.uid ? (
+                   <>
+                     {auth.uid !== inmuebles.inmueble.usuario._id ? (
+                       <Button
+                         titulo="Solicitar compartir"
+                         onClick={solicitarCompartir}
+                       />
+                     ) : null}
+                   </>
+                 ) : null}
+     
+                 <div className="px-2" />
+                 {auth.uid ? (
+                   <Button
+                     titulo="Añadir a favoritos"
+                     onClick={() => agregarFavorito(inmuebles.inmueble._id)}
+                   />
+                 ) : null}
+               </div>
+          }
         </Row>
       </Container>
     </section>

@@ -1,4 +1,5 @@
 import { Dispatch, MutableRefObject, SetStateAction, useContext } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { Overlay } from "react-bootstrap";
 import { AuthContext } from "context/auth/AuthContext";
@@ -11,17 +12,19 @@ interface Props {
   setNotificaciones: Dispatch<SetStateAction<boolean>>;
   mostrarMenu: boolean;
 }
-
-const MenuUsuario = (props: Props) => {
-  const { setMostrarMenu, target, setNotificaciones, mostrarMenu } = props;
-  const { auth, logOut } = useContext(AuthContext);
-  const { chatState } = useContext(ChatContext);
+ 
+const MenuUsuario                                                   = (props: Props) => {
+  const { setMostrarMenu, target, setNotificaciones, mostrarMenu }  = props;
+  const { auth, logOut }                                            = useContext(AuthContext);
+  const { chatState }                                               = useContext(ChatContext);
+  const router                                                      = useRouter();
 
   const cerrarSesion = () => {
     logOut();
     setMostrarMenu(false);
     setNotificaciones(false);
     chatState.chatActivo = null;
+    router.push('/');
   };
 
   return (

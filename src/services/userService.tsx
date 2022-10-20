@@ -43,7 +43,7 @@ import { production } from 'credentials';
 //             redirect: 'follow'
 //         };
 
-//         const response                          = await fetch(`${URL}/api/appointments/${hash}`, requestOptions);
+//         const response                          = await fetch(`${production}/api/appointments/${hash}`, requestOptions);
 //         const result:AppointmentResponse        = await response.json();
       
 //         return result;

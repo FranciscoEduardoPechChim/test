@@ -6,22 +6,21 @@ import Button from "../../../ui/button/Button";
 import styles from "./Perfil.module.css";
 import Loading from "../../../ui/loading/Loading";
 
-const Perfil = () => {
-  const router = useRouter();
-  const { auth, fotoPerfil, logOut } = useContext(AuthContext);
-  const [picture, setPicture] = useState("");
-  const [hover, setHover] = useState(false);
-  const [cargando, setCargando] = useState(false);
-  const inputFile = useRef<HTMLInputElement>(null);
-  const misPaquetes = () => router.push("/perfil/mis-paquetes");
-  const misPropiedades = () => router.push("/perfil/mis-propiedades");
-  const actualizarPerfil = () => router.push("/perfil/actualizar-perfil");
-  const referencias = () => router.push("/perfil/referencias-de-pago");
-  const historialPagos = () => router.push("/perfil/historial-de-pagos");
+const Perfil                                    = () => {
+  const router                                  = useRouter();
+  const { auth, fotoPerfil, logOut }            = useContext(AuthContext);
+  const [picture, setPicture]                   = useState("");
+  const [hover, setHover]                       = useState(false);
+  const [cargando, setCargando]                 = useState(false);
+  const inputFile                               = useRef<HTMLInputElement>(null);
+  const misPaquetes                             = () => router.push("/perfil/mis-paquetes");
+  const misPropiedades                          = () => router.push("/perfil/mis-propiedades");
+  const actualizarPerfil                        = () => router.push("/perfil/actualizar-perfil");
+  const referencias                             = () => router.push("/perfil/referencias-de-pago");
+  const historialPagos                          = () => router.push("/perfil/historial-de-pagos");
+  const abrirInputfile                          = () => inputFile.current?.click();
 
-  const abrirInputfile = () => inputFile.current?.click();
-
-  const handlePicture = async (e: any) => {
+  const handlePicture                           = async (e: any) => {
     e.preventDefault();
     setCargando(true);
     const formData = new FormData();
@@ -31,8 +30,8 @@ const Perfil = () => {
     setCargando(false);
   };
 
-  const onMouseEnter = () => setHover(true);
-  const onMouseLeave = () => setHover(false);
+  const onMouseEnter                            = () => setHover(true);
+  const onMouseLeave                            = () => setHover(false);
 
   return (
     <Container>
@@ -111,7 +110,6 @@ const Perfil = () => {
             onClick={misPropiedades}
           />
         </div>
-
         <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
           <Button titulo="Mis pagos" btn="Secondary" onClick={historialPagos} />
         </div>

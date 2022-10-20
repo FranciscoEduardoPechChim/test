@@ -19,16 +19,17 @@ interface Props {
   inmueble: InmueblesUsuario;
 }
 
-const InfoWindowMap = ({ inmueble }: Props) => {
-  const router = useRouter();
-  const { auth } = useContext(AuthContext);
+const InfoWindowMap               = ({ inmueble }: Props) => {
+  const router                    = useRouter();
+  const { auth }                  = useContext(AuthContext);
 
-  const handleProperty = async (id: string, slug: string) => {
-    const data = { usuario: auth.uid, inmueble: id };
+  const handleProperty            = async (id: string, slug: string) => {
+    const data                    = { usuario: auth.uid, inmueble: id };
 
     router.push(`/propiedades/${slug}`);
     await agregarHist("historial", data);
   };
+
  
   return (
     <InfoWindow position={{ lat: inmueble.lat, lng: inmueble.lng }}>

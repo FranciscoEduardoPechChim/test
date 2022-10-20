@@ -1,7 +1,7 @@
 //Types
 import { loginResponse, recoveryPassword } from '../types/authType';
 //Credentials
-import { development, production } from 'credentials';
+import { production } from 'credentials';
 
 //POST
 export const session                            = async (email:string, password: string):Promise<loginResponse | undefined> => {
@@ -19,7 +19,7 @@ export const session                            = async (email:string, password:
             body:JSON.stringify(body)
         };
         
-        const response                          = await fetch(`${development}/auth/login`, requestOptions);
+        const response                          = await fetch(`${production}/auth/login`, requestOptions);
         const result:loginResponse              = await response.json();
             
         return result; 
@@ -46,7 +46,33 @@ export const signup                             = async (name: string, lastName:
             body:JSON.stringify(body)
         };
         
-        const response                          = await fetch(`${development}/usuarios`, requestOptions);
+        const response                          = await fetch(`${production}/usuarios`, requestOptions);
+        const result:loginResponse              = await response.json();
+            
+        return result; 
+    }catch(error) {
+        console.log('Error: ' + error);
+    }
+}
+
+//Delete service and change in backend
+export const sendEmailWelcome                   = async (name: string, lastName: string, email: string):Promise<loginResponse | undefined> => {
+    try {
+        let body                                = { 
+            nombre:                             name,
+            apellido:                           lastName,
+            correo:                             email
+        };
+
+        const requestOptions                    = {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body:JSON.stringify(body)
+        };
+        
+        const response                          = await fetch(`${production}/correos/bienvenida`, requestOptions);
         const result:loginResponse              = await response.json();
             
         return result; 
@@ -67,7 +93,7 @@ export const confirmForgotPassword              = async (id: string | string[] |
             headers: myHeaders
         };
 
-        const response                          = await fetch(`${development}/auth/confirmPassword/${id}/${token}`, requestOptions);
+        const response                          = await fetch(`${production}/auth/confirmPassword/${id}/${token}`, requestOptions);
         const result:recoveryPassword           = await response.json();
       
         return result;
@@ -93,7 +119,7 @@ export const sendPassword                       = async (email: string):Promise<
             body:JSON.stringify(body)
         };
         
-        const response                          = await fetch(`${development}/auth/recoveryPassword`, requestOptions);
+        const response                          = await fetch(`${production}/auth/recoveryPassword`, requestOptions);
         const result:recoveryPassword           = await response.json();
             
         return result; 

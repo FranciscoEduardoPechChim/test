@@ -5,11 +5,11 @@ import { AuthContext } from "../../../context/auth/AuthContext";
 import Buscador from "../buscador/Buscador";
 import styles from "./PurpleHeader.module.css";
 
-const PurpleHeader = () => {
-  const { auth } = useContext(AuthContext);
+const PurpleHeader              = () => {
+  const { auth }                = useContext(AuthContext);
   const { setFiltros, filtros } = useContext(MapContext);
 
-  const mostrarFiltros = () => setFiltros(!filtros);
+  const mostrarFiltros          = () => setFiltros(!filtros);
 
   return (
     <div className={styles.purpleNav2}>
@@ -19,7 +19,7 @@ const PurpleHeader = () => {
             <li className="nav-item mt-2">
               <Link href="/perfil/mis-propiedades">
                 <div className={`${styles.purpleLinks} pointer`}>
-                  Mis Propiedades 
+                  Mis Propiedades  
                 </div>
               </Link>
             </li>
@@ -53,6 +53,7 @@ const PurpleHeader = () => {
             </li>
           </>
         ) : null}
+     
         <li className="nav-item">
           <div className={styles.filterIconContainer}>
             <Buscador  />
@@ -64,11 +65,13 @@ const PurpleHeader = () => {
             />
           </div>
         </li>
+        
         <li>
           <button className={styles.searchBtn}>
             <i className="bi bi-search" />
           </button>
         </li>
+        
       </ul>
     </div>
   );

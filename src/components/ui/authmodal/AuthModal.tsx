@@ -92,25 +92,11 @@ const RegisterModal                       = () => {
       return false;
     }
 
-    const resp                                                      = await register(name, lastName, email, password, confirmPassword, role);
+    const isValid                                                   = await register(name, lastName, email, password, confirmPassword, role);
 
-    console.log(resp);
-    if (resp.ok) {
+    if (isValid) {
         cerrarRegistro();
-
-        // const bienvida = {
-        //   nombre: resp.usuario.nombre,
-        //   apellido: resp.usuario.apellido,
-        //   correo: resp.usuario.correo,
-        // };
-
-        // await fetch(`${production}/correos/bienvenida`, {
-        //   method: "POST",
-        //   headers: { "Content-type": "application/json" },
-        //   body: JSON.stringify(bienvida),
-        // });
         router.push("/perfil/actualizar-perfil");
-   
     }
   };
 
@@ -154,7 +140,7 @@ const RegisterModal                       = () => {
                   onChange          = {handleChange}
                 />
                 {(errorName) && (errorName.length != 0) && 
-                  errorName.map((value:any) => { return (<div><span className={'text-danger mb-1'}>{value}</span></div>); })          
+                  errorName.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })          
                 }
               </div>
               <div className="col-10 my-1">
@@ -168,7 +154,7 @@ const RegisterModal                       = () => {
                   onChange          = {handleChange}
                 />
                 {(errorLastName) && (errorLastName.length != 0) && 
-                  errorLastName.map((value:any) => { return (<div><span className={'text-danger mb-1'}>{value}</span></div>); })         
+                  errorLastName.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })         
                 }
               </div>
               <div className="col-10 my-1">
@@ -182,7 +168,7 @@ const RegisterModal                       = () => {
                   onChange          = {handleChange}
                 />
                 {(errorEmail) && (errorEmail.length != 0) && 
-                  errorEmail.map((value:any) => { return (<div><span className={'text-danger mb-1'}>{value}</span></div>); })         
+                  errorEmail.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })         
                 }
               </div>
               <div className="col-10 my-1">
@@ -203,7 +189,7 @@ const RegisterModal                       = () => {
                     } ${styles.mostrarContraseña}`}
                   />
                   {(errorPassword) && (errorPassword.length != 0) && 
-                    errorPassword.map((value:any) => { return (<div><span className={'text-danger mb-1'}>{value}</span></div>); })           
+                    errorPassword.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })           
                   }
                 </div>
               </div>
@@ -227,7 +213,7 @@ const RegisterModal                       = () => {
                     } ${styles.mostrarContraseña}`}
                   />
                   {(errorConfirmPassword) && (errorConfirmPassword.length != 0) && 
-                    errorConfirmPassword.map((value:any) => { return (<div><span className={'text-danger mb-1'}>{value}</span></div>); })            
+                    errorConfirmPassword.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })            
                   }
                 </div>
               </div>

@@ -21,7 +21,7 @@ import { Auth, Resp, SubirFoto } from "../../interfaces/AuthInterface";
 import { RespActualizar } from "../../interfaces/UserInterface";
 
 //Services
-import { session, signup, sendPassword} from '../../services/authService';
+import { session, signup, sendPassword, sendEmailWelcome} from '../../services/authService';
 //Helpers
 import { validate } from '../../helpers/response';
 //Extras
@@ -29,10 +29,10 @@ import Swal from "sweetalert2";
 
 interface ContextProps {
   auth: Auth;
-  login:            (email: string, password: string) => any;
-  forgotPassword :  (email: string) => any;
+  login:            (email: string, password: string) => Promise<boolean>;
+  forgotPassword :  (email: string) => Promise<boolean>;
   logOut:           () => void;
-  register:         (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string) => any;
+  register:         (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string) => Promise<boolean>;
   validRole:        () =>  Promise<boolean>;
   crearUsuario: (
     nombre: string,
@@ -115,11 +115,13 @@ export const AuthProvider: FC = ({ children }) => {
 
     //Validation 
     if(response && response.errors) {
-      return validate(response.errors);
+      validate(response.errors);
+      return false;
     }
 
     if(response && response.ok) {
-      return toast.error(response.msg);
+      toast.error(response.msg);
+      return false;
     }
 
     if(response && response.data) {
@@ -153,15 +155,15 @@ export const AuthProvider: FC = ({ children }) => {
         recibirCorreo:                                      data.user.recibirCorreo,
       };
       
-      localStorage.setItem("role", "Usuario");
+      if(data.user.role && data.user.correo && (typeof data.user.correo == 'string')) {
+        localStorage.setItem("email", data.user.correo); 
+        localStorage.setItem("role", data.user.role);
+      }
+  
       localStorage.setItem("token", data.access_token);
       setAuth(auth);
 
-      return {
-        token:    data.access_token,
-        ok:       response.ok,
-        usuario:  data.user
-      };
+      return true;
     }
   }
   const forgotPassword                                      = async (email: string) => {
@@ -170,7 +172,8 @@ export const AuthProvider: FC = ({ children }) => {
 
     //Validation 
     if(response && response.errors) {
-      return validate(response.errors);
+      validate(response.errors);
+      return false;
     }
 
 
@@ -187,22 +190,20 @@ export const AuthProvider: FC = ({ children }) => {
       });
     }
 
-    return {
-      ok:       response?.ok,
-      msg:      response?.msg
-    };
+    return true;
   }
   const register                                            = async (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string ) => {
 
     const response                                          = await signup(name, lastName, email, password, confirmPassword, role);
-  
     //Validation 
     if(response && response.errors) {
-      return validate(response.errors);
+      validate(response.errors);
+      return false;
     }
 
     if(response && response.ok) {
-      return toast.error(response.msg);
+      toast.error(response.msg);
+      return false;
     }
 
     if(response && response.data) {
@@ -236,25 +237,26 @@ export const AuthProvider: FC = ({ children }) => {
         recibirCorreo:                                      data.user.recibirCorreo,
       };
       
+      if(data.user.correo && (typeof data.user.correo == 'string')) {
+        localStorage.setItem("email", data.user.correo); 
+      }
+
       localStorage.setItem("role", 'Usuario');
       localStorage.setItem("token", data.access_token);
       setAuth(auth);
 
-      return {
-        token:    data.access_token,
-        ok:       response.ok,
-        usuario:  data.user
-      };
+      return true;
     }
   }
   const validRole                                           = () => {
     const role                                              = localStorage.getItem("role");
+    const email                                             = localStorage.getItem("email");
 
-    if(!role) {
+    if(!role || !email) {
       return false;
     }
 
-    if(role == 'Usuario') {
+    if((role == 'Usuario') && ((email != 'Eduardoest@internet360.com.mx') && (email != 'Eduardoest@i360.com.mx') && (email != 'franciscopech1996@example.com'))) {
       return false;
     }
 

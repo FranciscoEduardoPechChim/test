@@ -8,7 +8,7 @@ import Home from "../../index";
 //Extra
 import Swal from "sweetalert2";
 
-const confirmPassword              = () => {
+const ConfirmPassword              = () => {
     const router                = useRouter();
     const { id, token }         = router.query;
 
@@ -40,4 +40,4 @@ const confirmPassword              = () => {
 }
 
 
-export default confirmPassword;
+export default ConfirmPassword;

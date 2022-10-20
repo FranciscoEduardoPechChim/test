@@ -6,7 +6,6 @@ import Button from "../button/Button";
 import Modaltitle from "../modaltitle/Modaltitle";
 import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
-import { production, development } from "../../../credentials";
 import Loading from "../loading/Loading";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -28,10 +27,9 @@ const PasswordForgot = (props: Props) => {
 		e.preventDefault();
     setLoading(true);
 
-    const response                  = await forgotPassword(correo);
-    const isContinuo                = !response.ok;
+    const isValid                   = await forgotPassword(correo);
 
-    if(isContinuo) {
+    if(isValid) {
       setCorreo('');
     }
 

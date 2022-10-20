@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Detalles from "../../components/paginas/propiedades/detalles/Detalles";
@@ -42,12 +42,13 @@ const Ubicacion: any = dynamic(
   { ssr: false }
 );
 
-const Propiedad = ({ inmuebles }: Props) => {
-  const { auth } = useContext(AuthContext);
+const Propiedad                                     = ({ inmuebles }: Props) => {
+  const { auth }                                    = useContext(AuthContext);
 
   if (!inmuebles.inmueble.publicado) {
     return <NotFound />;
   }
+
 
   return (
     <>
@@ -60,7 +61,7 @@ const Propiedad = ({ inmuebles }: Props) => {
       <Slider inmuebles={inmuebles} />
       <Detalles inmuebles={inmuebles} />
       <Ubicacion inmuebles={inmuebles} />
-      {auth.uid ? <Contact inmuebles={inmuebles} /> : null}
+      {auth.uid && (auth.role != 'Usuario' || ((auth.correo == 'Eduardoest@internet360.com.mx') || (auth.correo == 'Eduardoest@i360.com.mx') || (auth.correo == 'franciscopech1996@example.com'))) && <Contact inmuebles={inmuebles} />}
     </>
   );
 };

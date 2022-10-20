@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import { Categoria } from "../interfaces/InmueblesInterface";
 import { TipoPropiedad } from "../interfaces/PropertyType";
-
-const devURL = "http://localhost:8080/api";
-const baseURL = "https://red1a1-back.herokuapp.com/api";
+import { production } from '../credentials/credentials';
 
 export const useCategories = () => {
   const [cargando, setCargando] = useState(true);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   const obtenerCategorias = async () => {
-    const resp = await fetch(baseURL + "/categorias/");
+    const resp = await fetch(`${production}/categorias`);
     const data = await resp.json();
 
     setCategorias(data.categorias);
@@ -28,7 +26,7 @@ export const useTipoPropiedad = () => {
   const [loading, setLoading] = useState(true);
 
   const obtenerTipoPropiedad = async () => {
-    const res = await fetch(`${baseURL}/tipo-de-propiedad`);
+    const res = await fetch(`${production}/tipo-de-propiedad`);
     const data = await res.json();
 
     setPropertyTypes(data.tipoPropiedad);
