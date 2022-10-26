@@ -53,23 +53,7 @@ const Mihistorial = () => {
     setHistorial(nuevoHistorial);
     if (resp.ok) toast.success(resp.msg);
   };
-
-  const handlePrevPage = () => {
-    if (desde === 0) {
-      return;
-    } else {
-      setDesde(desde - 15);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (desde < total - 15) {
-      setDesde(desde + 15);
-    } else {
-      return;
-    }
-  };
-
+  
   return (
     <section className={styles.section}>
       <div className="container">
