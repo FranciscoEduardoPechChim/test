@@ -6,7 +6,7 @@ import { FormEvent, FC } from 'react';
 import Modaltitle from "../modaltitle/Modaltitle";
 //Stylist
 import styles from './PathModal.module.css';
-
+ 
 interface Props {
     title:      string;
     routeName:  string;
