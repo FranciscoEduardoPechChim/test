@@ -8,8 +8,8 @@ export const storePromotion                         = async (code: string, start
     try { 
         let body                                    = { 
             code:                                   code, 
-            startDate:                              startDate,
-            endDate:                                endDate,
+            startDate:                              (startDate) ? startDate.toISOString().split('T')[0]:null,
+            endDate:                                (endDate) ? endDate.toISOString().split('T')[0]:null,
             quantity:                               quantity,
             type:                                   type,
             repeat:                                 repeat       
@@ -18,8 +18,7 @@ export const storePromotion                         = async (code: string, start
         const requestOptions                        = {
             method: 'POST',
             headers: {
-                "Content-Type": "multipart/form-data",
-                "Accept": "application/json",
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${access_token}`
             },
             body:JSON.stringify(body)
@@ -35,7 +34,7 @@ export const storePromotion                         = async (code: string, start
 }
 
 //GET
-export const getPromotions                          = async (offset: number, limit: number, access_token: string):Promise<promotionResponse|undefined> => {
+export const getPromotions                          = async (access_token: string):Promise<promotionResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -47,7 +46,7 @@ export const getPromotions                          = async (offset: number, lim
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${development}/promotions?offset=${offset}&&limit=${limit}`, requestOptions);
+        const response                              = await fetch(`${development}/promotions`, requestOptions);
         const result:promotionResponse              = await response.json();
       
         return result;
@@ -133,8 +132,7 @@ export const updatePromotion                        = async (id: string, code: s
         const requestOptions                        = {
             method: 'PUT',
             headers: {
-                "Content-Type": "multipart/form-data",
-                "Accept": "application/json",
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${access_token}`
             },
             body:JSON.stringify(body)

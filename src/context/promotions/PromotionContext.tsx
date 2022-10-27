@@ -7,13 +7,17 @@ import { validate } from '../../helpers/response';
 //Interfaces
 import { Promotion } from '../../interfaces/PromotionInterface';
 //Services
-import { storePromotion, updatePromotion, destroyPromotion, restorePromotion } from '../../services/promotionService';
+import { storePromotion, updatePromotion, destroyPromotion, restorePromotion, getPromotion } from '../../services/promotionService';
+//Extras
+import Swal from "sweetalert2";
 
 interface ContextProps {
-    createPromotion:    (code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number) => Promise<boolean | undefined>;
-    editPromotion:      (id: string, code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number) => Promise<boolean | undefined>;
-    deletePromotion:    (id: string) => Promise<boolean | undefined>;
-    undeletePromotion:  (id: string) => Promise<boolean | undefined>;
+    promotion:          Promotion;
+    createPromotion:    (code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => Promise<boolean | undefined>;
+    editPromotion:      (id: string, code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => Promise<boolean | undefined>;
+    deletePromotion:    (id: string, access_token: string) => Promise<boolean | undefined>;
+    undeletePromotion:  (id: string, access_token: string) => Promise<boolean | undefined>;
+    showPromotion:      (id: string, access_token: string) => Promise<Promotion | undefined>;
 }
 
 export const PromotionContext                       = createContext({} as ContextProps);
@@ -28,13 +32,16 @@ const INITIAL_STATE: Promotion                      = {
 };
 
 export const PromotionProvider: FC                  = ({ children }) => {
-    const access_token                              = localStorage.getItem("token")
     const [promotion, setPromotion]                 = useState(INITIAL_STATE);
 
-    const createPromotion                           = async (code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number) => {
+    const createPromotion                           = async (code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => {
 
-        if(code && quantity && type && repeat && access_token) {
-            const response                          = await storePromotion(code, startDate, endDate, quantity, type, repeat, access_token);
+        if(code && String(quantity) && String(type) && String(repeat) && access_token) {
+
+            
+            const response                          = await storePromotion(code, startDate, endDate, Number(quantity), Number(type), Number(repeat), access_token);
+
+            console.log(response);
 
             if(response && response.errors) {
                 validate(response.errors);
@@ -59,16 +66,29 @@ export const PromotionProvider: FC                  = ({ children }) => {
                 }
 
                 setPromotion(currentPromotion);
-                
+
+                Swal.fire({
+                    title: '',
+                    html: response.msg,
+                    icon: 'success',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+                  
                 return true;
             }
         }
 
         return false;
     }
-    const deletePromotion                           = async (id: string) => {
+    const deletePromotion                           = async (id: string, access_token: string) => {
         if(id && access_token) {
             const response                          = await destroyPromotion(id, access_token);
+
+            console.log(response);
 
             if(response && response.ok) {
                 toast.error(response.msg);
@@ -76,6 +96,18 @@ export const PromotionProvider: FC                  = ({ children }) => {
             }
 
             if(response && response.data) {      
+
+                Swal.fire({
+                    title: '',
+                    html: response.msg,
+                    icon: 'success',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+
                 return true;
             }
 
@@ -83,7 +115,7 @@ export const PromotionProvider: FC                  = ({ children }) => {
 
         return false;
     }
-    const editPromotion                             = async (id: string, code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number) => {
+    const editPromotion                             = async (id: string, code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => {
         if(id && code && quantity && type && repeat && access_token) {
             const response                          = await updatePromotion(id, code, startDate, endDate, quantity, type, repeat, access_token);
 
@@ -118,7 +150,7 @@ export const PromotionProvider: FC                  = ({ children }) => {
 
         return false;
     }
-    const undeletePromotion                         = async (id: string) => {
+    const undeletePromotion                         = async (id: string, access_token: string) => {
         if(id && access_token) {
             const response                          = await restorePromotion(id, access_token);
 
@@ -128,20 +160,46 @@ export const PromotionProvider: FC                  = ({ children }) => {
             }
 
             if(response && response.data) {      
+                Swal.fire({
+                    title: '',
+                    html: response.msg,
+                    icon: 'success',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+
                 return true;
             }
         }
 
         return false;
     }
+    const showPromotion                             = async (id: string, access_token: string) => {
+        if(id && access_token) {
+            const response                          = await getPromotion(id, access_token);
+
+            if(response && response.ok) {
+                toast.error(response.msg);
+            }
+
+            if(response && response.data) {      
+                return response.data.promotions;
+            }
+        }
+    }
 
     return (
         <PromotionContext.Provider
           value={{
+           promotion,
            createPromotion,
            deletePromotion,
            editPromotion,
-           undeletePromotion
+           undeletePromotion,
+           showPromotion
           }}
         >
           {children}

@@ -1,5 +1,5 @@
 //React
-import { FormEvent, useContext, useState, useMemo } from "react";
+import { FormEvent, useContext, useState, useMemo, useEffect } from "react";
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Container, Row, Col } from "react-bootstrap";
 //Components
@@ -13,18 +13,20 @@ import Loading from '../../../ui/loading/Loading';
 import FilterComponent from './FilterComponent';
 import Button from "../../../ui/button/Button";
 import Card from '@material-ui/core/Card';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 //Context
 import { PromotionContext } from '../../../../context/promotions/PromotionContext';
 //Hooks
 import { usePromotions } from '../../../../hooks/usePromotions';
 //Style
 import styles from "./MyPromotions.module.css";
+//Validations
+import { isNotEmpty, isString, compareDate, isInteger, isMin } from '../../../../helpers/validations';
 
 const MyListPromotions                                                              = () => {
-    const { createPromotion, editPromotion, deletePromotion, undeletePromotion }    = useContext(PromotionContext);
-    const [ offset, setOffset ]                                                     = useState(0);
-    const [ limit, setLimit ]                                                       = useState(10);
+    const access_token                                                              = localStorage.getItem("token");
+    const { createPromotion, editPromotion, deletePromotion, undeletePromotion,
+            showPromotion }                                                         = useContext(PromotionContext);
     const [ filterText, setFilterText ]                                             = useState('');
     const [ selectAction, setSelectAction ]                                         = useState('');
     const [ selectId, setSelectId ]                                                 = useState('');
@@ -34,23 +36,22 @@ const MyListPromotions                                                          
     const [ errorQuantity, setErrorQuantity ]                                       = useState([]);
     const [ errorType, setErrorType ]                                               = useState([]);
     const [ errorRepeat, setErrorRepeat ]                                           = useState([]);
+    const [ errorStartDate, setErrorStartDate ]                                     = useState([]);
+    const [ errorEndDate, setErrorEndDate ]                                         = useState([]);
     const [ select, setSelect ]                                                     = useState<number | null>(null);
     const [ data, setData ]                                                         = useState({});
     const [ startDate, setStartDate ]                                               = useState<Dayjs | null>(null);
     const [ endDate, setEndDate ]                                                   = useState<Dayjs | null>(null);
-    const { loading, promotions, total }                                            = usePromotions(offset, limit);
-
-
+    const { loadings, promotions, init }                                            = usePromotions((access_token) ? access_token:'');
+   
     const INITIAL_STATE                                                             = {
         code:                                                                       '',
         quantity:                                                                   0,
-        type:                                                                       0,
         repeat:                                                                     0,
-        date:                                                                       null
     }
 
-    const { formulario, handleChange }                                              = useForm(INITIAL_STATE);
-    const { code, quantity, type, repeat, date }                                    = formulario;
+    const { formulario, handleChange, reset }                                       = useForm(INITIAL_STATE);
+    const { code, quantity, repeat }                                                = formulario;
 
     const columns = [
         {
@@ -105,19 +106,80 @@ const MyListPromotions                                                          
 		);
 	}, [filterText]);
 
-    // Otras acciones
+    const formValidate                                                              = (name: string, message: any) => {
+
+        const messageError                                                          = message.filter((value:any) => value != '');
+    
+        if(messageError.length == 0) {
+          return false;
+        }
+    
+        switch(name) {
+          case 'code':
+            setErrorCode(messageError);
+          return true;
+          case 'quantity':
+            setErrorQuantity(messageError);
+          return true;
+          case 'type':
+            setErrorType(messageError);
+          return true;
+          case 'repeat':
+            setErrorRepeat(messageError);
+          return true;
+          case 'startDate':
+            setErrorStartDate(messageError);
+          return true;
+          case 'endDate':
+            setErrorEndDate(messageError);
+          return true;
+          default:
+          return true;
+        }
+    }
+
     const handleChangeEvent                                                         = async (event: SelectChangeEvent, id: string) => {
-        if(event && id) {
+        if(event && id && access_token) {
+         
             switch(event.target.value) {
                 case 'show':
-                    setActions(event.target.value);
+                    const response                                                  = await showPromotion(id, access_token);
+
+                    if(response) {
+                        
+                        if(response.startDate && response.endDate) {
+                            setStartDate(dayjs((response.startDate).toString().split('T')[0]));
+                            setEndDate(dayjs((response.endDate).toString().split('T')[0]));
+                        }
+
+                        setSelect(response.type);
+                        setData(response);
+                        setActions(event.target.value);
+                        setModalShow(true);
+                    }
                 break;
                 case 'edit':
                     setActions(event.target.value);
+                    setModalShow(true);
                 break;
                 case 'delete':
+                    const deleteResponse                                            = await deletePromotion(id, access_token);
+
+                    if(deleteResponse) {
+                        init();
+                        modalClose();
+                    }
                 break;
                 case 'restore':
+                    const restoreResponse                                           = await undeletePromotion(id, access_token);
+
+                    console.log(id);
+                    console.log(access_token);
+                    console.log('dddd');
+                    if(restoreResponse) {
+                        init();
+                        modalClose();
+                    }
                 break;
             }
 
@@ -126,23 +188,16 @@ const MyListPromotions                                                          
         }
     }
 
-    // Crear esclusivamente
     const handleCreate                                                              = async () => {
-        console.log('ffgfghffgh');
-
         setActions('create');
         setModalShow(true);
     }
 
     const modalClose                                                                = () => {
-        setErrorCode([]);
-        setErrorQuantity([]);
-        setErrorType([]);
-        setErrorRepeat([]);
-        setStartDate(null);
-        setEndDate(null);
-        setSelect(null);
-        setSelectAction('');
+        setErrorCode([]); setErrorQuantity([]); setErrorType([]); setErrorRepeat([]); setErrorStartDate([]); setErrorEndDate([]);
+        setStartDate(null); setEndDate(null); setSelect(null); setSelectAction('');
+        reset();
+        setData({});
         setModalShow(false);
     }
 
@@ -151,13 +206,11 @@ const MyListPromotions                                                          
         setStartDate(start);
         setEndDate(end);
     };
-
-    // Solo select
+ 
     const handleSelect                                                              = (value: number) => {
         setSelect(value);
     }
 
-    // Fecha esclusivamente
     const handleDate                                                                = (type: string, date: Dayjs | null) => {
         if(type && date) {
 
@@ -172,7 +225,28 @@ const MyListPromotions                                                          
     const onSubmit                                                                  = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log('Hello world');
+        setErrorCode([]); setErrorQuantity([]); setErrorType([]); setErrorRepeat([]); setErrorStartDate([]); setErrorEndDate([]);
+
+        const formCode                                                              = formValidate('code', [isNotEmpty(code), isString(code)]);
+        const formQuantity                                                          = formValidate('quantity', [isNotEmpty(quantity), isInteger(quantity), isMin(quantity, 1)]);
+        const formStartDate                                                         = formValidate('startDate', [compareDate(startDate, endDate, true)]);
+        const formEndDate                                                           = formValidate('endDate', [compareDate(startDate, endDate, true)]);
+        const formType                                                              = formValidate('type', [isNotEmpty((Number.isInteger(select)) ? String(select):0), isInteger(select)]);
+        const formRepeat                                                            = formValidate('repeat', [isNotEmpty(repeat), isInteger(repeat), isMin(repeat, 1)]);
+
+        if(formCode || formQuantity || formType || formRepeat || formStartDate || formEndDate) {
+            return false;
+        }
+
+        if(access_token && (select != null)) {
+
+            const isValid                                                           = await createPromotion(code,(startDate) ? new Date(startDate.format('YYYY-MM-DD')): null ,(endDate) ? new Date(endDate.format('YYYY-MM-DD')): null, quantity, select, repeat, access_token);
+
+            if(isValid) {
+                init();
+                modalClose();
+            }
+        }
     }    
 
     return (
@@ -200,7 +274,7 @@ const MyListPromotions                                                          
                                 subHeader
                                 subHeaderComponent          = {subHeaderComponentMemo}
                                 persistTableHead
-                                progressPending             = {loading} 
+                                progressPending             = {loadings} 
                                 progressComponent           = {<Loading />}
                             />
                         </Row>
@@ -222,6 +296,8 @@ const MyListPromotions                                                          
                     errorQuantity   = {errorQuantity}
                     errorType       = {errorType}
                     errorRepeat     = {errorRepeat}
+                    errorStartDate  = {errorStartDate}
+                    errorEndDate    = {errorEndDate}
                     startDate       = {startDate}
                     endDate         = {endDate}
                     onChange        = {onChange}

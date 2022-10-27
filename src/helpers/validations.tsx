@@ -1,5 +1,21 @@
-export const isNotEmpty         = (data: any) => {
-    return (!data) ? 'El campo es requerido': '';
+import { Dayjs } from 'dayjs';
+import 'dayjs/locale/es';
+
+export const isNotEmpty         = (data:any) => {
+    return (!(typeof data != 'undefined' && data != '' && data != null)) ? 'El campo es requerido': '';
+}
+
+export const compareDate        = (startDate:Dayjs | null, endDate: Dayjs | null, isValidNull: boolean) => {
+
+    if(!startDate && !isValidNull) {
+        return 'No existe la fecha inicial';
+    }
+
+    if(!endDate && !isValidNull) {
+        return 'No existe la fecha final';
+    }
+
+    return (startDate && endDate && (startDate.isSame(endDate) || startDate.isAfter(endDate))) ? 'Las fechas son invalidas':'';
 }
 
 export const isString           = (data:any) => {
@@ -8,6 +24,14 @@ export const isString           = (data:any) => {
 
 export const isNumber           = (data:any) => {
     return (typeof data != 'number') ? 'El campo debe ser tipo numérico':'';
+}
+
+export const isInteger          = (data:any) => {
+    return ((typeof data != 'number') && Number.isInteger(data)) ? 'El campo debe ser tipo entero':'';
+}
+
+export const isMin              = (data:number, min: number) => {
+    return (data < min) ? 'El campo debe tener un minímo de ' + min:'';
 }
 
 export const isBoolean          = (data:any) => {
