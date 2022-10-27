@@ -13,7 +13,7 @@ import Loading from '../../../ui/loading/Loading';
 import FilterComponent from './FilterComponent';
 import Button from "../../../ui/button/Button";
 import Card from '@material-ui/core/Card';
-
+import { Dayjs } from 'dayjs';
 //Context
 import { PromotionContext } from '../../../../context/promotions/PromotionContext';
 //Hooks
@@ -34,10 +34,12 @@ const MyListPromotions                                                          
     const [ errorQuantity, setErrorQuantity ]                                       = useState([]);
     const [ errorType, setErrorType ]                                               = useState([]);
     const [ errorRepeat, setErrorRepeat ]                                           = useState([]);
+    const [ select, setSelect ]                                                     = useState<number | null>(null);
     const [ data, setData ]                                                         = useState({});
-    const [ startDate, setStartDate ]                                               = useState(null);
-    const [ endDate, setEndDate ]                                                   = useState(null);
+    const [ startDate, setStartDate ]                                               = useState<Dayjs | null>(null);
+    const [ endDate, setEndDate ]                                                   = useState<Dayjs | null>(null);
     const { loading, promotions, total }                                            = usePromotions(offset, limit);
+
 
     const INITIAL_STATE                                                             = {
         code:                                                                       '',
@@ -103,6 +105,7 @@ const MyListPromotions                                                          
 		);
 	}, [filterText]);
 
+    // Otras acciones
     const handleChangeEvent                                                         = async (event: SelectChangeEvent, id: string) => {
         if(event && id) {
             switch(event.target.value) {
@@ -123,6 +126,7 @@ const MyListPromotions                                                          
         }
     }
 
+    // Crear esclusivamente
     const handleCreate                                                              = async () => {
         console.log('ffgfghffgh');
 
@@ -131,6 +135,14 @@ const MyListPromotions                                                          
     }
 
     const modalClose                                                                = () => {
+        setErrorCode([]);
+        setErrorQuantity([]);
+        setErrorType([]);
+        setErrorRepeat([]);
+        setStartDate(null);
+        setEndDate(null);
+        setSelect(null);
+        setSelectAction('');
         setModalShow(false);
     }
 
@@ -139,6 +151,23 @@ const MyListPromotions                                                          
         setStartDate(start);
         setEndDate(end);
     };
+
+    // Solo select
+    const handleSelect                                                              = (value: number) => {
+        setSelect(value);
+    }
+
+    // Fecha esclusivamente
+    const handleDate                                                                = (type: string, date: Dayjs | null) => {
+        if(type && date) {
+
+            if(type == 'startDate') {
+                setStartDate(date);
+            }else{
+                setEndDate(date);
+            }
+        }
+    }
 
     const onSubmit                                                                  = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -186,8 +215,9 @@ const MyListPromotions                                                          
             >
                 <FormPromotion 
                     action          = {actions}
-                    typeArray       = {[{id: 0 , name: '$'},{id: 0, name:'%'}]}
+                    typeArray       = {[{id: 0 , name: '$'},{id: 1, name:'%'}]}
                     data            = {data}
+                    select          = {select}
                     errorCode       = {errorCode}
                     errorQuantity   = {errorQuantity}
                     errorType       = {errorType}
@@ -197,6 +227,8 @@ const MyListPromotions                                                          
                     onChange        = {onChange}
                     modalClose      = {modalClose}
                     handleChange    = {handleChange}
+                    handleDate      = {handleDate}
+                    handleSelect    = {handleSelect}
                 />
             </PathModal>
         </>
