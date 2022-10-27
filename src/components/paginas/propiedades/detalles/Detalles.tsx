@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Accordion } from "react-bootstrap";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { formatPrice } from "../../../../helpers/formatPrice";
@@ -13,11 +13,21 @@ interface Props {
   };
 }
 
-const Detalles = ({ inmuebles }: Props) => {
-  const { auth } = useContext(AuthContext);
+const Detalles                          = ({ inmuebles }: Props) => {
+  const { auth, validRole }             = useContext(AuthContext);
+  const [isRole, setIsRole]             = useState(false);
+  
+  useEffect(() => {
+    const initRole                      = async () => {
+      const role                        = await validRole();
+      setIsRole(role);
+    }
+
+    initRole();
+  }, [validRole]);
 
   return (
-    <section>
+    <section className="mb-4">
       <div className="container">
         <div className="row">
           <div className="col-sm-12 col-md-12 col-lg-12 col-xl-9">
@@ -611,7 +621,7 @@ const Detalles = ({ inmuebles }: Props) => {
           </div>
 
           {/* tarjeta de contacto */}
-          {auth.uid ? (
+          {isRole && auth.uid ? (
             <div className="col-sm-12 col-md-2 col-lg-2 col-xl-3 text-center d-none d-xl-block">
               <table>
                 <tbody>

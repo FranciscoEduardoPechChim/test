@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { Container, Row } from "react-bootstrap";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { InmuebleContext } from "../../../../context/inmuebles/InmuebleContext";
@@ -12,19 +12,13 @@ import TablePagination from '@material-ui/core/TablePagination';
 
 
 const MiListaPropiedades = () => {
-  const { auth, validRole } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const { eliminarInmueble, actualizarInmueble } = useContext(InmuebleContext);
   const [desde, setDesde] = useState(0);
   const { cargando, inmuebles, total, setInmuebles, setOffset } = useUserInmuebles(
     auth.uid,
     desde
   );
-
-  useEffect(() => {
-    console.log(validRole());
-    console.log('---------');
-  }, [validRole]);
-
 
   const [page, setPage]                 = useState(0);
   const [rowsPerPage, setRowsPerPage]   = useState(12);

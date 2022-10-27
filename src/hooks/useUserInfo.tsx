@@ -5,9 +5,6 @@ import { InmueblesUsuario } from '../interfaces/CrearInmuebleInterface';
 import { HistorialUsuario, PedidosUsuario } from '../interfaces/Historial';
 import { Usuario, UsuariosDir } from '../interfaces/UserInterface';
 
-const devURL = 'http://localhost:8080/api';
-const baseURL = devURL;
-//const baseURL = "https://red1a1-back.herokuapp.com/api";
 
 export const useUserInfo = (uid: string | undefined | null) => {
   const [user, setUser] = useState<Usuario>();
@@ -16,7 +13,7 @@ export const useUserInfo = (uid: string | undefined | null) => {
   const getUserInfo = async () => {
     setLoading(true);
 
-    const data = await fetch(baseURL + '/usuarios/' + uid);
+    const data = await fetch(`${production}/usuarios/${uid}`);
     const resp = await data.json();
 
     setLoading(false);
@@ -39,7 +36,7 @@ export const useUserInmuebles = (uid: string | undefined | null, desde = 0) => {
 
   const obtenerInmueblesDeUsuario = async () => {
     const data = await fetch(
-      `${baseURL}/inmuebles/usuario/${uid}?orden=${orden}&limite=${offset}&desde=${desde}`
+      `${production}/inmuebles/usuario/${uid}?orden=${orden}&limite=${offset}&desde=${desde}`
     );
     const resp = await data.json();
     setInmuebles(resp.inmueblesUsuario);
@@ -65,7 +62,7 @@ export const useUltimoInmueble = (
 
   const obtenerInmueblesDeUsuario = async () => {
     const data = await fetch(
-      `${baseURL}/inmuebles/usuario/${uid}?limite=1&orden=-createdAt`
+      `${production}/inmuebles/usuario/${uid}?limite=1&orden=-createdAt`
     );
     const resp = await data.json();
     setUltimoInmueble(resp.inmueblesUsuario);
@@ -88,7 +85,7 @@ export const useHistorial = (uid: string | undefined | null, desde: number) => {
 
   const obtenerHistorial = async () => {
     const resp = await fetch(
-      `${baseURL}/historial/usuario/${uid}?desde=${desde}&limite=${offset}`
+      `${production}/historial/usuario/${uid}?desde=${desde}&limite=${offset}`
     );
     const data = await resp.json();
 
@@ -137,7 +134,7 @@ export const useMisUsuarios = (uid: string | undefined | null) => {
   const [cargando, setCargando] = useState(true);
 
   const obtenerMisUsuarios = async () => {
-    const res = await fetch(`${baseURL}/usuarios/propietario/${uid}`);
+    const res = await fetch(`${production}/usuarios/propietario/${uid}`);
     const data = await res.json();
 
     setMisUsuarios(data.misUsuarios);

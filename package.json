@@ -41,9 +41,9 @@
     "react-number-format": "^4.9.1",
     "react-pro-sidebar": "^0.7.1",
     "react-select": "^5.2.2",
-    "react-toastify": "^8.1.0",
+    "react-toastify": "^8.2.0",
     "socket.io-client": "^4.4.1",
-    "sweetalert2": "^11.4.37",
+    "sweetalert2": "^11.5.2",
     "swiper": "^7.3.3",
     "uuid": "^8.3.2"
   },

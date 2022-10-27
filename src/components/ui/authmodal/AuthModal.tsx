@@ -92,22 +92,11 @@ const RegisterModal                       = () => {
       return false;
     }
 
-    const resp                                                      = await register(name, lastName, email, password, role);
+    const isValid                                                   = await register(name, lastName, email, password, confirmPassword, role);
 
-    if (resp.ok) {
-        const bienvida = {
-          nombre: resp.usuario.nombre,
-          apellido: resp.usuario.apellido,
-          correo: resp.usuario.correo,
-        };
-
-        await fetch(`${production}/correos/bienvenida`, {
-          method: "POST",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify(bienvida),
-        });
-        router.push("/perfil/actualizar-perfil");
+    if (isValid) {
         cerrarRegistro();
+        router.push("/perfil/actualizar-perfil");
     }
   };
 
@@ -151,7 +140,7 @@ const RegisterModal                       = () => {
                   onChange          = {handleChange}
                 />
                 {(errorName) && (errorName.length != 0) && 
-                  errorName.map((value:any, key:any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })          
+                  errorName.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })          
                 }
               </div>
               <div className="col-10 my-1">
@@ -165,7 +154,7 @@ const RegisterModal                       = () => {
                   onChange          = {handleChange}
                 />
                 {(errorLastName) && (errorLastName.length != 0) && 
-                  errorLastName.map((value:any, key:any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })         
+                  errorLastName.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })         
                 }
               </div>
               <div className="col-10 my-1">

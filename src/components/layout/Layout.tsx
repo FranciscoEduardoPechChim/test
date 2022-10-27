@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../context/auth/AuthContext";
 import VentanaChat from "../paginas/perfil/chats/VentanaChat";
@@ -11,11 +11,11 @@ import styles from "../../styles/Responsive.module.css";
 import BottomNavBar from "components/ui/responsive/BottomNavBar";
 import { MapContext } from "context/map/MapContext";
 
-const Layout: FC = ({ children }) => {
-  const { verificaToken, auth } = useContext(AuthContext);
-  const router = useRouter();
-  const { ocultarBottomNav } = useContext(MapContext);
-  const admin = router.pathname.includes("dashboard");
+const Layout: FC                            = ({ children }) => {
+  const { verificaToken, auth }             = useContext(AuthContext);
+  const router                              = useRouter();
+  const { ocultarBottomNav }                = useContext(MapContext);
+  const admin                               = router.pathname.includes("dashboard");
 
   useEffect(() => {
     verificaToken();

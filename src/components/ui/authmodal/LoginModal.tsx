@@ -48,10 +48,9 @@ const LoginModal = () => {
 
     (rememberme) ? localStorage.setItem("correo", correo): localStorage.removeItem("correo");
 
-    const response                    = await login(correo, password);
-    const isContinuo                  = !response.ok;
-
-    if(isContinuo) {
+    const isValid                    = await login(correo, password);
+    
+    if(isValid) {
       router.push("/perfil");
       cerrarLogin();
     }

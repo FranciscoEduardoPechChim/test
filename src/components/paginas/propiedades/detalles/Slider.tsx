@@ -49,27 +49,26 @@ const Slider = ({ inmuebles }: Props) => {
         </>
       ) : ( */}
       <Swiper
-        slidesPerView={1}
-        spaceBetween={30}
-        loop={true}
-        pagination={{
+        slidesPerView = {1}
+        spaceBetween  = {30}
+        loop          = {false}
+        pagination    = {{
           clickable: true,
         }}
-        navigation={true}
-        className="mySwiper"
+        navigation    = {false}
+        className     = "mySwiper"
       >
         {
           <>
             {inmuebles.inmueble.imgs.map((image, i) => {
               const sepracion = image.split(".");
-
               const extension = sepracion[sepracion.length - 1];
               const extensionesValidas = ["mp4"];
               return (
                 <SwiperSlide key={image}>
                   <div
                     className={styles.contendorslide}
-                    style={{ backgroundImage: `url(${image})` }}
+                    //style={{ backgroundImage: `url(${image})` }}
                   />
 
                   {extensionesValidas.includes(extension) ? (

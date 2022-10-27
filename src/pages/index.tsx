@@ -27,6 +27,7 @@ const Home: NextPage = () => {
   const { observe, inView } = useInView({
     onEnter: ({ unobserve }) => unobserve(),
   });
+  
 
   return (
     <>
