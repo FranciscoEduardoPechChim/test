@@ -29,11 +29,11 @@ import Swal from "sweetalert2";
 
 interface ContextProps {
   auth: Auth;
-  login:            (email: string, password: string) => Promise<boolean>;
-  forgotPassword :  (email: string) => Promise<boolean>;
+  login:            (email: string, password: string) => Promise<boolean | undefined>;
+  forgotPassword :  (email: string) => Promise<boolean | undefined>;
   logOut:           () => void;
-  register:         (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string) => Promise<boolean>;
-  validRole:        () =>  Promise<boolean>;
+  register:         (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string) => Promise<boolean | undefined>;
+  validRole:        () =>  Promise<boolean | undefined>;
   crearUsuario: (
     nombre: string,
     apellido: string,
@@ -248,7 +248,7 @@ export const AuthProvider: FC = ({ children }) => {
       return true;
     }
   }
-  const validRole                                           = () => {
+  const validRole                                           = async () => {
     const role                                              = localStorage.getItem("role");
     const email                                             = localStorage.getItem("email");
 

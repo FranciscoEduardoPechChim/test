@@ -85,8 +85,8 @@ const RegisterModal                       = () => {
     const formName                                                  = formValidate('name', [isNotEmpty(name), isString(name)]);
     const formLastName                                              = formValidate('lastName', [isNotEmpty(lastName), isString(lastName)]);
     const formEmail                                                 = formValidate('email', [isNotEmpty(email), isEmail(email)]);
-    const formPassword                                              = formValidate('password', [isNotEmpty(password), isString(password), isSamePassword(password, confirmPassword)]);
-    const formConfirmPassword                                       = formValidate('confirmPassword', [isNotEmpty(confirmPassword), isString(confirmPassword), isSamePassword(confirmPassword, password)]);
+    const formPassword                                              = formValidate('password', [isNotEmpty(password), isLength(4,20, password), isString(password), isSamePassword(password, confirmPassword)]);
+    const formConfirmPassword                                       = formValidate('confirmPassword', [isNotEmpty(confirmPassword), isLength(4,20, confirmPassword) ,isString(confirmPassword), isSamePassword(confirmPassword, password)]);
 
     if(formName || formLastName || formEmail || formPassword || formConfirmPassword) {
       return false;
@@ -231,12 +231,12 @@ const RegisterModal                       = () => {
                 <hr />
               </div>
               <GoogleLogin
-                clientId={googleClientId}
-                buttonText="Inicia sesión con google"
-                onSuccess={signInWithGoogle}
-                onFailure={signInWithGoogle}
-                cookiePolicy={"single_host_origin"}
-                render={(renderProps) => (
+                clientId      = {googleClientId}
+                buttonText    = "Inicia sesión con google"
+                onSuccess     = {signInWithGoogle}
+                onFailure     = {signInWithGoogle}
+                cookiePolicy  = {"single_host_origin"}
+                render        = {(renderProps) => (
                   <div
                     onClick={renderProps.onClick}
                     className="col-10 mb-3 text-center pointer"

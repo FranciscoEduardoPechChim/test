@@ -67,6 +67,21 @@ const MenuUsuario                                                   = (props: Pr
             {auth.role === "Individual" ||
               auth.role === "Usuario" ||
               auth.role === "UsuarioPagado" ? null : (
+              <Link href="/perfil/mis-promotions">
+                <div
+                  className={`${styles.menuItem} pointer mx-3 my-2`}
+                  onClick={() => {
+                    setMostrarMenu(false);
+                  }}
+                >
+                  Mis Promociones
+                </div>
+              </Link>
+            )}
+
+            {auth.role === "Individual" ||
+              auth.role === "Usuario" ||
+              auth.role === "UsuarioPagado" ? null : (
               <Link href="/perfil/mis-usuarios">
                 <div
                   className={`${styles.menuItem} pointer mx-3 my-2`}
