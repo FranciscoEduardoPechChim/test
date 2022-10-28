@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useState, ChangeEvent } from "react";
 import { useRouter } from "next/router";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Form, Modal } from "react-bootstrap";
@@ -20,7 +20,8 @@ import {
 } from "../../../helpers/fetch";
 import Loading from "../../ui/loading/Loading";
 import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
-import { production } from "credentials/credentials";
+// Context
+import { PromotionContext } from '../../../context/promotions/PromotionContext';
 
 interface Props {
   id: string;
@@ -32,40 +33,68 @@ interface Props {
   usuario?: number;
 }
 
-const PaqueteMultiple = (props: Props) => {
+const PaqueteMultiple                                                   = (props: Props) => {
+  const access_token                                                    = localStorage.getItem("token");
   const { titulo, precio, descripcion, options, avanzado, usuario, id } = props;
-  const { auth, abrirLogin, actualizarRol } = useContext(AuthContext);
-  const [show, setShow] = useState(false);
-  const [mostrarPago, setMostrarPago] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const stripe = useStripe();
-  const elements = useElements();
-  const [mostrarTransferencia, setMostrarTransferencia] = useState(false);
-  const [usuariosSeleccionados, setUsuariosSeleccionados] =
-    useState<any>(usuario);
-  const { formulario, handleChange } = useForm({ usuarios: 11 });
-  const { usuarios } = formulario;
+  const { auth, abrirLogin, actualizarRol }                             = useContext(AuthContext);
+  const { isValidPromotion }                                            = useContext(PromotionContext);
+  const { formulario, handleChange, setFormulario }                     = useForm({usuarios: 11});
+  const { usuarios }                                                    = formulario;
+  const [ show, setShow ]                                               = useState(false);
+  const [ mostrarPago, setMostrarPago ]                                 = useState(false);
+  const [ loading, setLoading ]                                         = useState(false);
+  const [mostrarTransferencia, setMostrarTransferencia]                 = useState(false);
+  const [usuariosSeleccionados, setUsuariosSeleccionados]               = useState<any>(usuario);
+  const router                                                          = useRouter();
+  const stripe                                                          = useStripe();
+  const elements                                                        = useElements();
+  const [ errorPromotion, setErrorPromotion ]                           = useState<any>([]);
+  const [ price, setPrice ]                                             = useState(0); 
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const ocultarPago = () => setMostrarPago(false);
-  const handleNext = () => setShow(false);
+  const handleClose                                                     = () =>  setShow(false);
+  
+  const handleShow                                                      = () => { 
+    if(avanzado) {
+      setFormulario({usuarios: 11});
+      setPrice(Number(11) * Number(precio));
+    }else {
+      setUsuariosSeleccionados(usuario);
+      setPrice(Number(precio));
+    }
+    setErrorPromotion([]);
+    setShow(true)
+  };
 
-  const pagar = () => {
+  const ocultarPago                                                     = () => setMostrarPago(false);
+  
+  const handleNext                                                      = () => setShow(false);
+
+  const pagar                                                           = () => {
     handleNext();
     setMostrarPago(true);
     !avanzado ? setUsuariosSeleccionados(usuariosSeleccionados.value) : null;
   };
 
-  const ocultarTransferencia = () => setMostrarTransferencia(false);
+  const selectQuantityUsers                                             = (data: any) => {
+    const { label, value }                                              = data;
+    setPrice(Number(precio) * Number(value));
+    setUsuariosSeleccionados(data);
+  }
 
-  const pagarTransferencia = () => {
+  const writeQuantityUsers                                              = (data: any) => {
+    const { name, value }                                               = data.target;
+    setPrice(Number(precio) * Number(value));
+    handleChange(data);
+  }
+
+  const ocultarTransferencia                                            = () => setMostrarTransferencia(false);
+  
+  const pagarTransferencia                                              = () => {
     handleNext();
     setMostrarTransferencia(true);
   };
 
-  const generarReferencia = async (e: FormEvent<HTMLFormElement>) => {
+  const generarReferencia                                               = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const body = {
@@ -75,9 +104,7 @@ const PaqueteMultiple = (props: Props) => {
         1_000_000_000_000 + Math.random() * 9_000_000_000_000
       ),
       precio: Number(precio),
-      importe: avanzado
-        ? Number(precio) * Number(usuarios)
-        : Number(precio) * Number(usuariosSeleccionados.value),
+      importe: Number(price),
       totalUsuarios: avanzado ? Number(usuarios) : usuariosSeleccionados.value,
       estado: false,
     };
@@ -92,7 +119,47 @@ const PaqueteMultiple = (props: Props) => {
     }
   };
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const onBlurChange                                                    = () => {
+    setErrorPromotion([]);
+  }
+
+  const validPromotion                                                  = async ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value }                                               = target;
+    setErrorPromotion([]);
+
+    if(value && (value.trim().length > 0) && access_token) {
+      const response                                                    = await isValidPromotion(value, access_token);
+  
+        if(response && (typeof response == 'string')) {
+          setErrorPromotion((typeof response != 'undefined') ? [response]:[]);
+  
+          if(avanzado) {
+            setPrice(Number(usuarios) * Number(precio));
+          }else {
+            const { label, value }                                          = usuariosSeleccionados;
+            setPrice(Number(value) * Number(precio));
+          }
+      
+         
+        }else {
+          setErrorPromotion([]);
+          if((typeof response == 'object') && response) {    
+            let total           = 0;
+  
+            if(response.type == 0) {
+              total             = Number(price) - Number(response.quantity);
+            }else {
+              const discount    = Number(price) * (Number(response.quantity) / 100);
+              total             = Number(price) - Number(discount);
+            }
+  
+            setPrice(total);
+          }
+        }
+    }
+  }
+
+  const onSubmit                                                        = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!stripe || !elements) return;
@@ -241,7 +308,7 @@ const PaqueteMultiple = (props: Props) => {
             <Modaltitle titulo={titulo} />
           </div>
           <div className={`${styles.S2content} text-center mt-5 mb-4`}>
-            Especifique el número de <br /> usuarios a contratar.
+            Especifique el número de<br /> usuarios a contratar.
           </div>
           <div>
             {avanzado ? (
@@ -256,12 +323,12 @@ const PaqueteMultiple = (props: Props) => {
                       </div>
                       <div className="col-3">
                         <input
-                          type="number"
-                          min={11}
-                          name="usuarios"
-                          value={usuarios}
-                          onChange={handleChange}
-                          className={styles.inputS2}
+                          type      = "number"
+                          min       = {11}
+                          name      = "usuarios"
+                          value     = {usuarios}
+                          onChange  = {writeQuantityUsers}
+                          className = {styles.inputS2}
                         />
                       </div>
                       {usuarios < 11 ? (
@@ -275,17 +342,34 @@ const PaqueteMultiple = (props: Props) => {
                           <div
                             className={`${styles.precioAPagar} col-12 text-center mt-4 mb-5`}
                           >
-                            {formatPrice(precio * usuarios)}
+                            {formatPrice(price)}
                           </div>
-                          <div className="col-12 d-flex justify-content-center">
+                        </>
+                      )}
+
+                      <div className="col-12">
+                        <div className="form-group">
+                          <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                          {usuarios && (usuarios >= 11) ? 
+                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                          }
+                          {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                              return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                          })}
+                        </div>
+                      </div>
+
+                      {usuarios && (usuarios >= 11) &&
+                          <div className="col-12 d-flex justify-content-center mt-3 mb-3">
                             <Button titulo="Pago con tarjeta" onClick={pagar} />
                             <Button
                               titulo="Transferencia bancaria"
                               onClick={pagarTransferencia}
                             />
                           </div>
-                        </>
-                      )}
+                      }
+
                     </div>
                   </div>
                 </div>
@@ -302,25 +386,37 @@ const PaqueteMultiple = (props: Props) => {
                       </div>
                       <div className="col-4">
                         <Select
-                          defaultValue={usuariosSeleccionados}
-                          onChange={setUsuariosSeleccionados}
-                          options={options}
-                          classNamePrefix={styles.selectS2}
+                          defaultValue    = {usuariosSeleccionados}
+                          onChange        = {selectQuantityUsers}
+                          options         = {options}
+                          classNamePrefix = {styles.selectS2}
                         />
                       </div>
                       <div className="col-12">
-                        <div className="text-center mt-4">
+                        <div className="text-center mt-2">
                           {usuariosSeleccionados.value ? (
                             <div
                               className={`${styles.precioAPagar} text-center`}
                             >
-                              {formatPrice(
-                                precio * usuariosSeleccionados.value
-                              ) + " MXN"}
+                              {formatPrice(price) + " MXN"}
                             </div>
                           ) : null}
                         </div>
                       </div>
+
+                      <div className="col-12">
+                        <div className="form-group mt-4 mb-2">
+                          <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                          {(usuariosSeleccionados.value) ? 
+                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                          }
+                          {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                              return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                          })}
+                        </div>
+                      </div>
+
                       <div className="col-12">
                         <div className="text-center mt-5">
                           {!usuariosSeleccionados.value ? (
@@ -365,8 +461,8 @@ const PaqueteMultiple = (props: Props) => {
           Cantidad a pagar:{" "}
           <span className={`${styles.precio}`}>
             {avanzado
-              ? formatPrice(Number(precio) * Number(usuarios))
-              : formatPrice(Number(precio) * usuariosSeleccionados)}
+              ? formatPrice(Number(price))
+              : formatPrice(Number(price))}
             MXN
           </span>
         </div>
@@ -396,7 +492,7 @@ const PaqueteMultiple = (props: Props) => {
             />
           </div>
 
-          <div className="text-center my-3">
+          <div className="text-center my-4">
             {!stripe ? (
               <Button titulo="Pagar" btn="Disabled" />
             ) : (
@@ -420,8 +516,8 @@ const PaqueteMultiple = (props: Props) => {
           Cantidad a pagar:{" "}
           <span className={`${styles.precio}`}>
             {avanzado
-              ? formatPrice(Number(precio) * Number(usuarios))
-              : formatPrice(Number(precio) * usuariosSeleccionados.value)}
+              ? formatPrice(Number(price))
+              : formatPrice(Number(price))}
             MXN
           </span>
         </div>

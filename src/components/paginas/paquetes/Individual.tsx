@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useState, ChangeEvent } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 import { Form, Modal } from "react-bootstrap";
@@ -32,8 +32,13 @@ const Individual = () => {
   const [mostrarPago, setMostrarPago] = useState(false);
   const [mostrarTransferencia, setMostrarTransferencia] = useState(false);
 
+  const [ price, setPrice ]                             = useState(0);
+  const [ type, setType ]                               = useState('');
+  const [ errorPromotion, setErrorPromotion ]           = useState<any>([]);
+
   const handleClose = () => {
     setPrecioSeleccionado("");
+    setPrice(0);
     setShow(false);
   };
 
@@ -42,17 +47,17 @@ const Individual = () => {
   const ocultarPago = () => setMostrarPago(false);
   const ocultarTransferencia = () => setMostrarTransferencia(false);
 
-  const pagar = () => {
+  const pagar                                                           = () => {
     handleNext();
     setMostrarPago(true);
   };
 
-  const pagarTransferencia = () => {
+  const pagarTransferencia                                              = () => {
     handleNext();
     setMostrarTransferencia(true);
   };
 
-  const generarReferencia = async (e: FormEvent<HTMLFormElement>) => {
+  const generarReferencia                                               = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const body = {
@@ -75,6 +80,68 @@ const Individual = () => {
       toast.success("Error al generear la referencia. Inténtelo de nuevo");
     }
   };
+
+  const selectQuantityUsers                                             = (name: string) => {
+    if(paquete) {
+      switch(name) {
+        case 'annual':
+          setType(name);
+          setPrice(paquete.precioAnual);
+        break;
+        case 'biannual':
+          setType(name);
+          setPrice(paquete.precioSemestral);
+        break;
+        case 'quarterly':
+          setType(name);
+          setPrice(paquete.precioTrimestral);
+        break;
+        default:
+          setType('');
+          setPrice(0);
+      }
+    }
+  }
+
+  const onBlurChange                                                    = () => {
+    setErrorPromotion([]);
+  }
+
+  const validPromotion                                                  = async ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value }                                               = target;
+    setErrorPromotion([]);
+
+    // if(value && (value.trim().length > 0) && access_token) {
+    //   const response                                                    = await isValidPromotion(value, access_token);
+  
+    //     if(response && (typeof response == 'string')) {
+    //       setErrorPromotion((typeof response != 'undefined') ? [response]:[]);
+  
+    //       if(avanzado) {
+    //         setPrice(Number(usuarios) * Number(precio));
+    //       }else {
+    //         const { label, value }                                          = usuariosSeleccionados;
+    //         setPrice(Number(value) * Number(precio));
+    //       }
+      
+         
+    //     }else {
+    //       setErrorPromotion([]);
+    //       if((typeof response == 'object') && response) {    
+    //         let total           = 0;
+  
+    //         if(response.type == 0) {
+    //           total             = Number(price) - Number(response.quantity);
+    //         }else {
+    //           const discount    = Number(price) * (Number(response.quantity) / 100);
+    //           total             = Number(price) - Number(discount);
+    //         }
+  
+    //         setPrice(total);
+    //       }
+    //     }
+    // }
+  }
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -249,6 +316,7 @@ const Individual = () => {
           </>
         )}
       </div>
+
       <Modal show={show} onHide={handleClose} contentClassName={styles.modalS1}>
         <Modal.Header closeButton className={styles.modalS1header} />
         <Modal.Body>
@@ -269,7 +337,7 @@ const Individual = () => {
                   <div className="col-7 text-end mb-2">
                     <input
                       value={paquete?.precioAnual}
-                      onChange={(e) => setPrecioSeleccionado(e.target.value)}
+                      onChange={(e) => selectQuantityUsers('annual')}
                       type="radio"
                       name="individual"
                     />
@@ -285,7 +353,7 @@ const Individual = () => {
                   <div className="col-7 text-end mb-2">
                     <input
                       value={paquete?.precioSemestral}
-                      onChange={(e) => setPrecioSeleccionado(e.target.value)}
+                      onChange={(e) => selectQuantityUsers('biannual')}
                       type="radio"
                       name="individual"
                     />
@@ -303,7 +371,7 @@ const Individual = () => {
                       value={paquete?.precioTrimestral}
                       type="radio"
                       name="individual"
-                      onChange={(e) => setPrecioSeleccionado(e.target.value)}
+                      onChange={(e) => selectQuantityUsers('quarterly')}
                     />
                     <span className={`${styles.precio} ms-2`}>
                       {paquete ? (
@@ -314,6 +382,22 @@ const Individual = () => {
                 </div>
               </div>
             </div>
+            {price && (price > 0) &&
+              <div className="row">
+                <div className="col-12">
+                    <div className="form-group">
+                        <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                        {price && (price > 0) ? 
+                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                        }
+                        {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                            return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                        })}
+                    </div>
+                </div>
+              </div>
+            }
             <div className="text-center mt-5">
               {precioSeleccionado ? (
                 <>

@@ -7,12 +7,13 @@ import { validate } from '../../helpers/response';
 //Interfaces
 import { Promotion } from '../../interfaces/PromotionInterface';
 //Services
-import { storePromotion, updatePromotion, destroyPromotion, restorePromotion, getPromotion } from '../../services/promotionService';
+import { storePromotion, updatePromotion, destroyPromotion, restorePromotion, getPromotion, getPromotionByCode } from '../../services/promotionService';
 //Extras
 import Swal from "sweetalert2";
 
 interface ContextProps {
     promotion:          Promotion;
+    isValidPromotion:   (code: string, access_token: string) => Promise<Promotion | string | undefined>;
     createPromotion:    (code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => Promise<boolean | undefined>;
     editPromotion:      (id: string, code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => Promise<boolean | undefined>;
     deletePromotion:    (id: string, access_token: string) => Promise<boolean | undefined>;
@@ -32,7 +33,7 @@ const INITIAL_STATE: Promotion                      = {
 };
 
 export const PromotionProvider: FC                  = ({ children }) => {
-    const [promotion, setPromotion]                 = useState(INITIAL_STATE);
+    const [ promotion, setPromotion ]               = useState(INITIAL_STATE);
 
     const createPromotion                           = async (code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => {
 
@@ -199,6 +200,18 @@ export const PromotionProvider: FC                  = ({ children }) => {
             }
         }
     }
+    const isValidPromotion                          = async (code: string, access_token: string) => {
+
+        const response                              = await getPromotionByCode(code, access_token);
+
+        if(response && response.ok) {
+            return response.msg;
+        }
+
+        if(response && response.data) {     
+            return response.data.promotions;
+        }
+    }
 
     return (
         <PromotionContext.Provider
@@ -208,7 +221,8 @@ export const PromotionProvider: FC                  = ({ children }) => {
            deletePromotion,
            editPromotion,
            undeletePromotion,
-           showPromotion
+           showPromotion,
+           isValidPromotion
           }}
         >
           {children}
