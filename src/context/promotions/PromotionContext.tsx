@@ -37,11 +37,8 @@ export const PromotionProvider: FC                  = ({ children }) => {
     const createPromotion                           = async (code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => {
 
         if(code && String(quantity) && String(type) && String(repeat) && access_token) {
-
-            
+ 
             const response                          = await storePromotion(code, startDate, endDate, Number(quantity), Number(type), Number(repeat), access_token);
-
-            console.log(response);
 
             if(response && response.errors) {
                 validate(response.errors);
@@ -116,7 +113,8 @@ export const PromotionProvider: FC                  = ({ children }) => {
         return false;
     }
     const editPromotion                             = async (id: string, code: string, startDate: Date | null, endDate: Date | null,  quantity: number, type: number, repeat: number, access_token: string) => {
-        if(id && code && quantity && type && repeat && access_token) {
+        
+        if(id && code && String(quantity) && String(type) && String(repeat) && access_token) {
             const response                          = await updatePromotion(id, code, startDate, endDate, quantity, type, repeat, access_token);
 
             if(response && response.errors) {
@@ -142,7 +140,18 @@ export const PromotionProvider: FC                  = ({ children }) => {
                 }
 
                 setPromotion(currentPromotion);
-                
+                       
+                Swal.fire({
+                    title: '',
+                    html: response.msg,
+                    icon: 'success',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+
                 return true;
             }
 

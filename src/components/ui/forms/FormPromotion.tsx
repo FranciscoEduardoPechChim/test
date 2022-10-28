@@ -44,7 +44,13 @@ const FormPromotion = ({action, handleChange, data, handleSelect, select, startD
                     <Col md={6} sm xs={12} className='my-2'>
                         <Form.Group>
                             <Form.Label className={style.modalLabels} htmlFor="code">Código*</Form.Label>
-                            <Form.Control defaultValue={code} id="code" type="text" name="code" placeholder="PROMOTIONMX" onChange={handleChange}/>
+
+                            {action && (action != 'show') &&
+                                <Form.Control defaultValue={code} id="code" type="text" name="code" placeholder="PROMOTIONMX" onChange={handleChange} />
+                            }
+                            {action && (action == 'show') &&
+                                <Form.Control defaultValue={code} id="code" type="text" name="code" placeholder="PROMOTIONMX" onChange={handleChange} disabled/>
+                            }
                         </Form.Group>
                         {(errorCode) && (errorCode.length != 0) && errorCode.map((value: any, key: any) => {
                             return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
@@ -53,7 +59,13 @@ const FormPromotion = ({action, handleChange, data, handleSelect, select, startD
                     <Col md={6} sm xs={12} className='my-2'>
                         <Form.Group>
                             <Form.Label className={style.modalLabels} htmlFor="quantity">Cantidad*</Form.Label>
-                            <Form.Control defaultValue={quantity} id="quantity" type="number" min={0} name="quantity" placeholder="0" onChange={handleChange}/>   
+                            
+                            {action && (action != 'show') &&
+                                <Form.Control defaultValue={quantity} id="quantity" type="number" min={0} name="quantity" placeholder="0" onChange={handleChange}/>   
+                            }
+                            {action && (action == 'show') &&
+                                <Form.Control defaultValue={quantity} id="quantity" type="number" min={0} name="quantity" placeholder="0" onChange={handleChange} disabled/>   
+                            }   
                         </Form.Group>
                         {(errorQuantity) && (errorQuantity.length != 0) && errorQuantity.map((value: any, key: any) => {
                             return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
@@ -64,17 +76,31 @@ const FormPromotion = ({action, handleChange, data, handleSelect, select, startD
                 <Row >
                     <Col md={6} sm xs={12} className='my-2'>
                         <Form.Group>
-                            {/* <Form.Label className={style.modalLabels} htmlFor="startDate">Fecha inicial</Form.Label>  */}
-                            <DatePicker
-                                label       = 'Fecha inicial'
-                                value       = {startDate}
-                                inputFormat = 'DD-MM-YYYY'
-                                onChange    = {(newDate:any) => {
-                                    handleDate('startDate', newDate);
-                                }}
-                                minDate     = {new Date()}
-                                renderInput = {(params) => <TextField size="small" {...params} fullWidth/>}
-                            />
+                            {action && (action != 'show') &&
+                                <DatePicker
+                                    label       = 'Fecha inicial'
+                                    value       = {startDate}
+                                    inputFormat = 'DD-MM-YYYY'
+                                    onChange    = {(newDate:any) => {
+                                        handleDate('startDate', newDate);
+                                    }}
+                                    minDate     = {new Date()}
+                                    renderInput = {(params) => <TextField size="small" {...params} fullWidth/>}
+                                />
+                            }
+                            {action && (action == 'show') &&
+                                <DatePicker
+                                    label       = 'Fecha inicial'
+                                    value       = {startDate}
+                                    inputFormat = 'DD-MM-YYYY'
+                                    disabled
+                                    onChange    = {(newDate:any) => {
+                                        handleDate('startDate', newDate);
+                                    }}
+                                    minDate     = {new Date()}
+                                    renderInput = {(params) => <TextField size="small" {...params} fullWidth/>}
+                                />
+                            }
                             {(errorStartDate) && (errorStartDate.length != 0) && errorStartDate.map((value: any, key: any) => {
                                 return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
                             })}
@@ -82,17 +108,32 @@ const FormPromotion = ({action, handleChange, data, handleSelect, select, startD
                     </Col>
                     <Col md={6} sm xs={12} className='my-2'>
                         <Form.Group>
-                            {/* <Form.Label className={style.modalLabels} htmlFor="endDate">Fecha final</Form.Label> */}
-                            <DatePicker
-                                label       = 'Fecha final'
-                                value       = {endDate}
-                                inputFormat = 'DD-MM-YYYY'
-                                onChange    = {(newDate:any) => {
-                                    handleDate('endDate', newDate);
-                                }}
-                                minDate     = {new Date()}
-                                renderInput = {(params) => <TextField size="small" {...params} fullWidth/>}
-                            />
+                            {action && (action != 'show') &&
+                                <DatePicker
+                                    label       = 'Fecha final'
+                                    value       = {endDate}
+                                    inputFormat = 'DD-MM-YYYY'
+                                    onChange    = {(newDate:any) => {
+                                        handleDate('endDate', newDate);
+                                    }}
+                                    minDate     = {new Date()}
+                                    renderInput = {(params) => <TextField size="small" {...params} fullWidth/>}
+                                />
+                            }
+                            {action && (action == 'show') &&
+                                <DatePicker
+                                    label       = 'Fecha final'
+                                    value       = {endDate}
+                                    inputFormat = 'DD-MM-YYYY'
+                                    disabled
+                                    onChange    = {(newDate:any) => {
+                                        handleDate('endDate', newDate);
+                                    }}
+                                    minDate     = {new Date()}
+                                    renderInput = {(params) => <TextField size="small" {...params} fullWidth/>}
+                                />
+                            }
+                            
                             {(errorEndDate) && (errorEndDate.length != 0) && errorEndDate.map((value: any, key: any) => {
                                 return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
                             })}
@@ -103,21 +144,40 @@ const FormPromotion = ({action, handleChange, data, handleSelect, select, startD
                     <Col md={6} sm xs={12} className='my-2'>
                         <Form.Group>
                             <Form.Label className={style.modalLabels} htmlFor="type">Tipo*</Form.Label>
-                            <Form.Select 
-                                id              = "type"  
-                                value           = {(select == null) ? '':select}
-                                onChange        = {e => {
-                                    handleSelect(parseInt(e.target.value));
-                                }}
-                            >
-                                {action && (action != 'show') &&
-                                    <option value={''} disabled>Seleccionar tipo</option>
-                                }
-                                {(typeArray) && (typeArray.length != 0) && typeArray.map((value:any, key:any) => {
-                                    return (<option key={key} value={value.id}>{value.name}</option>);
-                                    
-                                })}
-                            </Form.Select>
+                            {action && (action != 'show') &&
+                                <Form.Select 
+                                    id              = "type"  
+                                    value           = {(select == null) ? '':select}
+                                    onChange        = {e => {
+                                        handleSelect(parseInt(e.target.value));
+                                    }}
+                                >
+                                    {action && (action != 'show') &&
+                                        <option value={''} disabled>Seleccionar tipo</option>
+                                    }
+                                    {(typeArray) && (typeArray.length != 0) && typeArray.map((value:any, key:any) => {
+                                        return (<option key={key} value={value.id}>{value.name}</option>);        
+                                    })}
+                                </Form.Select>
+                            }
+                            {action && (action == 'show') &&
+                                <Form.Select 
+                                    id              = "type"  
+                                    value           = {(select == null) ? '':select}
+                                    disabled
+                                    onChange        = {e => {
+                                        handleSelect(parseInt(e.target.value));
+                                    }}
+                                >
+                                    {action && (action != 'show') &&
+                                        <option value={''} disabled>Seleccionar tipo</option>
+                                    }
+                                    {(typeArray) && (typeArray.length != 0) && typeArray.map((value:any, key:any) => {
+                                        return (<option key={key} value={value.id}>{value.name}</option>);        
+                                    })}
+                                </Form.Select>
+                            }
+                            
                         </Form.Group>   
                         {(errorType) && (errorType.length != 0) && errorType.map((value: any, key: any) => {
                             return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
@@ -126,7 +186,12 @@ const FormPromotion = ({action, handleChange, data, handleSelect, select, startD
                     <Col md={6} sm xs={12} className='my-2'>
                         <Form.Group>
                             <Form.Label className={style.modalLabels} htmlFor="repeat">Disponibilidad*</Form.Label>
-                            <Form.Control defaultValue={repeat} id="repeat" type="number" name="repeat" min={0} placeholder="0" onChange={handleChange}/>
+                            {action && (action != 'show') &&
+                                <Form.Control defaultValue={repeat} id="repeat" type="number" name="repeat" min={0} placeholder="0" onChange={handleChange}/>
+                            }
+                            {action && (action == 'show') &&
+                                <Form.Control defaultValue={repeat} id="repeat" type="number" name="repeat" min={0} placeholder="0" onChange={handleChange} disabled/>
+                            }
                         </Form.Group>
                         {(errorRepeat) && (errorRepeat.length != 0) && errorRepeat.map((value: any, key: any) => {
                             return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);

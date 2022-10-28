@@ -121,14 +121,15 @@ export const destroyPromotion                       = async (id: string, access_
 export const updatePromotion                        = async (id: string, code: string, startDate: Date | null, endDate: Date | null, quantity: number, type: number, repeat: number, access_token: string):Promise<promotionResponse | undefined> => {
     try { 
         let body                                    = { 
+            id:                                     id,
             code:                                   code, 
-            startDate:                              startDate,
-            endDate:                                endDate,
+            startDate:                              (startDate) ? startDate.toISOString().split('T')[0]:null,
+            endDate:                                (endDate) ? endDate.toISOString().split('T')[0]:null,
             quantity:                               quantity,
             type:                                   type,
             repeat:                                 repeat       
         };
-
+        
         const requestOptions                        = {
             method: 'PUT',
             headers: {

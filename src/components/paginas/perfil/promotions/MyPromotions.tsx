@@ -43,14 +43,15 @@ const MyListPromotions                                                          
     const [ startDate, setStartDate ]                                               = useState<Dayjs | null>(null);
     const [ endDate, setEndDate ]                                                   = useState<Dayjs | null>(null);
     const { loadings, promotions, init }                                            = usePromotions((access_token) ? access_token:'');
-   
+    
     const INITIAL_STATE                                                             = {
         code:                                                                       '',
         quantity:                                                                   0,
         repeat:                                                                     0,
     }
 
-    const { formulario, handleChange, reset }                                       = useForm(INITIAL_STATE);
+    const [ initialState, setInitialState ]                                         = useState(INITIAL_STATE);
+    const { formulario, handleChange, reset }                                       = useForm(initialState);
     const { code, quantity, repeat }                                                = formulario;
 
     const columns = [
@@ -106,6 +107,28 @@ const MyListPromotions                                                          
 		);
 	}, [filterText]);
 
+    const getPromotion                                                              = async (id: string, access_token: string, value: any) => {
+        const response                                                              = await showPromotion(id, access_token);
+
+        if(response) {                
+            if(response.startDate && response.endDate) {
+                setStartDate(dayjs((response.startDate).toString().split('T')[0]));
+                setEndDate(dayjs((response.endDate).toString().split('T')[0]));
+            }
+
+            setInitialState({
+                code:       response.code,
+                quantity:   response.quantity,
+                repeat:     response.repeat,
+            });
+
+            setSelect(response.type);
+            setData(response);
+            setActions(value);
+            setModalShow(true);
+        }
+    }
+
     const formValidate                                                              = (name: string, message: any) => {
 
         const messageError                                                          = message.filter((value:any) => value != '');
@@ -143,24 +166,10 @@ const MyListPromotions                                                          
          
             switch(event.target.value) {
                 case 'show':
-                    const response                                                  = await showPromotion(id, access_token);
-
-                    if(response) {
-                        
-                        if(response.startDate && response.endDate) {
-                            setStartDate(dayjs((response.startDate).toString().split('T')[0]));
-                            setEndDate(dayjs((response.endDate).toString().split('T')[0]));
-                        }
-
-                        setSelect(response.type);
-                        setData(response);
-                        setActions(event.target.value);
-                        setModalShow(true);
-                    }
+                    getPromotion(id, access_token, event.target.value);
                 break;
                 case 'edit':
-                    setActions(event.target.value);
-                    setModalShow(true);
+                    getPromotion(id, access_token, event.target.value);
                 break;
                 case 'delete':
                     const deleteResponse                                            = await deletePromotion(id, access_token);
@@ -237,11 +246,12 @@ const MyListPromotions                                                          
         if(formCode || formQuantity || formType || formRepeat || formStartDate || formEndDate) {
             return false;
         }
-
+        
         if(access_token && (select != null)) {
-
-            const isValid                                                           = await createPromotion(code,(startDate) ? new Date(startDate.format('YYYY-MM-DD')): null ,(endDate) ? new Date(endDate.format('YYYY-MM-DD')): null, quantity, select, repeat, access_token);
-
+            const isValid                                                       = (actions == 'create') ? 
+                await createPromotion(code,(startDate) ? new Date(startDate.format('YYYY-MM-DD')): null ,(endDate) ? new Date(endDate.format('YYYY-MM-DD')): null, quantity, select, repeat, access_token):
+                await editPromotion(selectId,code,(startDate) ? new Date(startDate.format('YYYY-MM-DD')): null ,(endDate) ? new Date(endDate.format('YYYY-MM-DD')): null, quantity, select, repeat, access_token);
+        
             if(isValid) {
                 init();
                 modalClose();
