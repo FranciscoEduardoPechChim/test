@@ -181,10 +181,6 @@ const MyListPromotions                                                          
                 break;
                 case 'restore':
                     const restoreResponse                                           = await undeletePromotion(id, access_token);
-
-                    console.log(id);
-                    console.log(access_token);
-                    console.log('dddd');
                     if(restoreResponse) {
                         init();
                         modalClose();

@@ -20,6 +20,13 @@ const Buscador = () => {
         lng: suggest.location.lng,
       });
 
+    // !suggest
+    //   ? setCoordenadas({ lat: 25.7825453, lng: -80.2994984 })
+    //   : setCoordenadas({
+    //     lat: suggest.location.lat,
+    //     lng: suggest.location.lng,
+    //   });
+
     router.push("/");
 
     !suggest ? setDirMapa(null) : setDirMapa(suggest.label);
@@ -32,7 +39,7 @@ const Buscador = () => {
       onFocus={mostrarFiltros}
       ref={geosuggestEl}
       queryDelay={530}
-      country="mx"
+      country="usa"
       placeholder="Busca aquí..."
       onSuggestSelect={onSuggestSelect}
       autoComplete="off"

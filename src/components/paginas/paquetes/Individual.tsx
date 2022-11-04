@@ -19,6 +19,8 @@ import {
 } from "../../../helpers/fetch";
 import { Pedido } from "../../../interfaces/PedidosInterface";
 import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
+// Context
+import { PromotionContext } from '../../../context/promotions/PromotionContext';
 
 const Individual = () => {
   const { auth, abrirLogin, actualizarRol } = useContext(AuthContext);
@@ -32,20 +34,44 @@ const Individual = () => {
   const [mostrarPago, setMostrarPago] = useState(false);
   const [mostrarTransferencia, setMostrarTransferencia] = useState(false);
 
-  const [ price, setPrice ]                             = useState(0);
-  const [ type, setType ]                               = useState('');
-  const [ errorPromotion, setErrorPromotion ]           = useState<any>([]);
+   //const access_token                                                 = localStorage.getItem("token") || "";
+   const access_token                                                   = "123";
+  const [ price, setPrice ]                                             = useState(0);
+  const [ type, setType ]                                               = useState('');
+  const [ priceAnnual, setPriceAnnual ]                                 = useState(0);
+  const [ priceBiannual, setPriceBiannual ]                             = useState(0);
+  const [ priceQuarterly, setPriceQuarterly ]                           = useState(0);
+  const [ errorPromotion, setErrorPromotion ]                           = useState<any>([]);
+  const { isValidPromotion }                                            = useContext(PromotionContext);
 
-  const handleClose = () => {
-    setPrecioSeleccionado("");
-    setPrice(0);
-    setShow(false);
-  };
+  const handleClose                                                     = () => setShow(false);
+  const handleNext                                                      = () => setShow(false);
+  const handleShow                                                      = () => { 
+    if(paquete) {
+      switch(type) {
+        case 'annual':
+          setPriceAnnual(paquete.precioAnual);
+        break;
+        case 'biannual':
+          setPriceBiannual(paquete.precioSemestral);
+        break;
+        case 'quarterly':
+          setPriceQuarterly(paquete.precioTrimestral);
+        break;
+        default:
+          setPriceAnnual(0);
+          setPriceBiannual(0);
+          setPriceQuarterly(0);
+      }
 
-  const handleNext = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const ocultarPago = () => setMostrarPago(false);
-  const ocultarTransferencia = () => setMostrarTransferencia(false);
+      setType('');
+      setPrice(0);
+    }
+ 
+    setShow(true);
+  }
+  const ocultarPago                                                     = () => setMostrarPago(false);
+  const ocultarTransferencia                                            = () => setMostrarTransferencia(false);
 
   const pagar                                                           = () => {
     handleNext();
@@ -66,8 +92,8 @@ const Individual = () => {
       referencia: Math.floor(
         1_000_000_000_000 + Math.random() * 9_000_000_000_000
       ),
-      precio: Number(precioSeleccionado),
-      importe: Number(precioSeleccionado),
+      precio: price,
+      importe: price,
       totalUsuarios: 1,
       estado: false,
     };
@@ -111,36 +137,67 @@ const Individual = () => {
     const { name, value }                                               = target;
     setErrorPromotion([]);
 
-    // if(value && (value.trim().length > 0) && access_token) {
-    //   const response                                                    = await isValidPromotion(value, access_token);
+    if(value && (value.trim().length > 0) && access_token && (price > 0)) {
+      const response                                                    = await isValidPromotion(value, access_token);
   
-    //     if(response && (typeof response == 'string')) {
-    //       setErrorPromotion((typeof response != 'undefined') ? [response]:[]);
-  
-    //       if(avanzado) {
-    //         setPrice(Number(usuarios) * Number(precio));
-    //       }else {
-    //         const { label, value }                                          = usuariosSeleccionados;
-    //         setPrice(Number(value) * Number(precio));
-    //       }
-      
+        if(response && type && (typeof response == 'string')) {
+          setErrorPromotion((typeof response != 'undefined') ? [response]:[]);    
+
+          if(paquete) {
+            switch(type) {
+              case 'annual':
+                setPriceAnnual(paquete.precioAnual);
+                setPrice(paquete.precioAnual);
+              break;
+              case 'biannual':
+                setPriceBiannual(paquete.precioSemestral);
+                setPrice(paquete.precioSemestral);
+              break;
+              case 'quarterly':
+                setPriceQuarterly(paquete.precioTrimestral);
+                setPrice(paquete.precioTrimestral);
+              break;
+              default:
+                setPriceAnnual(0);
+                setPriceBiannual(0);
+                setPriceQuarterly(0);
+                setPrice(0);
+            }
+          }
          
-    //     }else {
-    //       setErrorPromotion([]);
-    //       if((typeof response == 'object') && response) {    
-    //         let total           = 0;
+        }else {
+          setErrorPromotion([]);
+          
+          if((typeof response == 'object') && response && type) {    
+            let total           = 0;
   
-    //         if(response.type == 0) {
-    //           total             = Number(price) - Number(response.quantity);
-    //         }else {
-    //           const discount    = Number(price) * (Number(response.quantity) / 100);
-    //           total             = Number(price) - Number(discount);
-    //         }
+            if(response.type == 0) {
+              total             = Number(price) - Number(response.quantity);
+            }else {
+              const discount    = Number(price) * (Number(response.quantity) / 100);
+              total             = Number(price) - Number(discount);
+            }
   
-    //         setPrice(total);
-    //       }
-    //     }
-    // }
+            switch(type) {
+              case 'annual':
+                setPriceAnnual(total);
+              break;
+              case 'biannual':
+                setPriceBiannual(total);
+              break;
+              case 'quarterly':
+                setPriceQuarterly(total);
+              break;
+              default:
+                setPriceAnnual(0);
+                setPriceBiannual(0);
+                setPriceQuarterly(0);
+            }
+
+            setPrice(total);
+          }
+        }
+    }
   }
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -343,7 +400,7 @@ const Individual = () => {
                     />
                     <span className={`${styles.precio} ms-2`}>
                       {paquete ? (
-                        <>{formatPrice(paquete?.precioAnual)} MXN</>
+                        <>{formatPrice((priceAnnual > 0) ? priceAnnual:paquete?.precioAnual)} MXN</>
                       ) : null}
                     </span>
                   </div>
@@ -359,7 +416,7 @@ const Individual = () => {
                     />
                     <span className={`${styles.precio} ms-2`}>
                       {paquete ? (
-                        <>{formatPrice(paquete.precioSemestral)} MXN</>
+                        <>{formatPrice((priceBiannual > 0) ? priceBiannual:paquete.precioSemestral)} MXN</>
                       ) : null}
                     </span>
                   </div>
@@ -375,31 +432,30 @@ const Individual = () => {
                     />
                     <span className={`${styles.precio} ms-2`}>
                       {paquete ? (
-                        <>{formatPrice(paquete!.precioTrimestral)} MXN</>
+                        <>{formatPrice((priceQuarterly > 0) ? priceQuarterly:paquete!.precioTrimestral)} MXN</>
                       ) : null}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
-            {price && (price > 0) &&
-              <div className="row">
-                <div className="col-12">
-                    <div className="form-group">
-                        <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
-                        {price && (price > 0) ? 
-                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
-                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
-                        }
-                        {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
-                            return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
-                        })}
-                    </div>
-                </div>
+            <div className="row my-2 d-flex justify-content-center">
+              <div className="col-sm-12 col-md-12 col-lg-9">
+                  <div className="form-group">
+                      <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                      {(price > 0) ? 
+                        <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                        <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                      }
+                      {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                          return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                      })}
+                  </div>
               </div>
-            }
+            </div>
             <div className="text-center mt-5">
-              {precioSeleccionado ? (
+
+              {(price > 0) ? (
                 <>
                   <Button titulo="Pagar con tarjeta" onClick={pagar} />
                   <Button
@@ -429,7 +485,7 @@ const Individual = () => {
         <div className={`${styles.S1content} text-center`}>
           Cantidad a pagar:{" "}
           <span className={`${styles.precio}`}>
-            {formatPrice(Number(precioSeleccionado))} MXN
+            {formatPrice(price)} MXN
           </span>
         </div>
 
@@ -481,7 +537,7 @@ const Individual = () => {
         <div className={`${styles.S1content} text-center`}>
           Cantidad a pagar:{" "}
           <span className={`${styles.precio}`}>
-            {formatPrice(Number(precioSeleccionado))} MXN
+            {formatPrice(Number(price))} MXN
           </span>
         </div>
 

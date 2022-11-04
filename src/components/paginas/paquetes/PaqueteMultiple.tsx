@@ -1,7 +1,7 @@
 import { FormEvent, useContext, useState, ChangeEvent } from "react";
 import { useRouter } from "next/router";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { Form, Modal } from "react-bootstrap";
+import { Form, Modal, Col, Row } from "react-bootstrap";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import moment from "moment";
@@ -22,6 +22,14 @@ import Loading from "../../ui/loading/Loading";
 import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
 // Context
 import { PromotionContext } from '../../../context/promotions/PromotionContext';
+//Services
+import { storeOrder, destroyOrder } from '../../../services/orderService';
+//Validations
+import { isNotEmpty, isString } from '../../../helpers/validations';
+//Helpers
+import { validate } from '../../../helpers/response';
+//Extras
+import Swal from "sweetalert2";
 
 interface Props {
   id: string;
@@ -34,12 +42,13 @@ interface Props {
 }
 
 const PaqueteMultiple                                                   = (props: Props) => {
-  const access_token                                                    = localStorage.getItem("token");
+  //const access_token                                                    = localStorage.getItem("token") || "";
+  const access_token                                                    = "123";
   const { titulo, precio, descripcion, options, avanzado, usuario, id } = props;
   const { auth, abrirLogin, actualizarRol }                             = useContext(AuthContext);
   const { isValidPromotion }                                            = useContext(PromotionContext);
-  const { formulario, handleChange, setFormulario }                     = useForm({usuarios: 11});
-  const { usuarios }                                                    = formulario;
+  const { formulario, handleChange, setFormulario }                     = useForm({usuarios: 11, name: ''});
+  const { usuarios, name }                                              = formulario;
   const [ show, setShow ]                                               = useState(false);
   const [ mostrarPago, setMostrarPago ]                                 = useState(false);
   const [ loading, setLoading ]                                         = useState(false);
@@ -50,17 +59,22 @@ const PaqueteMultiple                                                   = (props
   const elements                                                        = useElements();
   const [ errorPromotion, setErrorPromotion ]                           = useState<any>([]);
   const [ price, setPrice ]                                             = useState(0); 
+  const [ userTotal, setUserTotal ]                                     = useState(11);
+  const [ code, setCode ]                                               = useState('');
+  const [ errorName, setErrorName ]                                     = useState([]);
 
   const handleClose                                                     = () =>  setShow(false);
   
   const handleShow                                                      = () => { 
     if(avanzado) {
-      setFormulario({usuarios: 11});
+      setFormulario({usuarios: 11, name: ''});
       setPrice(Number(11) * Number(precio));
+      setUserTotal(11);
     }else {
       setUsuariosSeleccionados(usuario);
       setPrice(Number(precio));
     }
+    setCode('');
     setErrorPromotion([]);
     setShow(true)
   };
@@ -83,6 +97,7 @@ const PaqueteMultiple                                                   = (props
 
   const writeQuantityUsers                                              = (data: any) => {
     const { name, value }                                               = data.target;
+    setUserTotal(Number(value));
     setPrice(Number(precio) * Number(value));
     handleChange(data);
   }
@@ -127,7 +142,7 @@ const PaqueteMultiple                                                   = (props
     const { name, value }                                               = target;
     setErrorPromotion([]);
 
-    if(value && (value.trim().length > 0) && access_token) {
+    if(value && (value.trim().length > 0) && access_token && (price > 0)) {
       const response                                                    = await isValidPromotion(value, access_token);
   
         if(response && (typeof response == 'string')) {
@@ -153,94 +168,136 @@ const PaqueteMultiple                                                   = (props
               total             = Number(price) - Number(discount);
             }
   
+            setCode(value);
             setPrice(total);
           }
         }
     }
   }
 
-  const onSubmit                                                        = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const formValidate                                                    = (name: string, message: any) => {
 
-    if (!stripe || !elements) return;
+    const messageError                                                  = message.filter((value:any) => value != '');
 
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: elements.getElement(CardElement)!,
-    });
+    if(messageError.length == 0) {
+      return false;
+    }
 
-    setLoading(true);
+    switch(name) {
+      case 'name':
+        setErrorName(messageError);
+      return true;
+      default:
+      return true;
+    }
+  }
 
-    const fechaPago = moment().format();
-    const fechaVencimiento = moment(fechaPago).add(1, "y").format();
-
-    if (!error) {
-      const pago = paymentMethod;
-      const body: Pedido = {
-        usuario: auth.uid,
-        paquete: id,
-        precio: Number(precio),
-        importe: avanzado
-          ? Number(precio) * Number(usuarios)
-          : Number(precio) * Number(usuariosSeleccionados),
-        fechaPago,
-        fechaVencimiento,
-        metodoPago: pago?.type,
-        vigencia: true,
-        idPago: pago?.id,
-        totalUsuarios: avanzado ? usuarios : usuariosSeleccionados,
-      };
-
-      const correoPedido: NuevoPedido = {
-        apellido: auth.apellido,
-        nombre: auth.nombre,
-        correo: auth.correo,
-        idCompra: pago?.id,
-        nombrePaquete: titulo,
-        precio: Number(precio),
-        importe: avanzado
-          ? Number(precio) * Number(usuarios)
-          : Number(precio) * Number(usuariosSeleccionados),
-      };
-
-      const correoPedidoAdmin: NuevoPedidoAdmin = {
-        apellido: auth.apellido,
-        nombre: auth.nombre,
-        idCompra: pago?.id,
-        nombrePaquete: titulo,
-        precio: Number(precio),
-        importe: avanzado
-          ? Number(precio) * Number(usuarios)
-          : Number(precio) * Number(usuariosSeleccionados),
-      };
-
-      try {
-        const resp = await anadirPaqueteInv("pedidos", body);
-        auth.role !== "Administrador"
-          ? await actualizarRol(
+  const onCancelSubscription                                            = async () => {
+    Swal.fire({
+      title: '¿Está de acuerdo en cancelar la subscripción?',
+      text: "Al cancelar, perdera los privilegios adquiridos del paquete al cual está subscrito",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'De acuerdo'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if(auth.uid && access_token) {
+          const response                                                = await destroyOrder(auth.uid, access_token);
+    
+          if(response && response.ok) {
+            toast.error(response.msg);
+            return false;
+          }
+    
+          if(response && response.data) {
+            toast.success(response.msg);
+    
+            localStorage.setItem("role", 'Usuario');
+            
+            await actualizarRol(
               {
-                role: titulo,
-                paqueteAdquirido: id,
-                usuarios: avanzado ? usuarios : usuariosSeleccionados,
+                role:             'Usuario',
+                paqueteAdquirido: '',
               },
               auth.uid
-            )
-          : null;
-
-        await nuevoPedido("correos/nuevo-pedido", correoPedido);
-        await nuevoPedidoAdmin("correos/nuevo-pedido-admin", correoPedidoAdmin);
-
-        if (resp.ok) {
-          toast.success(resp.msg);
-          ocultarPago();
-          router.push("/perfil/historial-de-pagos");
+            );
+    
+            router.push("/perfil/historial-de-pagos");
+          }
+          
         }
-        if (!resp.ok) toast.error(resp.msg);
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
       }
-      setLoading(false);
+    })
+  }
+
+  const onSubmit                                                        = async (e: FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+
+      setErrorName([]);
+
+      const formName                                                    = formValidate('name', [isNotEmpty(name), isString(name)]);
+      
+      if(formName) {
+        return false;
+      }
+
+      if (!stripe || !elements) return;
+
+      const { error, paymentMethod }                                    = await stripe.createPaymentMethod({
+        type:                                                           "card",
+        card:                                                           elements.getElement(CardElement)!,
+        billing_details: {
+          name:                                                         name
+        },
+      });
+
+      if (!error && access_token) {
+        setLoading(true);
+        const paymentDate                                               = moment().format();
+        const expirationDate                                            = moment(paymentDate).add(1, "y").format();
+        const payment                                                   = paymentMethod;
+
+        if(payment && (typeof auth.uid == 'string')) {
+          const type                                                    = (avanzado) ? ((userTotal >= 11) ? 'advanced':''):( (usuariosSeleccionados >= 3 && usuariosSeleccionados <= 5) ? 'basic': ((usuariosSeleccionados >= 6 && usuariosSeleccionados <= 10) ? 'intermediate':'' ));
+          const response                                                = await storeOrder(auth.uid, id, (avanzado) ? userTotal:usuariosSeleccionados, type, paymentDate, expirationDate, payment.type, payment.id, (code != '') ? code:null, name, access_token);
+
+          if(response && response.errors) {
+            validate(response.errors);
+            return false;
+          }
+
+          if(response && response.ok) {
+              toast.error(response.msg);
+              return false;
+          }
+
+          if(response && response.data) {
+            if(auth.role !== 'Administrador') {
+              await actualizarRol(
+                {
+                  role:                                                 titulo,
+                  paqueteAdquirido:                                     id,
+                  usuarios:                                             (avanzado) ? userTotal:usuariosSeleccionados,
+                },
+                auth.uid
+              )
+            }
+            localStorage.setItem("role", titulo);
+            toast.success(response.msg);
+            ocultarPago();
+            router.push("/perfil/historial-de-pagos");
+          }
+        }
+    
+        setLoading(false);
+      }
+      
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -266,7 +323,19 @@ const PaqueteMultiple                                                   = (props
             {auth.uid ? (
               <>
                 {auth.role === titulo ? (
-                  <Button titulo="Contratado" btn="Disabled" />
+                  <div className="row">
+                    <div className="col-12">
+                      <button
+                        type      = "button"
+                        className = {styles.btnContract}
+                      >
+                        CONTRATADO
+                      </button>
+                    </div>
+                    <div className="col-12 mt-2">
+                      <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
+                    </div>
+                  </div>
                 ) : (
                   <>
                     {auth.role === "Intermedio" ? (
@@ -467,31 +536,41 @@ const PaqueteMultiple                                                   = (props
           </span>
         </div>
 
-        <br />
         <Form onSubmit={onSubmit}>
-          <div className="form-group px-4">
-            <CardElement
-              options={{
-                style: {
-                  base: {
-                    iconColor: "#2C2C2C",
-                    color: "#2C2C2C",
-                    fontWeight: "500",
-                    fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
-                    fontSize: "16px",
-                    "::placeholder": {
-                      color: "#757575",
+          <Row>
+            <Col className="form-group px-5 my-2"  md sm xs={12} >
+              <Form.Label className={styles.S3labels} htmlFor="name">Titular de la tarjeta *</Form.Label>
+              <Form.Control id="name" type="text" name="name" placeholder="Jhon Miller" onChange={handleChange} />
+              {(errorName) && (errorName.length != 0) && errorName.map((value: any, key: any) => {
+                  return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+              })}
+            </Col>
+          </Row>
+          <Row>
+            <Col className="form-group px-5 my-3" md sm xs={12}>
+              <CardElement
+                options={{
+                  hidePostalCode: true,
+                  style: {
+                    base: {
+                      iconColor: "#2C2C2C",
+                      color: "#2C2C2C",
+                      fontWeight: "500",
+                      fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
+                      fontSize: "16px",
+                      "::placeholder": {
+                        color: "#757575",
+                      },
+                    },
+                    invalid: {
+                      iconColor: "#E44122",
+                      color: "#E44122",
                     },
                   },
-                  invalid: {
-                    iconColor: "#E44122",
-                    color: "#E44122",
-                  },
-                },
-              }}
-            />
-          </div>
-
+                }}
+              />
+            </Col>
+          </Row>
           <div className="text-center my-4">
             {!stripe ? (
               <Button titulo="Pagar" btn="Disabled" />

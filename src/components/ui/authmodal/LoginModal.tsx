@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { googleClientId } from "credentials";
 import PasswordForgot from "../authmodal/PasswordForgot";
 
+
 const LoginModal = () => {
   const router = useRouter();
   const [modalShow, setModalShow]       = useState(false);
@@ -23,6 +24,7 @@ const LoginModal = () => {
     password: "",
     rememberme: false,
   });
+
 
   useEffect(() => {
     const correo = localStorage.getItem("correo");
@@ -68,7 +70,7 @@ const LoginModal = () => {
     cerrarLogin();
     setModalShow(!modalShow)
   };
-  
+
 
   return (
     <>
@@ -120,7 +122,7 @@ const LoginModal = () => {
                     } ${styles.mostrarContraseña}`}
                   />
                 </div>
-              </div>
+              </div>       
               <div className="col-4 my-4">
                 <hr />
               </div>
@@ -174,7 +176,6 @@ const LoginModal = () => {
                   <label className="modal-labels">Recordarme</label>
                 </div>
               </div>
-
               <div className="col-10 mb-3 text-center">
                 {correo.length > 0 && password.length > 0 ? (
                   <Button titulo="Iniciar sesión" />

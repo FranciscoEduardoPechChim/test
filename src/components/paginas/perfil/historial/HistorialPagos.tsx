@@ -52,6 +52,7 @@ const HistorialPagos = () => {
                     <th className="">Paquete</th>
                     <th className="">PPU</th>
                     <th className="text-center">Usuarios</th>
+                    <th className="">Descuento</th>
                     <th className="">Importe</th>
 
                     {historialPago.map((pago) => (
@@ -68,6 +69,9 @@ const HistorialPagos = () => {
                         </td>
                         <td className={`${styles.content} text-center`}>
                           {pago.totalUsuarios <= 1 ? "N/A" : pago.totalUsuarios}
+                        </td>
+                        <td className={`${styles.content}`}>
+                          N/A
                         </td>
                         <td className={`${styles.content}`}>
                           {formatPrice(pago.importe)}

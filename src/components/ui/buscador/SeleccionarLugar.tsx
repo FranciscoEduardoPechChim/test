@@ -19,6 +19,12 @@ const SeleccionarLugar = () => {
           lat: suggest.location.lat,
           lng: suggest.location.lng,
         });
+    // !suggest
+    // ? setUbicacion({ lat: 25.7825453, lng: -80.2994984 })
+    // : setUbicacion({
+    //     lat: suggest.location.lat,
+    //     lng: suggest.location.lng,
+    //   });
   };
 
   return (
@@ -26,7 +32,7 @@ const SeleccionarLugar = () => {
       <Geosuggest
         ref={geosuggestEl}
         queryDelay={530}
-        country="mx"
+        country="usa"
         placeholder="Busca tu colonia aquí..."
         onSuggestSelect={onSuggestSelect}
         autoComplete="off"

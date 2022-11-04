@@ -14,6 +14,11 @@ import MenuUsuario from "./MenuUsuario";
 import Notificaciones from "./Notificaciones";
 import { ChatContext } from "context/chat/ChatContext";
 
+import { MapContext } from "../../../context/map/MapContext";
+import SortIcon from '@material-ui/icons/ArrowDropDown';
+import { Box, InputLabel, MenuItem, FormControl, Select, SelectChangeEvent } from '@mui/material';
+
+
 // interface Notificacion {
 //   de: string;
 //   para: string;
@@ -37,6 +42,10 @@ const Header = () => {
   //   useState<Notificacion[]>([]);
   // const uniqueValues = new Set();
 
+  
+  const [ location, setLocation ]                 = useState(0);
+  const { setUbicacionUsuario, setCoordenadas }   = useContext(MapContext);
+
   useEffect(() => {
     socket?.on("obtener-solicitud", (solicitud) => {
       setSolicitudes([...solicitudes, solicitud]);
@@ -59,7 +68,18 @@ const Header = () => {
     setContador(solicitudes.length);
   }, [solicitudes.length]);
 
+const handleChangeSelect = (event: SelectChangeEvent) => {
 
+    if(Number(event.target.value) == 0) {
+      setUbicacionUsuario({ lat: 19.4326078, lng: -99.133207 }); 
+      setCoordenadas({ lat: 19.4326078, lng: -99.133207 }); 
+    }else {
+      setUbicacionUsuario({ lat: 25.7825453, lng: -80.2994984 }); 
+      setCoordenadas({ lat: 25.7825453, lng: -80.2994984 }); 
+    }
+
+    setLocation(Number(event.target.value));
+  };
 
   // useEffect(() => {
   //   socket?.on("obtener-notificacion", (notificacion) => {
@@ -80,12 +100,33 @@ const Header = () => {
               alt="Red 1 a 1"
               className="pointer"
             />
-          </Link>
-        </div>
+          </Link> 
+        </div> 
         <Navbar.Toggle />
         <Navbar.Collapse>
           {!auth.logged ? (
             <Nav className="ms-auto my-2" navbarScroll>
+              {/* <div
+                onClick={abrirRegistro}
+                className={`${styles.navEnlace} pointer`}
+              >
+                Ubicaciones
+                < SortIcon />
+              
+              </div> */}
+
+              <Select
+                      sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                      labelId   = "demo-simple-select-label"
+                      id        = "demo-simple-select"
+                      value     = {String(location)}
+                      label     = "location"
+                      onChange  = {handleChangeSelect}
+                    >
+                      <MenuItem value={0}>Ciudad de México</MenuItem>
+                      <MenuItem value={1}>Miami</MenuItem>
+                    </Select>
+
               <div
                 onClick={abrirRegistro}
                 className={`${styles.navEnlace} pointer ms-3`}

@@ -69,6 +69,24 @@
     rgba(204, 67, 255, 1) 100%
   );
 }
+.btnContract {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 15px;
+  color: #ffffff;
+  border-radius: 40px;
+  text-decoration: none;
+  padding: 15px 31px 15px 31px;
+  border: none;
+  outline: none;
+  background: rgb(100, 3, 171);
+  background: linear-gradient(
+    90deg,
+    rgba(100, 3, 171, 1) 0%,
+    rgba(204, 67, 255, 1) 100%
+  );
+}
 
 .ajusteBtn {
   position: absolute;
@@ -215,4 +233,22 @@
 .selectS2{
   outline: none;
   border: 1px solid tomato;
+}
+
+.cancel {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  color: #d80404;
+}
+
+.cancel:hover {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  color: #d80404;
+  text-decoration: underline #d80404;
+
 }

@@ -65,11 +65,20 @@ export const MapProvider: FC = ({ children }) => {
     lat: 19.4326078,
     lng: -99.133207,
   });
+  // const [coordenadas, setCoordenadas] = useState<Location>({
+  //   lat: 25.7825453,
+  //   lng: -80.2994984,
+  // });
 
   const [ubicacion, setUbicacion] = useState<Location>({
     lat: 19.4326077,
     lng: -99.133208,
   });
+
+  // const [ubicacion, setUbicacion] = useState<Location>({
+  //   lat: 25.7825453,
+  //   lng: -80.2994984,
+  // });
 
   const [ubicacionUsuario, setUbicacionUsuario] = useState<Location>({
     lat: 0,
@@ -85,9 +94,10 @@ export const MapProvider: FC = ({ children }) => {
   >({ lat: 0, lng: 0 });
 
   const [direccion, setDireccion] = useState();
-
+  //const [dirMapa, setDirMapa] = useState("Miami, Florida, EE. UU.");
   const [dirMapa, setDirMapa] = useState("Ciudad de México, CDMX, México");
 
+  //const [zoom, setZoom] = useState(6);
   const [zoom, setZoom] = useState(5);
 
   const [categoria, setCategoria] = useState(rentas);
@@ -107,6 +117,10 @@ export const MapProvider: FC = ({ children }) => {
     coordenadas.lat !== 19.4326078 && coordenadas.lng !== -99.133207
       ? setZoom(12)
       : setZoom(5);
+    // coordenadas.lat !== 25.7825453 && coordenadas.lng !== -80.2994984
+    //   ? setZoom(12)
+    //   : setZoom(6);
+
   }, [coordenadas]);
 
 
