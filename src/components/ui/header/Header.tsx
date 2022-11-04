@@ -106,26 +106,17 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
         <Navbar.Collapse>
           {!auth.logged ? (
             <Nav className="ms-auto my-2" navbarScroll>
-              {/* <div
-                onClick={abrirRegistro}
-                className={`${styles.navEnlace} pointer`}
-              >
-                Ubicaciones
-                < SortIcon />
-              
-              </div> */}
-
               <Select
-                      sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
-                      labelId   = "demo-simple-select-label"
-                      id        = "demo-simple-select"
-                      value     = {String(location)}
-                      label     = "location"
-                      onChange  = {handleChangeSelect}
-                    >
-                      <MenuItem value={0}>Ciudad de México</MenuItem>
-                      <MenuItem value={1}>Miami</MenuItem>
-                    </Select>
+                sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                labelId   = "demo-simple-select-label"
+                id        = "demo-simple-select"
+                value     = {String(location)}
+                label     = "location"
+                onChange  = {handleChangeSelect}
+              >
+                <MenuItem value={0}>Ciudad de México</MenuItem>
+                <MenuItem value={1}>Miami</MenuItem>
+              </Select>
 
               <div
                 onClick={abrirRegistro}
@@ -138,6 +129,17 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
             </Nav>
           ) : (
             <Nav className="ms-auto my-2" navbarScroll>
+               <Select
+                  sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                  labelId   = "demo-simple-select-label"
+                  id        = "demo-simple-select"
+                  value     = {String(location)}
+                  label     = "location"
+                  onChange  = {handleChangeSelect}
+                >
+                  <MenuItem value={0}>Ciudad de México</MenuItem>
+                  <MenuItem value={1}>Miami</MenuItem>
+              </Select>
               <Link href='/'>
                 <div className={`${styles.navEnlace} pointer`} style={{marginTop: '20px'}}>
                   Inicio
