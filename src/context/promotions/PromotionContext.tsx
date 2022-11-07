@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 import { validate } from '../../helpers/response';
 //Interfaces
 import { Promotion } from '../../interfaces/PromotionInterface';
+import { Pedido } from '../../interfaces/PedidosInterface';
 //Services
 import { storePromotion, updatePromotion, destroyPromotion, restorePromotion, getPromotion, getPromotionByCode } from '../../services/promotionService';
+import { getSubcription, getOrder } from '../../services/orderService';
 //Extras
 import Swal from "sweetalert2";
 
@@ -19,6 +21,8 @@ interface ContextProps {
     deletePromotion:    (id: string, access_token: string) => Promise<boolean | undefined>;
     undeletePromotion:  (id: string, access_token: string) => Promise<boolean | undefined>;
     showPromotion:      (id: string, access_token: string) => Promise<Promotion | undefined>;
+    isSubscription:     (id: string, access_token: string) => Promise<boolean | undefined>;
+    showOrder:          (id: string, access_token: string) => Promise<Pedido | undefined>;
 }
 
 export const PromotionContext                       = createContext({} as ContextProps);
@@ -212,7 +216,34 @@ export const PromotionProvider: FC                  = ({ children }) => {
             return response.data.promotions;
         }
     }
+    const showOrder                                 = async (id: string, access_token: string) => {
+        if(id && access_token) {
+            const response                          = await getOrder(id, access_token);
 
+            if(response && response.ok) {
+                toast.error(response.msg);
+            }
+
+            if(response && response.data) {      
+                return response.data.orders;
+            }
+        }
+    }
+    const isSubscription                            = async (id: string, access_token: string) => {
+        if(id && access_token) {
+            const response                          = await getSubcription(id, access_token);
+
+            if(response && response.ok) {
+                return false;
+            }
+
+            if(response && response.data) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
     return (
         <PromotionContext.Provider
           value={{
@@ -222,7 +253,9 @@ export const PromotionProvider: FC                  = ({ children }) => {
            editPromotion,
            undeletePromotion,
            showPromotion,
-           isValidPromotion
+           isValidPromotion,
+           isSubscription,
+           showOrder
           }}
         >
           {children}

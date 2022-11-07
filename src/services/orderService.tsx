@@ -1,5 +1,5 @@
 //Types
-import { orderResponse } from '../types/orderType';
+import { orderResponse, subscriptionResponse } from '../types/orderType';
 //Credentials
 import { production, development } from 'credentials';
 
@@ -38,26 +38,46 @@ export const storeOrder                             = async (userId: string, pac
 }
 
 //GET
-// export const getPromotions                          = async (access_token: string):Promise<promotionResponse|undefined> => {
-//     try {
-//         var myHeaders                               = new Headers();
-//         myHeaders.append("Content-Type", "application/json");
-//         myHeaders.append("X-Requested-With", "XMLHttpRequest");
-//         myHeaders.append("Authorization", `Bearer ${access_token}`);
+export const getSubcription                         = async (id: string, access_token: string):Promise<subscriptionResponse|undefined> => {
+    try {
+        var myHeaders                               = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+        myHeaders.append("Authorization", `Bearer ${access_token}`);
 
-//         const requestOptions                        = {
-//             method: 'GET',
-//             headers: myHeaders
-//         };
+        const requestOptions                        = {
+            method: 'GET',
+            headers: myHeaders
+        };
 
-//         const response                              = await fetch(`${development}/promotions`, requestOptions);
-//         const result:promotionResponse              = await response.json();
+        const response                              = await fetch(`${development}/pedidos/subscription/${id}`, requestOptions);
+        const result:subscriptionResponse           = await response.json();
       
-//         return result;
-//     } catch (error) {
-//         console.log("Error:", error);
-//     }
-// }
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
+export const getOrder                               = async (id: string, access_token: string):Promise<orderResponse|undefined> => {
+    try {
+        var myHeaders                               = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+        myHeaders.append("Authorization", `Bearer ${access_token}`);
+
+        const requestOptions                        = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                              = await fetch(`${development}/pedidos/client/${id}`, requestOptions);
+        const result:orderResponse                  = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
 // export const getPromotion                           = async (id: string, access_token: string):Promise<promotionResponse|undefined> => {
 //     try {
 //         var myHeaders                               = new Headers();

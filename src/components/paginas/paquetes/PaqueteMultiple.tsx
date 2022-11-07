@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useState, ChangeEvent } from "react";
+import { FormEvent, useContext, useState, ChangeEvent, useEffect } from "react";
 import { useRouter } from "next/router";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { Form, Modal, Col, Row } from "react-bootstrap";
@@ -11,7 +11,6 @@ import { useForm } from "../../../hooks/useForm";
 import Button from "../../ui/button/Button";
 import Modaltitle from "../../ui/modaltitle/Modaltitle";
 import styles from "./paquetes.module.css";
-import { Pedido } from "../../../interfaces/PedidosInterface";
 import {
   anadirPaqueteInv,
   generarRefMul,
@@ -20,6 +19,8 @@ import {
 } from "../../../helpers/fetch";
 import Loading from "../../ui/loading/Loading";
 import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
+//Interfaces
+import { Pedido } from '../../../interfaces/PedidosInterface';
 // Context
 import { PromotionContext } from '../../../context/promotions/PromotionContext';
 //Services
@@ -46,7 +47,7 @@ const PaqueteMultiple                                                   = (props
   const access_token                                                    = "123";
   const { titulo, precio, descripcion, options, avanzado, usuario, id } = props;
   const { auth, abrirLogin, actualizarRol }                             = useContext(AuthContext);
-  const { isValidPromotion }                                            = useContext(PromotionContext);
+  const { isValidPromotion, isSubscription, showOrder }                 = useContext(PromotionContext);
   const { formulario, handleChange, setFormulario }                     = useForm({usuarios: 11, name: ''});
   const { usuarios, name }                                              = formulario;
   const [ show, setShow ]                                               = useState(false);
@@ -62,13 +63,23 @@ const PaqueteMultiple                                                   = (props
   const [ userTotal, setUserTotal ]                                     = useState(11);
   const [ code, setCode ]                                               = useState('');
   const [ errorName, setErrorName ]                                     = useState([]);
-
+  const [ subscription, setSubscription ]                               = useState(false);
+  const [ order, setOrder ]                                             = useState<Pedido>();
+  
   const handleClose                                                     = () =>  setShow(false);
   
-  const handleShow                                                      = () => { 
+  const handleShow                                                      = async () => { 
     if(avanzado) {
+      let discount                                                      = 0;
+    
+      if(order && order.importe) {
+        const startDate                                                 = moment(order.fechaPago);
+        const endDate                                                   = moment();
+        discount                                                        = (endDate.diff(startDate, 'months') + 1) * (order.importe/12);
+      }
+
       setFormulario({usuarios: 11, name: ''});
-      setPrice(Number(11) * Number(precio));
+      setPrice((Number(11) * Number(precio)) - discount);
       setUserTotal(11);
     }else {
       setUsuariosSeleccionados(usuario);
@@ -91,14 +102,30 @@ const PaqueteMultiple                                                   = (props
 
   const selectQuantityUsers                                             = (data: any) => {
     const { label, value }                                              = data;
-    setPrice(Number(precio) * Number(value));
+    let discount                                                        = 0;
+
+    if(order && order.importe) {
+      const startDate                                                   = moment(order.fechaPago);
+      const endDate                                                     = moment();
+      discount                                                          = (endDate.diff(startDate, 'months') + 1) * (order.importe/12);
+    }
+
+    setPrice((Number(precio) * Number(value)) - discount);
     setUsuariosSeleccionados(data);
   }
 
   const writeQuantityUsers                                              = (data: any) => {
     const { name, value }                                               = data.target;
+    let discount                                                        = 0;
+
+    if(order && order.importe) {
+      const startDate                                                   = moment(order.fechaPago);
+      const endDate                                                     = moment();
+      discount                                                          = (endDate.diff(startDate, 'months') + 1) * (order.importe/12);
+    }
+
     setUserTotal(Number(value));
-    setPrice(Number(precio) * Number(value));
+    setPrice((Number(precio) * Number(value)) - discount);
     handleChange(data);
   }
 
@@ -233,6 +260,31 @@ const PaqueteMultiple                                                   = (props
     })
   }
 
+  const chagePaymentCard                                                = async () => {
+    console.log('ggggg');
+    console.log(price);
+    console.log(auth.uid);
+    console.log('----------');
+  }
+
+  const changePaymentRef                                                = async () => {
+    Swal.fire({
+      title: '¿Está de acuerdo en realizar el pago por referencia?',
+      text: "Al realizar el pago por referencia, se cancelara la subscripción una vez confirmado el pago hasta 10 días hábiles",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'De acuerdo'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        handleNext();
+        setMostrarTransferencia(true);
+      }
+    });
+  }
+
   const onSubmit                                                        = async (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -301,6 +353,26 @@ const PaqueteMultiple                                                   = (props
     }
   };
 
+  useEffect(() => {
+    const initSubscription                                              = async () => {
+      if(auth.uid) {
+        const subscriptionData                                          = await isSubscription(auth.uid, access_token); 
+        const orderData                                                 = await showOrder(auth.uid, access_token);
+
+        if(subscriptionData && typeof subscriptionData == 'boolean') {
+          setSubscription(subscriptionData);
+        }
+
+        if(orderData && orderData._id) {
+          setOrder(orderData);
+        }
+      }
+    }
+
+    initSubscription();
+  }, [isSubscription]);
+
+
   return (
     <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
       <div className={styles.paquetesCard}>
@@ -332,9 +404,11 @@ const PaqueteMultiple                                                   = (props
                         CONTRATADO
                       </button>
                     </div>
-                    <div className="col-12 mt-2">
-                      <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
-                    </div>
+                    {subscription && 
+                      <div className="col-12 mt-2">
+                        <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
+                      </div>
+                    }
                   </div>
                 ) : (
                   <>
@@ -416,25 +490,37 @@ const PaqueteMultiple                                                   = (props
                         </>
                       )}
 
-                      <div className="col-12">
-                        <div className="form-group">
-                          <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
-                          {usuarios && (usuarios >= 11) ? 
-                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
-                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
-                          }
-                          {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
-                              return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
-                          })}
+                      {(!subscription) && 
+                        <div className="col-12">
+                          <div className="form-group">
+                            <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                            {usuarios && (usuarios >= 11) ? 
+                              <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                              <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                            }
+                            {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                                return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                            })}
+                          </div>
                         </div>
-                      </div>
+                      }
 
-                      {usuarios && (usuarios >= 11) &&
+                      {usuarios && (usuarios >= 11) && (!subscription) ?
                           <div className="col-12 d-flex justify-content-center mt-3 mb-3">
                             <Button titulo="Pago con tarjeta" onClick={pagar} />
                             <Button
                               titulo="Transferencia bancaria"
                               onClick={pagarTransferencia}
+                            />
+                          </div>:
+                          <div className="col-12 d-flex justify-content-center mt-3 mb-3">
+                            <Button
+                              titulo="Pago con tarjeta"
+                              onClick={chagePaymentCard}
+                            />
+                            <Button
+                              titulo="Transferencia bancaria"
+                              onClick={changePaymentRef}
                             />
                           </div>
                       }
@@ -472,7 +558,7 @@ const PaqueteMultiple                                                   = (props
                           ) : null}
                         </div>
                       </div>
-
+                      {(!subscription) && 
                       <div className="col-12">
                         <div className="form-group mt-4 mb-2">
                           <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
@@ -485,10 +571,11 @@ const PaqueteMultiple                                                   = (props
                           })}
                         </div>
                       </div>
-
+                      }
                       <div className="col-12">
                         <div className="text-center mt-5">
                           {!usuariosSeleccionados.value ? (
+                            (!subscription) ?
                             <div className="d-flex justify-content-center">
                               <Button
                                 titulo="Pago con tarjeta"
@@ -498,18 +585,39 @@ const PaqueteMultiple                                                   = (props
                                 titulo="Transferencia bancaria"
                                 btn="Disabled"
                               />
+                            </div>:
+                            <div className="d-flex justify-content-center mb-1">
+                              <Button
+                                  titulo="Pago con tarjeta"
+                                  btn="Disabled"
+                                />
+                                <Button
+                                  titulo="Transferencia bancaria"
+                                  btn="Disabled"
+                                />
                             </div>
                           ) : (
-                            <div className="d-flex justify-content-center">
-                              <Button
-                                titulo="Pago con tarjeta"
-                                onClick={pagar}
-                              />
-                              <Button
-                                titulo="Transferencia bancaria"
-                                onClick={pagarTransferencia}
-                              />
-                            </div>
+                            (!subscription) ?
+                              <div className="d-flex justify-content-center">
+                                <Button
+                                  titulo="Pago con tarjeta"
+                                  onClick={pagar}
+                                />
+                                <Button
+                                  titulo="Transferencia bancaria"
+                                  onClick={pagarTransferencia}
+                                />
+                              </div>:
+                              <div className="d-flex justify-content-center mb-1">
+                                <Button
+                                  titulo="Pago con tarjeta"
+                                  onClick={chagePaymentCard}
+                                />
+                                <Button
+                                  titulo="Transferencia bancaria"
+                                  onClick={changePaymentRef}
+                                />
+                             </div>
                           )}
                         </div>
                       </div>
