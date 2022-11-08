@@ -68,6 +68,10 @@ const Sidebar = ({ handleToggleSidebar, toggled, collapsed }: Props) => {
             <Link href="/dashboard/pagos/wallet">Wallet</Link>
           </MenuItem>
           <MenuItem>
+            <i className="bi bi-gift me-2"></i>
+            <Link href="/dashboard/promotions">Promociones</Link>
+          </MenuItem> 
+          <MenuItem>
             <i className="bi bi-receipt-cutoff me-2"></i>
             <Link href="/dashboard/pagos/referencias">Referencias</Link>
           </MenuItem>

@@ -220,10 +220,6 @@ export const PromotionProvider: FC                  = ({ children }) => {
         if(id && access_token) {
             const response                          = await getOrder(id, access_token);
 
-            if(response && response.ok) {
-                toast.error(response.msg);
-            }
-
             if(response && response.data) {      
                 return response.data.orders;
             }

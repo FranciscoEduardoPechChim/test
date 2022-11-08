@@ -24,7 +24,7 @@ import { Pedido } from '../../../interfaces/PedidosInterface';
 // Context
 import { PromotionContext } from '../../../context/promotions/PromotionContext';
 //Services
-import { storeOrder, destroyOrder } from '../../../services/orderService';
+import { storeOrder, destroyOrder, updateOrder } from '../../../services/orderService';
 //Validations
 import { isNotEmpty, isString } from '../../../helpers/validations';
 //Helpers
@@ -65,19 +65,23 @@ const PaqueteMultiple                                                   = (props
   const [ errorName, setErrorName ]                                     = useState([]);
   const [ subscription, setSubscription ]                               = useState(false);
   const [ order, setOrder ]                                             = useState<Pedido>();
+  const [ discounts, setDiscounts ]                                     = useState(0);
   
   const handleClose                                                     = () =>  setShow(false);
   
   const handleShow                                                      = async () => { 
+    setDiscounts(0);
+
     if(avanzado) {
       let discount                                                      = 0;
     
-      if(order && order.importe) {
+      if(order && order.precio && order.totalUsuarios) {
         const startDate                                                 = moment(order.fechaPago);
         const endDate                                                   = moment();
-        discount                                                        = (endDate.diff(startDate, 'months') + 1) * (order.importe/12);
+        discount                                                        = (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12);
       }
 
+      setDiscounts(discount);
       setFormulario({usuarios: 11, name: ''});
       setPrice((Number(11) * Number(precio)) - discount);
       setUserTotal(11);
@@ -104,12 +108,13 @@ const PaqueteMultiple                                                   = (props
     const { label, value }                                              = data;
     let discount                                                        = 0;
 
-    if(order && order.importe) {
+    if(order && order.precio && order.totalUsuarios) {
       const startDate                                                   = moment(order.fechaPago);
       const endDate                                                     = moment();
-      discount                                                          = (endDate.diff(startDate, 'months') + 1) * (order.importe/12);
+      discount                                                          = (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12);
     }
 
+    setDiscounts(discount);
     setPrice((Number(precio) * Number(value)) - discount);
     setUsuariosSeleccionados(data);
   }
@@ -118,12 +123,13 @@ const PaqueteMultiple                                                   = (props
     const { name, value }                                               = data.target;
     let discount                                                        = 0;
 
-    if(order && order.importe) {
+    if(order && order.precio && order.totalUsuarios) {
       const startDate                                                   = moment(order.fechaPago);
       const endDate                                                     = moment();
-      discount                                                          = (endDate.diff(startDate, 'months') + 1) * (order.importe/12);
+      discount                                                          = (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12);
     }
 
+    setDiscounts(discount);
     setUserTotal(Number(value));
     setPrice((Number(precio) * Number(value)) - discount);
     handleChange(data);
@@ -174,21 +180,31 @@ const PaqueteMultiple                                                   = (props
   
         if(response && (typeof response == 'string')) {
           setErrorPromotion((typeof response != 'undefined') ? [response]:[]);
-  
+          let total               = 0;
+
           if(avanzado) {
-            setPrice(Number(usuarios) * Number(precio));
+            total                 = Number(usuarios) * Number(precio);
           }else {
             const { label, value }                                          = usuariosSeleccionados;
-            setPrice(Number(value) * Number(precio));
+            total                 = Number(value) * Number(precio);
           }
       
-         
+          setPrice(total);
         }else {
           setErrorPromotion([]);
           if((typeof response == 'object') && response) {    
             let total           = 0;
-  
-            if(response.type == 0) {
+            let price           = 0;
+
+            if(avanzado) {
+              price             = Number(usuarios) * Number(precio);
+            }else {
+              const { label, value }                                        = usuariosSeleccionados;
+              price             = Number(value) * Number(precio);
+            }
+
+
+            if(response.type == 0) {    
               total             = Number(price) - Number(response.quantity);
             }else {
               const discount    = Number(price) * (Number(response.quantity) / 100);
@@ -252,6 +268,7 @@ const PaqueteMultiple                                                   = (props
               auth.uid
             );
     
+
             router.push("/perfil/historial-de-pagos");
           }
           
@@ -260,11 +277,46 @@ const PaqueteMultiple                                                   = (props
     })
   }
 
-  const chagePaymentCard                                                = async () => {
-    console.log('ggggg');
-    console.log(price);
-    console.log(auth.uid);
-    console.log('----------');
+  const changePaymentCard                                               = async () => {
+    setLoading(true);
+
+    if(typeof auth.uid == 'string' && access_token) {
+      const paymentDate                                                 = moment().format();
+      const quantity                                                    = (avanzado) ? userTotal:usuariosSeleccionados.value;
+      const type                                                        = (avanzado) ? ((userTotal >= 11) ? 'advanced':''):( (usuariosSeleccionados.value >= 3 && usuariosSeleccionados.value <= 5) ? 'basic': ((usuariosSeleccionados.value >= 6 && usuariosSeleccionados.value <= 10) ? 'intermediate':'' ));
+
+      const response                                                    = await updateOrder(auth.uid, id, quantity, type, paymentDate, paymentDate, discounts, access_token);
+
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+          toast.error(response.msg);
+          return false;
+      }
+
+      if(response && response.data) {
+        if(auth.role !== 'Administrador') {
+          await actualizarRol(
+            {
+              role:                                                 titulo,
+              paqueteAdquirido:                                     id,
+              usuarios:                                             quantity,
+            },
+            auth.uid
+          )
+        }
+        localStorage.setItem("role", titulo);
+        toast.success(response.msg);
+        ocultarPago();
+        router.push("/perfil/historial-de-pagos");
+      }
+
+    }
+
+    setLoading(false);
   }
 
   const changePaymentRef                                                = async () => {
@@ -370,8 +422,7 @@ const PaqueteMultiple                                                   = (props
     }
 
     initSubscription();
-  }, [isSubscription]);
-
+  }, []);
 
   return (
     <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
@@ -413,7 +464,15 @@ const PaqueteMultiple                                                   = (props
                 ) : (
                   <>
                     {auth.role === "Intermedio" ? (
-                      <Button titulo="Contratar" btn="Disabled" />
+                      (titulo == 'Básico') ?
+                      <Button titulo="Contratar" btn="Disabled" />:
+                      <button
+                          onClick={handleShow}
+                          type="button"
+                          className={styles.btnContratar}
+                          >
+                          CONTRATAR
+                      </button>
                     ) : (
                       <>
                         {auth.role === "Avanzado" ? (
@@ -516,7 +575,7 @@ const PaqueteMultiple                                                   = (props
                           <div className="col-12 d-flex justify-content-center mt-3 mb-3">
                             <Button
                               titulo="Pago con tarjeta"
-                              onClick={chagePaymentCard}
+                              onClick={changePaymentCard}
                             />
                             <Button
                               titulo="Transferencia bancaria"
@@ -611,7 +670,7 @@ const PaqueteMultiple                                                   = (props
                               <div className="d-flex justify-content-center mb-1">
                                 <Button
                                   titulo="Pago con tarjeta"
-                                  onClick={chagePaymentCard}
+                                  onClick={changePaymentCard}
                                 />
                                 <Button
                                   titulo="Transferencia bancaria"

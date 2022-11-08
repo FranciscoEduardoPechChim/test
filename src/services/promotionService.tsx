@@ -24,7 +24,7 @@ export const storePromotion                         = async (code: string, start
             body:JSON.stringify(body)
         };
 
-        const response                              = await fetch(`${production}/promotions`, requestOptions);
+        const response                              = await fetch(`${development}/promotions`, requestOptions);
         const result:promotionResponse              = await response.json();
             
         return result; 
@@ -46,7 +46,7 @@ export const getPromotions                          = async (access_token: strin
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${production}/promotions`, requestOptions);
+        const response                              = await fetch(`${development}/promotions`, requestOptions);
         const result:promotionResponse              = await response.json();
       
         return result;
@@ -66,7 +66,7 @@ export const getPromotion                           = async (id: string, access_
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${production}/promotions/${id}`, requestOptions);
+        const response                              = await fetch(`${development}/promotions/${id}`, requestOptions);
         const result:promotionResponse              = await response.json();
       
         return result;
@@ -86,7 +86,7 @@ export const restorePromotion                       = async (id: string, access_
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${production}/promotions/restore/${id}`, requestOptions);
+        const response                              = await fetch(`${development}/promotions/restore/${id}`, requestOptions);
         const result:promotionResponse              = await response.json();
       
         return result;
@@ -106,7 +106,7 @@ export const getPromotionByCode                     = async (code: string, acces
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${production}/promotions/code/${code}`, requestOptions);
+        const response                              = await fetch(`${development}/promotions/code/${code}`, requestOptions);
         const result:promotionResponse              = await response.json();
       
         return result;
@@ -128,7 +128,7 @@ export const destroyPromotion                       = async (id: string, access_
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${production}/promotions/${id}`, requestOptions);
+        const response                              = await fetch(`${development}/promotions/${id}`, requestOptions);
         const result:promotionResponse              = await response.json();
       
         return result;
@@ -159,7 +159,7 @@ export const updatePromotion                        = async (id: string, code: s
             body:JSON.stringify(body)
         };
 
-        const response                              = await fetch(`${production}/promotions/${id}`, requestOptions);
+        const response                              = await fetch(`${development}/promotions/${id}`, requestOptions);
         const result:promotionResponse              = await response.json();
             
         return result; 

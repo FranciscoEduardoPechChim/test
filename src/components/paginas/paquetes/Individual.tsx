@@ -1,7 +1,7 @@
 import { FormEvent, useContext, useState, ChangeEvent } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
-import { Form, Modal } from "react-bootstrap";
+import { Form, Modal, Row, Col } from "react-bootstrap";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../context/auth/AuthContext";
@@ -21,6 +21,8 @@ import { Pedido } from "../../../interfaces/PedidosInterface";
 import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
 // Context
 import { PromotionContext } from '../../../context/promotions/PromotionContext';
+//Components
+import { useForm } from '../../../hooks/useForm';
 
 const Individual = () => {
   const { auth, abrirLogin, actualizarRol } = useContext(AuthContext);
@@ -43,6 +45,12 @@ const Individual = () => {
   const [ priceQuarterly, setPriceQuarterly ]                           = useState(0);
   const [ errorPromotion, setErrorPromotion ]                           = useState<any>([]);
   const { isValidPromotion }                                            = useContext(PromotionContext);
+
+
+  const [ errorName, setErrorName ]                                     = useState([]);
+
+
+  //const { formulario, handleChange, setFormulario }                     = useForm({usuarios: 11, name: ''});
 
   const handleClose                                                     = () => setShow(false);
   const handleNext                                                      = () => setShow(false);
@@ -491,29 +499,40 @@ const Individual = () => {
 
         <br />
         <Form onSubmit={onSubmit}>
-          <div className="form-group px-4">
-            <CardElement
-              options={{
-                style: {
-                  base: {
-                    iconColor: "#2C2C2C",
-                    color: "#2C2C2C",
-                    fontWeight: "500",
-                    fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
-                    fontSize: "16px",
-                    "::placeholder": {
-                      color: "#757575",
+          {/* <Row>
+            <Col className="form-group px-5 my-2"  md sm xs={12} >
+              <Form.Label className={styles.S3labels} htmlFor="name">Titular de la tarjeta *</Form.Label>
+              <Form.Control id="name" type="text" name="name" placeholder="Jhon Miller" onChange={handleChange} />
+              {(errorName) && (errorName.length != 0) && errorName.map((value: any, key: any) => {
+                  return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+              })}
+            </Col>
+          </Row> */}
+          <Row>
+            <Col className="form-group px-5 my-3" md sm xs={12}>
+              <CardElement
+                options={{
+                  hidePostalCode: true,
+                  style: {
+                    base: {
+                      iconColor: "#2C2C2C",
+                      color: "#2C2C2C",
+                      fontWeight: "500",
+                      fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
+                      fontSize: "16px",
+                      "::placeholder": {
+                        color: "#757575",
+                      },
+                    },
+                    invalid: {
+                      iconColor: "#E44122",
+                      color: "#E44122",
                     },
                   },
-                  invalid: {
-                    iconColor: "#E44122",
-                    color: "#E44122",
-                  },
-                },
-              }}
-            />
-          </div>
-
+                }}
+              />
+            </Col>
+          </Row>
           <div className="text-center my-3">
             {!stripe ? (
               <Button titulo="Pagar" btn="Disabled" />

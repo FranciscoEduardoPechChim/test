@@ -4,7 +4,7 @@ import { orderResponse, subscriptionResponse } from '../types/orderType';
 import { production, development } from 'credentials';
 
 //POST
-export const storeOrder                             = async (userId: string, packageId: string, quantityUsers: number, type: string, paymentDate: string, expirationDate: string, paymentMethod: string, stripePaymentId: string, code: string | null, name: string, access_token: string):Promise<orderResponse | undefined> => {
+export const storeOrder                                 = async (userId: string, packageId: string, quantityUsers: number, type: string, paymentDate: string, expirationDate: string, paymentMethod: string, stripePaymentId: string, code: string | null, name: string, access_token: string):Promise<orderResponse | undefined> => {
     try { 
         let body                                    = { 
             userId:                                 userId,
@@ -28,7 +28,7 @@ export const storeOrder                             = async (userId: string, pac
             body:JSON.stringify(body)
         };
 
-        const response                              = await fetch(`${production}/pedidos`, requestOptions);
+        const response                              = await fetch(`${development}/pedidos`, requestOptions);
         const result:orderResponse                  = await response.json();
             
         return result; 
@@ -38,7 +38,7 @@ export const storeOrder                             = async (userId: string, pac
 }
 
 //GET
-export const getSubcription                         = async (id: string, access_token: string):Promise<subscriptionResponse|undefined> => {
+export const getSubcription                             = async (id: string, access_token: string):Promise<subscriptionResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -58,7 +58,7 @@ export const getSubcription                         = async (id: string, access_
         console.log("Error:", error);
     }
 }
-export const getOrder                               = async (id: string, access_token: string):Promise<orderResponse|undefined> => {
+export const getOrder                                   = async (id: string, access_token: string):Promise<orderResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -152,7 +152,7 @@ export const destroyOrder                               = async (id: string, acc
             headers: myHeaders
         };
 
-        const response                                  = await fetch(`${production}/pedidos/${id}`, requestOptions);
+        const response                                  = await fetch(`${development}/pedidos/${id}`, requestOptions);
         const result:orderResponse                      = await response.json();
       
         return result;
@@ -162,35 +162,39 @@ export const destroyOrder                               = async (id: string, acc
 } 
 
 //UPDATE
-// export const updatePromotion                        = async (id: string, code: string, startDate: Date | null, endDate: Date | null, quantity: number, type: number, repeat: number, access_token: string):Promise<promotionResponse | undefined> => {
-//     try { 
-//         let body                                    = { 
-//             id:                                     id,
-//             code:                                   code, 
-//             startDate:                              (startDate) ? startDate.toISOString().split('T')[0]:null,
-//             endDate:                                (endDate) ? endDate.toISOString().split('T')[0]:null,
-//             quantity:                               quantity,
-//             type:                                   type,
-//             repeat:                                 repeat       
-//         };
+export const updateOrder                                = async (userId: string, packageId: string, quantityUsers: number, type: string, paymentDate: string, expirationDate: string, discount: number, access_token: string):Promise<orderResponse | undefined> => {
+    try { 
+        let body                                        = { 
+            userId:                                     userId,
+            packageId:                                  packageId,
+            quantityUsers:                              quantityUsers,
+            type:                                       type,
+            paymentDate:                                paymentDate,
+            expirationDate:                             expirationDate,
+            paymentMethod:                              'card',
+            stripePaymentId:                            'Red1a1',
+            code:                                       null,
+            name:                                       'Red1a1',
+            discount:                                   discount
+        };
         
-//         const requestOptions                        = {
-//             method: 'PUT',
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${access_token}`
-//             },
-//             body:JSON.stringify(body)
-//         };
+        const requestOptions                        = {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${access_token}`
+            },
+            body:JSON.stringify(body)
+        };
 
-//         const response                              = await fetch(`${development}/promotions/${id}`, requestOptions);
-//         const result:promotionResponse              = await response.json();
+        const response                              = await fetch(`${development}/pedidos`, requestOptions);
+        const result:orderResponse                  = await response.json();
             
-//         return result; 
-//     }catch(error) {
-//         console.log('Error: ' + error);
-//     }
-// }
+        return result; 
+    }catch(error) {
+        console.log('Error: ' + error);
+    }
+}
 
 //ACTIONS
 
