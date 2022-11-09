@@ -21,7 +21,7 @@ import { usePromotions } from '../../../../hooks/usePromotions';
 //Style
 import styles from "./MyPromotions.module.css";
 //Validations
-import { isNotEmpty, isString, compareDate, isInteger, isMin } from '../../../../helpers/validations';
+import { isNotEmpty, isString, compareDate, isInteger, isMin, isMaxPercentage } from '../../../../helpers/validations';
 
 const MyListPromotions                                                              = () => {
     const access_token                                                              = localStorage.getItem("token");
@@ -233,7 +233,7 @@ const MyListPromotions                                                          
         setErrorCode([]); setErrorQuantity([]); setErrorType([]); setErrorRepeat([]); setErrorStartDate([]); setErrorEndDate([]);
 
         const formCode                                                              = formValidate('code', [isNotEmpty(code), isString(code)]);
-        const formQuantity                                                          = formValidate('quantity', [isNotEmpty(quantity), isInteger(quantity), isMin(quantity, 1)]);
+        const formQuantity                                                          = formValidate('quantity', [isNotEmpty(quantity), isInteger(quantity), isMin(quantity, 1), isMaxPercentage(quantity, 100, (select) ? select:0)]);
         const formStartDate                                                         = formValidate('startDate', [compareDate(startDate, endDate, true)]);
         const formEndDate                                                           = formValidate('endDate', [compareDate(startDate, endDate, true)]);
         const formType                                                              = formValidate('type', [isNotEmpty((Number.isInteger(select)) ? String(select):0), isInteger(select)]);

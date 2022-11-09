@@ -72,13 +72,13 @@ const PaqueteMultiple                                                   = (props
   const handleShow                                                      = async () => { 
     setDiscounts(0);
 
-    if(avanzado) {
+    if(avanzado && auth) {
       let discount                                                      = 0;
     
       if(order && order.precio && order.totalUsuarios) {
         const startDate                                                 = moment(order.fechaPago);
         const endDate                                                   = moment();
-        discount                                                        = (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12);
+        discount                                                        = ((auth.role != 'Individual') && (auth.role != 'Usuario') && ((order.precio != 1250) && (order.precio != 1999))) ? (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12):((order.precio == 1250) ? (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/3):(endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/6) );
       }
 
       setDiscounts(discount);
@@ -91,7 +91,7 @@ const PaqueteMultiple                                                   = (props
     }
     setCode('');
     setErrorPromotion([]);
-    setShow(true)
+    setShow(true);
   };
 
   const ocultarPago                                                     = () => setMostrarPago(false);
@@ -111,7 +111,7 @@ const PaqueteMultiple                                                   = (props
     if(order && order.precio && order.totalUsuarios) {
       const startDate                                                   = moment(order.fechaPago);
       const endDate                                                     = moment();
-      discount                                                          = (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12);
+      discount                                                          = ((auth.role != 'Individual') && (auth.role != 'Usuario') && ((order.precio != 1250) && (order.precio != 1999))) ? (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12):((order.precio == 1250) ? (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/3):(endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/6) );
     }
 
     setDiscounts(discount);
@@ -126,7 +126,7 @@ const PaqueteMultiple                                                   = (props
     if(order && order.precio && order.totalUsuarios) {
       const startDate                                                   = moment(order.fechaPago);
       const endDate                                                     = moment();
-      discount                                                          = (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12);
+      discount                                                          = ((auth.role != 'Individual') && (auth.role != 'Usuario') && ((order.precio != 1250) && (order.precio != 1999))) ? (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/12):((order.precio == 1250) ? (endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/3):(endDate.diff(startDate, 'months') + 1) * ((Number(order.precio) * Number(order.totalUsuarios))/6) );
     }
 
     setDiscounts(discount);
@@ -563,6 +563,11 @@ const PaqueteMultiple                                                   = (props
                           </div>
                         </div>
                       }
+                      {(subscription) && (loading) &&
+                        <div className="col-12">
+                          <Loading /> 
+                        </div>
+                      }
 
                       {usuarios && (usuarios >= 11) && (!subscription) ?
                           <div className="col-12 d-flex justify-content-center mt-3 mb-3">
@@ -630,6 +635,11 @@ const PaqueteMultiple                                                   = (props
                           })}
                         </div>
                       </div>
+                      }
+                      {(subscription) && (loading) &&
+                        <div className="col-12">
+                          <Loading /> 
+                        </div>
                       }
                       <div className="col-12">
                         <div className="text-center mt-5">

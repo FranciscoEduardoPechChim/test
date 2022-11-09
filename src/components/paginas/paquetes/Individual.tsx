@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useState, ChangeEvent } from "react";
+import { FormEvent, useContext, useState, ChangeEvent, useEffect } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 import { Form, Modal, Row, Col } from "react-bootstrap";
@@ -23,6 +23,15 @@ import { NuevoPedido, NuevoPedidoAdmin } from "interfaces/ContactInterface";
 import { PromotionContext } from '../../../context/promotions/PromotionContext';
 //Components
 import { useForm } from '../../../hooks/useForm';
+//Services
+import { storeOrder, destroyOrder, updateOrder } from '../../../services/orderService';
+//Validations
+import { isNotEmpty, isString } from '../../../helpers/validations';
+//Helpers
+import { validate } from '../../../helpers/response';
+//Extras
+import Swal from "sweetalert2";
+import Paquetes from "pages/paquetes";
 
 const Individual = () => {
   const { auth, abrirLogin, actualizarRol } = useContext(AuthContext);
@@ -44,16 +53,19 @@ const Individual = () => {
   const [ priceBiannual, setPriceBiannual ]                             = useState(0);
   const [ priceQuarterly, setPriceQuarterly ]                           = useState(0);
   const [ errorPromotion, setErrorPromotion ]                           = useState<any>([]);
-  const { isValidPromotion }                                            = useContext(PromotionContext);
+  const [ code, setCode ]                                               = useState('');
+  const [ subscription, setSubscription ]                               = useState(false);
+  const [ order, setOrder ]                                             = useState<Pedido>();
+  const { isValidPromotion, isSubscription, showOrder }                 = useContext(PromotionContext);
 
 
   const [ errorName, setErrorName ]                                     = useState([]);
-
-
-  //const { formulario, handleChange, setFormulario }                     = useForm({usuarios: 11, name: ''});
+  const { formulario, handleChange, setFormulario }                     = useForm({name: ''});
+  const { name }                                                        = formulario;
 
   const handleClose                                                     = () => setShow(false);
   const handleNext                                                      = () => setShow(false);
+
   const handleShow                                                      = () => { 
     if(paquete) {
       switch(type) {
@@ -75,7 +87,7 @@ const Individual = () => {
       setType('');
       setPrice(0);
     }
- 
+    setCode('');
     setShow(true);
   }
   const ocultarPago                                                     = () => setMostrarPago(false);
@@ -141,6 +153,65 @@ const Individual = () => {
     setErrorPromotion([]);
   }
 
+  const formValidate                                                    = (name: string, message: any) => {
+
+    const messageError                                                  = message.filter((value:any) => value != '');
+
+    if(messageError.length == 0) {
+      return false;
+    }
+
+    switch(name) {
+      case 'name':
+        setErrorName(messageError);
+      return true;
+      default:
+      return true;
+    }
+  }
+
+  const onCancelSubscription                                            = async () => {
+    Swal.fire({
+      title: '¿Está de acuerdo en cancelar la subscripción?',
+      text: "Al cancelar, perdera los privilegios adquiridos del paquete al cual está subscrito",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'De acuerdo'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if(auth.uid && access_token) {
+          const response                                                = await destroyOrder(auth.uid, access_token);
+    
+          if(response && response.ok) {
+            toast.error(response.msg);
+            return false;
+          }
+    
+          if(response && response.data) {
+            toast.success(response.msg);
+    
+            localStorage.setItem("role", 'Usuario');
+            
+            await actualizarRol(
+              {
+                role:             'Usuario',
+                paqueteAdquirido: '',
+              },
+              auth.uid
+            );
+    
+
+            router.push("/perfil/historial-de-pagos");
+          }
+          
+        }
+      }
+    })
+  }
+  
   const validPromotion                                                  = async ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value }                                               = target;
     setErrorPromotion([]);
@@ -176,14 +247,15 @@ const Individual = () => {
         }else {
           setErrorPromotion([]);
           
-          if((typeof response == 'object') && response && type) {    
+          if((typeof response == 'object') && response && type && paquete) {    
             let total           = 0;
+            let subTotal        = (type == 'annual') ? paquete.precioAnual:((type == 'biannual') ? paquete.precioSemestral:paquete.precioTrimestral);
   
             if(response.type == 0) {
-              total             = Number(price) - Number(response.quantity);
+              total             = Number(subTotal) - Number(response.quantity);
             }else {
-              const discount    = Number(price) * (Number(response.quantity) / 100);
-              total             = Number(price) - Number(discount);
+              const discount    = Number(subTotal) * (Number(response.quantity) / 100);
+              total             = Number(subTotal) - Number(discount);
             }
   
             switch(type) {
@@ -201,98 +273,174 @@ const Individual = () => {
                 setPriceBiannual(0);
                 setPriceQuarterly(0);
             }
-
+          
+            setCode(value);
             setPrice(total);
           }
         }
     }
   }
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!stripe || !elements) return;
+  const onSubmit                                                        = async (e: FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
 
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: elements.getElement(CardElement)!,
-    });
+      setErrorName([]);
 
-    setLoading(true);
+      const formName                                                    = formValidate('name', [isNotEmpty(name), isString(name)]);
+      
+      if(formName) {
+        return false;
+      }
 
-    const fechaPago = moment().format();
-    const fechaVencimiento = moment(fechaPago).add(1, "y").format();
-    const fechaVencimientoSem = moment(fechaPago).add(6, "M").format();
-    const fechaVencimientoTri = moment(fechaPago).add(3, "M").format();
+      if (!stripe || !elements) return;
 
-    if (!error) {
-      const pago = paymentMethod;
-      const body: Pedido = {
-        usuario: auth.uid,
-        paquete: paquete?._id,
-        precio: Number(precioSeleccionado),
-        importe: Number(precioSeleccionado),
-        fechaPago,
-        fechaVencimiento:
-          Number(precioSeleccionado) === 1250
-            ? fechaVencimientoTri
-            : Number(precioSeleccionado) === 2799
-            ? fechaVencimientoSem
-            : fechaVencimiento,
-        metodoPago: pago?.type,
-        vigencia: true,
-        idPago: pago?.id,
-        totalUsuarios: 1,
-      };
+      const { error, paymentMethod }                                    = await stripe.createPaymentMethod({
+        type:                                                           "card",
+        card:                                                           elements.getElement(CardElement)!,
+        billing_details: {
+          name:                                                         name
+        },
+      });
 
-      const correoPedido: NuevoPedido = {
-        apellido: auth.apellido,
-        nombre: auth.nombre,
-        correo: auth.correo,
-        idCompra: pago?.id,
-        nombrePaquete: paquete?.nombre,
-        precio: Number(precioSeleccionado),
-        importe: Number(precioSeleccionado),
-      };
+      if (!error && access_token) {
+        setLoading(true);
+        const paymentDate                                               = moment().format();
+        const expirationDate                                            = (type == 'annual') ? moment(paymentDate).add(1, "y").format(): ((type == 'biannual')  ? moment(paymentDate).add(6, "M").format():moment(paymentDate).add(3, "M").format());
+        const payment                                                   = paymentMethod;
 
-      const correoPedidoAdmin: NuevoPedidoAdmin = {
-        apellido: auth.apellido,
-        nombre: auth.nombre,
-        idCompra: pago?.id,
-        nombrePaquete: paquete?.nombre,
-        precio: Number(precioSeleccionado),
-        importe: Number(precioSeleccionado),
-      };
+        if(payment && (typeof auth.uid == 'string') && paquete) {
+          const response                                                = await storeOrder(auth.uid, paquete._id, 1, 'individual_' + type, paymentDate, expirationDate, payment.type, payment.id, (code != '') ? code:null, name, access_token);
+         
+          if(response && response.errors) {
+            validate(response.errors);
+            return false;
+          }
 
-      try {
-        const resp = await anadirPaqueteInv("pedidos", body);
-        auth.role !== "Administrador"
-          ? await actualizarRol(
-              {
-                role: paquete?.nombre,
-                paqueteAdquirido: paquete?._id,
-              },
-              auth.uid
-            )
-          : null;
+          if(response && response.ok) {
+              toast.error(response.msg);
+              return false;
+          }
 
-        await nuevoPedido("correos/nuevo-pedido", correoPedido);
-        await nuevoPedidoAdmin("correos/nuevo-pedido-admin", correoPedidoAdmin);
+          if(response && response.data) {
+            if(auth.role !== 'Administrador') {
+              await actualizarRol(
+                {
+                  role:                                                 paquete.nombre,
+                  paqueteAdquirido:                                     paquete._id,
+                  usuarios:                                             1,
+                },
+                auth.uid
+              )
+            }
 
-        if (resp.ok) {
-          toast.success(resp.msg);
-          ocultarPago();
-          router.push("/perfil/historial-de-pagos");
+            localStorage.setItem("role", paquete.nombre);
+            toast.success(response.msg);
+            ocultarPago();
+            router.push("/perfil/historial-de-pagos");
+          }
         }
 
-        if (!resp.ok) toast.error(resp.msg);
-
         setLoading(false);
-      } catch (error) {
-        console.log(error);
       }
-      setLoading(false);
+  
+    } catch (error) {
+      console.log(error);
     }
+
+  
+
+
+
+
+    // if (!error) {
+    //   const pago = paymentMethod;
+    //   const body: Pedido = {
+    //     usuario: auth.uid,
+    //     paquete: paquete?._id,
+    //     precio: Number(precioSeleccionado),
+    //     importe: Number(precioSeleccionado),
+    //     fechaPago,
+    //     fechaVencimiento:
+    //       Number(precioSeleccionado) === 1250
+    //         ? fechaVencimientoTri
+    //         : Number(precioSeleccionado) === 2799
+    //         ? fechaVencimientoSem
+    //         : fechaVencimiento,
+    //     metodoPago: pago?.type,
+    //     vigencia: true,
+    //     idPago: pago?.id,
+    //     totalUsuarios: 1,
+    //   };
+
+    //   // const correoPedido: NuevoPedido = {
+    //   //   apellido: auth.apellido,
+    //   //   nombre: auth.nombre,
+    //   //   correo: auth.correo,
+    //   //   idCompra: pago?.id,
+    //   //   nombrePaquete: paquete?.nombre,
+    //   //   precio: Number(precioSeleccionado),
+    //   //   importe: Number(precioSeleccionado),
+    //   // };
+
+    //   // const correoPedidoAdmin: NuevoPedidoAdmin = {
+    //   //   apellido: auth.apellido,
+    //   //   nombre: auth.nombre,
+    //   //   idCompra: pago?.id,
+    //   //   nombrePaquete: paquete?.nombre,
+    //   //   precio: Number(precioSeleccionado),
+    //   //   importe: Number(precioSeleccionado),
+    //   // };
+
+    //   try {
+    //     const resp = await anadirPaqueteInv("pedidos", body);
+    //     auth.role !== "Administrador"
+    //       ? await actualizarRol(
+    //           {
+    //             role: paquete?.nombre,
+    //             paqueteAdquirido: paquete?._id,
+    //           },
+    //           auth.uid
+    //         )
+    //       : null;
+
+    //     // await nuevoPedido("correos/nuevo-pedido", correoPedido);
+    //     // await nuevoPedidoAdmin("correos/nuevo-pedido-admin", correoPedidoAdmin);
+
+    //     if (resp.ok) {
+    //       toast.success(resp.msg);
+    //       ocultarPago();
+    //       router.push("/perfil/historial-de-pagos");
+    //     }
+
+    //     if (!resp.ok) toast.error(resp.msg);
+
+    //     setLoading(false);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   setLoading(false);
+    // }
   };
+
+  useEffect(() => {
+    const initSubscription                                              = async () => {
+      if(auth.uid) {
+        const subscriptionData                                          = await isSubscription(auth.uid, access_token); 
+        const orderData                                                 = await showOrder(auth.uid, access_token);
+
+        if(subscriptionData && typeof subscriptionData == 'boolean') {
+          setSubscription(subscriptionData);
+        }
+
+        // if(orderData && orderData._id) {
+        //   setOrder(orderData);
+        // }
+      }
+    }
+
+    initSubscription();
+  }, []);
 
   return (
     <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
@@ -349,7 +497,21 @@ const Individual = () => {
               {auth.uid ? (
                 <>
                   {auth.role === "Individual" ? (
-                    <Button titulo="Contratado" btn="Disabled" />
+                    <div className="row">
+                      <div className="col-12">
+                        <button
+                          type      = "button"
+                          className = {styles.btnContract}
+                        >
+                          CONTRATADO
+                        </button>
+                      </div>
+                      {subscription && 
+                        <div className="col-12 mt-2">
+                          <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
+                        </div>
+                      } 
+                    </div>
                   ) : (
                     <>
                       {auth.role === "Básico" ||
@@ -447,6 +609,8 @@ const Individual = () => {
                 </div>
               </div>
             </div>
+
+            {(!subscription) && 
             <div className="row my-2 d-flex justify-content-center">
               <div className="col-sm-12 col-md-12 col-lg-9">
                   <div className="form-group">
@@ -460,7 +624,9 @@ const Individual = () => {
                       })}
                   </div>
               </div>
-            </div>
+            </div>}
+
+
             <div className="text-center mt-5">
 
               {(price > 0) ? (
@@ -499,7 +665,7 @@ const Individual = () => {
 
         <br />
         <Form onSubmit={onSubmit}>
-          {/* <Row>
+          <Row>
             <Col className="form-group px-5 my-2"  md sm xs={12} >
               <Form.Label className={styles.S3labels} htmlFor="name">Titular de la tarjeta *</Form.Label>
               <Form.Control id="name" type="text" name="name" placeholder="Jhon Miller" onChange={handleChange} />
@@ -507,7 +673,7 @@ const Individual = () => {
                   return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
               })}
             </Col>
-          </Row> */}
+          </Row> 
           <Row>
             <Col className="form-group px-5 my-3" md sm xs={12}>
               <CardElement
@@ -533,7 +699,7 @@ const Individual = () => {
               />
             </Col>
           </Row>
-          <div className="text-center my-3">
+          <div className="text-center my-4">
             {!stripe ? (
               <Button titulo="Pagar" btn="Disabled" />
             ) : (

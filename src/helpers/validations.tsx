@@ -34,6 +34,10 @@ export const isMin              = (data:number, min: number) => {
     return (data < min) ? 'El campo debe tener un minímo de ' + min:'';
 }
 
+export const isMaxPercentage    = (data: number, max: number, type: number) => {
+    return (type == 1) ? ((data > max) ? ('El campo no puede exceder la cantidad de ' + max):''):'';
+}
+
 export const isBoolean          = (data:any) => {
     return (typeof data != 'boolean') ? 'El campo debe ser tipo booleano':true;
 }

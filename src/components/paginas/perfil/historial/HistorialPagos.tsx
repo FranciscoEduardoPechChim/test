@@ -92,7 +92,7 @@ const HistorialPagos = () => {
               onRowsPerPageChange   = {handleChangeRowsPerPage}
               rowsPerPageOptions    = {[10, 25, 50, 100]}
               labelRowsPerPage      = {'Cantidad'}
-              labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to}`}
+              labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to} de ${count}`}
           />
         </div>
       )}
