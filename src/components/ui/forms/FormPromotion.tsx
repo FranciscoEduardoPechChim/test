@@ -8,7 +8,7 @@ import { ChangeEvent, ChangeEventHandler } from 'react';
 import { Dayjs } from 'dayjs';
 import 'dayjs/locale/es';
 //Stylist 
-import style from './FormPromotion.module.css';
+import style from './Form.module.css';
 
 interface Props {
     action:         string;
@@ -46,10 +46,10 @@ const FormPromotion = ({action, handleChange, data, handleSelect, select, startD
                             <Form.Label className={style.modalLabels} htmlFor="code">Código*</Form.Label>
 
                             {action && (action != 'show') &&
-                                <Form.Control defaultValue={code} id="code" type="text" name="code" placeholder="PROMOTIONMX" onChange={handleChange} />
+                                <Form.Control defaultValue={code} id="code" type="text" name="code" maxLength={255} placeholder="PROMOTIONMX" onChange={handleChange} />
                             }
                             {action && (action == 'show') &&
-                                <Form.Control defaultValue={code} id="code" type="text" name="code" placeholder="PROMOTIONMX" onChange={handleChange} disabled/>
+                                <Form.Control defaultValue={code} id="code" type="text" name="code" maxLength={255} placeholder="PROMOTIONMX" onChange={handleChange} disabled/>
                             }
                         </Form.Group>
                         {(errorCode) && (errorCode.length != 0) && errorCode.map((value: any, key: any) => {

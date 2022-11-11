@@ -6,6 +6,8 @@ import 'moment/locale/es';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from '../context/auth/AuthContext';
 import { PromotionProvider } from '../context/promotions/PromotionContext';
+import { PermissionProvider } from '../context/permissions/PermissionContext';
+import { RoleByPermissionProvider } from '../context/rolebypermissions/RoleByPermissionContext';
 import Layout from '../components/layout/Layout';
 import { InmuebleProvider } from '../context/inmuebles/InmuebleContext';
 import { MapProvider } from '../context/map/MapContext';
@@ -19,20 +21,24 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ChatProvider>
         <SocketProvider>
           <PromotionProvider>
-          <NextNProgress
-              height={6}
-              color="#7149BC"
-              options={{ showSpinner: false }}
-            />
-            <MapProvider>
-              <Layout>
-                <InmuebleProvider>
-                  <Component {...pageProps} />
-                </InmuebleProvider>
+            <PermissionProvider>
+              <RoleByPermissionProvider>
+                <NextNProgress
+                    height={6}
+                    color="#7149BC"
+                    options={{ showSpinner: false }}
+                  />
+                  <MapProvider>
+                    <Layout>
+                      <InmuebleProvider>
+                        <Component {...pageProps} />
+                      </InmuebleProvider>
+                    
               
-        
-              </Layout>
-            </MapProvider>
+                    </Layout>
+                  </MapProvider>
+                </RoleByPermissionProvider>
+            </PermissionProvider>
           </PromotionProvider>
         </SocketProvider>
       </ChatProvider>
