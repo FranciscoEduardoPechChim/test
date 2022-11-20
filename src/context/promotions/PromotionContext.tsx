@@ -90,8 +90,6 @@ export const PromotionProvider: FC                  = ({ children }) => {
         if(id && access_token) {
             const response                          = await destroyPromotion(id, access_token);
 
-            console.log(response);
-
             if(response && response.ok) {
                 toast.error(response.msg);
                 return false;

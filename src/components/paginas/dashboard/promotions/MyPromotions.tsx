@@ -3,6 +3,7 @@ import { FormEvent, useContext, useState, useMemo, useEffect } from "react";
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Container, Row, Col } from "react-bootstrap";
 //Components
+import FilterComponent from '../../../ui/filters/FilterComponent';
 import FormPromotion from '../../../ui/forms/FormPromotion';
 import ActionComponent from '../../../ui/actions/Actions';
 import PathModal from '../../../ui/authmodal/PathModal';
@@ -10,7 +11,6 @@ import SortIcon from '@material-ui/icons/ArrowDownward';
 import { useForm } from '../../../../hooks/useForm';
 import DataTable from 'react-data-table-component';
 import Loading from '../../../ui/loading/Loading';
-import FilterComponent from './FilterComponent';
 import Button from "../../../ui/button/Button";
 import Card from '@material-ui/core/Card';
 import dayjs, { Dayjs } from 'dayjs';
@@ -49,9 +49,7 @@ const MyListPromotions                                                          
         quantity:                                                                   0,
         repeat:                                                                     0,
     }
-
-    const [ initialState, setInitialState ]                                         = useState(INITIAL_STATE);
-    const { formulario, handleChange, reset }                                       = useForm(initialState);
+    const { formulario, handleChange, reset, setFormulario }                        = useForm(INITIAL_STATE);
     const { code, quantity, repeat }                                                = formulario;
 
     const columns = [
@@ -116,7 +114,7 @@ const MyListPromotions                                                          
                 setEndDate(dayjs((response.endDate).toString().split('T')[0]));
             }
 
-            setInitialState({
+            setFormulario({
                 code:       response.code,
                 quantity:   response.quantity,
                 repeat:     response.repeat,
