@@ -22,6 +22,8 @@ import { RespActualizar } from "../../interfaces/UserInterface";
 
 //Services
 import { session, signup, sendPassword, sendEmailWelcome} from '../../services/authService';
+import { hasPermission } from '../../services/rolebypermissionService';
+import { storeUser, updateUser, destroyUser } from '../../services/userService';
 //Helpers
 import { validate } from '../../helpers/response';
 //Extras
@@ -32,8 +34,11 @@ interface ContextProps {
   login:            (email: string, password: string) => Promise<boolean | undefined>;
   forgotPassword :  (email: string) => Promise<boolean | undefined>;
   logOut:           () => void;
-  register:         (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string) => Promise<boolean | undefined>;
+  register:         (name: string, lastName: string, email: string, password: string, confirmPassword: string) => Promise<boolean | undefined>;
   validRole:        () =>  Promise<boolean | undefined>;
+  createUser:       (name: string, lastName: string, email: string, password: string, confirmPassword: string, ownerId: string, access_token:string) => Promise<boolean | undefined>;
+  editUser:         (id: string, name: string, lastName: string, email: string, password: string, confirmPassword: string, access_token:string) => Promise<boolean | undefined>;
+  deleteUser:       (id: string, changeId: string, access_token: string) => Promise<boolean | undefined>;
   crearUsuario: (
     nombre: string,
     apellido: string,
@@ -93,6 +98,7 @@ const initialState: Auth = {
   propietario: undefined,
   google: undefined,
   recibirCorreo: false,
+  ownerId: null
 };
 
 export const AuthProvider: FC = ({ children }) => {
@@ -153,6 +159,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario:                                        data.user.propietario,
         google:                                             undefined,
         recibirCorreo:                                      data.user.recibirCorreo,
+        ownerId:                                            (data.user.ownerId) ? data.user.ownerId:null
       };
       
       if(data.user.role && data.user.correo && (typeof data.user.correo == 'string')) {
@@ -160,8 +167,14 @@ export const AuthProvider: FC = ({ children }) => {
         localStorage.setItem("role", data.user.role);
       }
   
-      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("token", (data.access_token) ? data.access_token:'');
       setAuth(auth);
+
+      const permissions                                     = await hasPermission((typeof data.user.role == 'string') ? data.user.role:'', (data.access_token) ? data.access_token:'');
+
+      if(permissions && permissions.data) {
+        localStorage.setItem("permissions", permissions.data.rolebypermissions);
+      }
 
       return true;
     }
@@ -192,9 +205,10 @@ export const AuthProvider: FC = ({ children }) => {
 
     return true;
   }
-  const register                                            = async (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string ) => {
+  const register                                            = async (name: string, lastName: string, email: string, password: string, confirmPassword: string ) => {
 
-    const response                                          = await signup(name, lastName, email, password, confirmPassword, role);
+    const response                                          = await signup(name, lastName, email, password, confirmPassword);
+
     //Validation 
     if(response && response.errors) {
       validate(response.errors);
@@ -235,6 +249,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario:                                        data.user.propietario,
         google:                                             undefined,
         recibirCorreo:                                      data.user.recibirCorreo,
+        ownerId:                                            null
       };
       
       if(data.user.correo && (typeof data.user.correo == 'string')) {
@@ -242,15 +257,23 @@ export const AuthProvider: FC = ({ children }) => {
       }
 
       localStorage.setItem("role", 'Usuario');
-      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("token", (data.access_token) ? data.access_token:'');
       setAuth(auth);
+
+
+      const permissions                                     = await hasPermission('Usuario', (data.access_token) ? data.access_token:'');
+
+      if(permissions && permissions.data) {
+        localStorage.setItem("permissions", permissions.data.rolebypermissions);
+      }
 
       return true;
     }
   }
   const validRole                                           = async () => {
-    const role                                              = localStorage.getItem("role");
-    const email                                             = localStorage.getItem("email");
+
+    const role                                              = (typeof window !== "undefined") ? localStorage.getItem("role"):"";
+    const email                                             = (typeof window !== "undefined") ? localStorage.getItem("email"):"";
 
     if(!role || !email) {
       return false;
@@ -261,6 +284,103 @@ export const AuthProvider: FC = ({ children }) => {
     }
 
     return true;
+  }
+  const createUser                                          = async (name: string, lastName: string, email: string, password: string, confirmPassword: string, ownerId: string, access_token: string) => {
+    
+    if(name && lastName && email && password && confirmPassword && ownerId && access_token) {
+      const response                                        = await storeUser(name, lastName, email, password, confirmPassword, ownerId, access_token);
+
+      //Validation 
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        
+        Swal.fire({
+          title: '',
+          html: response.msg,
+          icon: 'success',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar'
+        });
+
+        return true;
+      }
+    }
+  }
+  const editUser                                            = async (id: string, name: string, lastName: string, email: string, password: string, confirmPassword: string, access_token: string) => {
+    if(id && name && lastName && email && access_token) {
+      const response                                        = await updateUser(id, name, lastName, email, password, confirmPassword, access_token);
+
+      //Validation 
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        
+        Swal.fire({
+          title: '',
+          html: response.msg,
+          icon: 'success',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar'
+        });
+
+        return true;
+      }
+    }
+  }
+  const deleteUser                                          = async (id: string, changeId: string, access_token: string) => {
+    if(id && access_token) {
+      const response                                        = await destroyUser(id, changeId, access_token);
+
+      //Validation 
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        
+        Swal.fire({
+          title: '',
+          html: response.msg,
+          icon: 'success',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar'
+        });
+
+        return true;
+      }
+    }
   }
 
   const crearUsuario = async (
@@ -308,6 +428,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: usuario.propietario,
         google: undefined,
         recibirCorreo: usuario.recibirCorreo,
+        ownerId: null
       });
     }
 
@@ -315,7 +436,7 @@ export const AuthProvider: FC = ({ children }) => {
   };
 
   const verificaToken = useCallback(async () => {
-    const token = localStorage.getItem("token");
+    const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
     if (!token) {
       setAuth({
@@ -344,6 +465,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: undefined,
         google: undefined,
         recibirCorreo: false,
+        ownerId: null
       });
 
       return false;
@@ -380,6 +502,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: usuario.propietario,
         google: true,
         recibirCorreo: usuario.recibirCorreo,
+        ownerId: null
       });
       return true;
     } else {
@@ -409,6 +532,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: undefined,
         google: undefined,
         recibirCorreo: false,
+        ownerId: null
       });
 
       return false;
@@ -443,6 +567,7 @@ export const AuthProvider: FC = ({ children }) => {
       propietario: undefined,
       google: undefined,
       recibirCorreo: false,
+      ownerId: null
     });
   };
 
@@ -480,6 +605,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: usuario.propietario,
         google: undefined,
         recibirCorreo: usuario.recibirCorreo,
+        ownerId: null
       });
 
       toast.success(resp.msg);
@@ -525,6 +651,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: usuario.propietario,
         google: undefined,
         recibirCorreo: usuario.recibirCorreo,
+        ownerId: null
       });
     }
 
@@ -566,6 +693,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: usuario.propietario,
         google: undefined,
         recibirCorreo: usuario.recibirCorreo,
+        ownerId: null
       });
 
       toast.success(resp.msg);
@@ -576,6 +704,8 @@ export const AuthProvider: FC = ({ children }) => {
 
   const signInWithGoogle = async (response: any) => {
     /* response:GoogleLoginResponse */
+
+   
     const id_token = response.getAuthResponse().id_token;
     const body = { id_token };
 
@@ -610,6 +740,7 @@ export const AuthProvider: FC = ({ children }) => {
         propietario: usuario.propietario,
         google: true,
         recibirCorreo: usuario.recibirCorreo,
+        ownerId: null
       });
     }
     setMostrarLogin(false);
@@ -632,6 +763,9 @@ export const AuthProvider: FC = ({ children }) => {
         signInWithGoogle,
         signInWithFacebook,
         verificaToken,
+        createUser,
+        editUser,
+        deleteUser,
         actualizarPerfil,
         fotoPerfil,
         mostrarLogin,

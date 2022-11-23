@@ -29,12 +29,12 @@ export const useUltimoMsg = (uid: string, id: string) => {
   const { auth } = useContext(AuthContext);
   const [ultimoMsg, setUltimoMsg] = useState<Mensaje[]>([]);
 
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   if (uid === auth.uid) {
     const ultimoMensaje = async () => {
       const res = await fetch(`${production}/mensajes/${id}`, {
-        headers: { "x-token": token },
+        headers: { "x-token": (token) ? token:"" },
       });
 
       const data: MensajesRespuesta = await res.json();
@@ -49,7 +49,7 @@ export const useUltimoMsg = (uid: string, id: string) => {
   if (uid !== auth.uid) {
     const ultimoMensaje = async () => {
       const res = await fetch(`${production}/mensajes/${uid}`, {
-        headers: { "x-token": token },
+        headers: { "x-token": (token) ? token:"" },
       });
 
       const data = await res.json();

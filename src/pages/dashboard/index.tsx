@@ -6,6 +6,9 @@ import WalletCard from "components/paginas/dashboard/resumen/WalletCard";
 import ReferenciasCard from "components/paginas/dashboard/resumen/ReferenciasCard";
 import PropiedadesCard from "components/paginas/dashboard/resumen/PropiedadesCard";
 import UsuariosCard from "components/paginas/dashboard/resumen/UsuariosCard";
+import PromotionCard from "components/paginas/dashboard/promotions/MyPromotions";
+import PermissionCard from 'components/paginas/dashboard/permissions/MyPermissions';
+import RoleByPermissionCard from "components/paginas/dashboard/rolebypermissions/MyRoleByPermissions";
 
 const Index = () => {
   const router = useRouter();
@@ -21,6 +24,9 @@ const Index = () => {
               <ReferenciasCard />
               <PropiedadesCard />
               <UsuariosCard />
+              <PromotionCard />
+              <PermissionCard />
+              <RoleByPermissionCard />
             </div>
           </div>
         </section>

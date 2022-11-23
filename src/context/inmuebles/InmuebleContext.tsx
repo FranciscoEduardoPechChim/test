@@ -117,6 +117,8 @@ interface ContextProps {
   ) => Promise<SubirImagenesInmueble>;
   orden: string;
   setOrden: Dispatch<SetStateAction<string>>;
+  user: string;
+  setUser: Dispatch<SetStateAction<string>>;
   solicitud: string;
   setSolicitud: Dispatch<SetStateAction<string>>;
   actualizarInmueble: (
@@ -186,6 +188,7 @@ const InmuebleState: ActualizarInmueble = {
 };
 
 export const InmuebleProvider: FC = ({ children }) => {
+  const [user,setUser]            = useState<string>('all');
   const [orden, setOrden] = useState<string>("createdAt");
   const [solicitud, setSolicitud] = useState("Pendiente");
   const [editar, setEditar] = useState<EditarInmueble>();
@@ -262,6 +265,8 @@ export const InmuebleProvider: FC = ({ children }) => {
         subirImagenesInmueble,
         orden,
         setOrden,
+        user,
+        setUser,
         solicitud,
         setSolicitud,
         actualizarInmueble,

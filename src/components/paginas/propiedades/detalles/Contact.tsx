@@ -6,10 +6,8 @@ import Button from "../../../ui/button/Button";
 import styles from "./Inmueble.module.css";
 
 interface Props {
-  inmuebles: {
-    inmueble: InmueblesUsuario;
-    ok: boolean;
-  };
+  inmuebles: InmueblesUsuario;
+    
 }
 
 const Contact = ({ inmuebles }: Props) => {
@@ -18,7 +16,7 @@ const Contact = ({ inmuebles }: Props) => {
 
   const data: CrearChat = {
     remitente: auth.uid,
-    destinatario: inmuebles.inmueble.usuario._id,
+    destinatario: inmuebles.usuario._id,
   };
 
   return (
@@ -33,8 +31,8 @@ const Contact = ({ inmuebles }: Props) => {
                 src="/images/icons/deatails-icons/propietario.png"
                 alt=""
               />
-              {inmuebles.inmueble.usuario.nombre}{" "}
-              {inmuebles.inmueble.usuario.apellido} {/*Ajustar esta mierda*/}
+              {inmuebles.usuario.nombre}{" "}
+              {inmuebles.usuario.apellido} {/*Ajustar esta mierda*/}
             </div>
             <div className={styles.telefonoC}>
               <img
@@ -42,20 +40,20 @@ const Contact = ({ inmuebles }: Props) => {
                 src="/images/icons/deatails-icons/telefono.png"
                 alt=""
               />
-              {inmuebles.inmueble.usuario.telefonoPersonal
-                ? inmuebles.inmueble.usuario.telefonoPersonal
-                : inmuebles.inmueble.usuario.telefonoOficina
-                ? inmuebles.inmueble.usuario.telefonoOficina
+              {inmuebles.usuario.telefonoPersonal
+                ? inmuebles.usuario.telefonoPersonal
+                : inmuebles.usuario.telefonoOficina
+                ? inmuebles.usuario.telefonoOficina
                 : "Número oculto"}
             </div>
-            {inmuebles.inmueble.comisiones ? (
+            {inmuebles.comisiones ? (
               <div>
                 <i
                   style={{ color: "#7149BC", fontSize: 25, marginRight:'12px', marginLeft: '6px' }}
                   className="bi bi-currency-dollar"
                 />
                 <span className={styles.telefonoC} style={{fontSize: '22px'}}>
-                  Comisión {inmuebles.inmueble.comisiones}%
+                  Comisión {inmuebles.comisiones}%
                 </span>
               </div>
             ) : null}

@@ -6,7 +6,7 @@ import { validate } from '../../helpers/response';
 //Interfaces
 import { PermissionsByGroup } from '../../interfaces/RoleByPermissionInterface';
 //Services
-import { storeRoleByPermission, updateRoleByPermission, destroyRoleByPermission, getRoleByPermission } from '../../services/rolebypermissionService';
+import { storeRoleByPermission, updateRoleByPermission, destroyRoleByPermission, getRoleByPermission, restoreRoleByPermission} from '../../services/rolebypermissionService';
 //Extras
 import Swal from "sweetalert2";
 
@@ -15,20 +15,16 @@ interface ContextProps {
     createRoleByPermission:     (roleId: string, permissionId: string, access_token: string) => Promise<boolean | undefined>;
     editRoleByPermission:       (id: string, roleId: string, permissionId: string, access_token: string) => Promise<boolean | undefined>;
     deleteRoleByPermission:     (id: string, access_token: string) => Promise<boolean | undefined>;
+    undeleteRoleByPermission:   (id: string, access_token: string) => Promise<boolean | undefined>;
     showRoleByPermission:       (id: string, access_token: string) => Promise<PermissionsByGroup | undefined>;
 }
 
 export const RoleByPermissionContext                = createContext({} as ContextProps);
 
 const INITIAL_STATE: PermissionsByGroup             = {
-    Administrador:                                  undefined,
-    Usuario:                                        undefined,
-    Individual:                                     undefined,
-    Básico:                                         undefined,
-    Intermedio:                                     undefined,
-    Avanzado:                                       undefined,
-    UsuarioPagado:                                  undefined,
-    SuperAdministrador:                             undefined
+    _id:                                            '',
+    roles:                                          '',
+    permissions:                                    [],
 };
 
 export const RoleByPermissionProvider: FC           = ({ children }) => {
@@ -52,6 +48,8 @@ export const RoleByPermissionProvider: FC           = ({ children }) => {
 
             if(response && response.data) {
                 const { data }                      = response;
+
+                setRoleByPermission(data.rolebypermissions[0]);
 
                 Swal.fire({
                     title: '',
@@ -114,7 +112,11 @@ export const RoleByPermissionProvider: FC           = ({ children }) => {
                 return false;
             }
 
-            if(response && response.data) {             
+            if(response && response.data) {    
+                const { data }                      = response;
+
+                setRoleByPermission(data.rolebypermissions[0]);
+
                 Swal.fire({
                     title: '',
                     html: response.msg,
@@ -141,9 +143,36 @@ export const RoleByPermissionProvider: FC           = ({ children }) => {
             }
 
             if(response && response.data) {      
-                return response.data.rolebypermissions;
+                return response.data.rolebypermissions[0];
             }
         }
+    }
+    const undeleteRoleByPermission                  = async (id: string, access_token: string) => {
+        if(id && access_token) {
+            const response                          = await restoreRoleByPermission(id, access_token);
+
+            if(response && response.ok) {
+                toast.error(response.msg);
+                return false;
+            }
+
+            if(response && response.data) {      
+                Swal.fire({
+                    title: '',
+                    html: response.msg,
+                    icon: 'success',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: true,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+
+                return true;
+            }
+        }
+
+        return false;
     }
     return (
         <RoleByPermissionContext.Provider
@@ -152,7 +181,8 @@ export const RoleByPermissionProvider: FC           = ({ children }) => {
            createRoleByPermission,
            deleteRoleByPermission,
            editRoleByPermission,
-           showRoleByPermission
+           showRoleByPermission,
+           undeleteRoleByPermission
           }}
         >
           {children}

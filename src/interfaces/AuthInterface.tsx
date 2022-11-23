@@ -24,6 +24,7 @@ export interface Auth {
   propietario: string | undefined;
   google: true | undefined;
   recibirCorreo: boolean;
+  ownerId: string | null;
 }
 
 export interface Resp {

@@ -91,6 +91,26 @@ export const restorePermission                      = async (id: string, access_
         console.log("Error:", error);
     }
 }
+export const getPermissionByRole                    = async (id: string, access_token: string):Promise<permissionResponse|undefined> => {
+    try {
+        var myHeaders                               = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+        myHeaders.append("Authorization", `Bearer ${access_token}`);
+
+        const requestOptions                        = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                              = await fetch(`${development}/permissions/byrole/${id}`, requestOptions);
+        const result:permissionResponse             = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
 
 //DELETE
 export const destroyPermission                      = async (id: string, access_token:string):Promise<permissionResponse|undefined> => {

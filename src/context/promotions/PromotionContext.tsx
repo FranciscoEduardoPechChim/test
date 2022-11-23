@@ -57,17 +57,8 @@ export const PromotionProvider: FC                  = ({ children }) => {
 
             if(response && response.data) {
                 const { data }                      = response;
-                
-                const currentPromotion              = {
-                    code:                         data.promotions.code,
-                    startDate:                    data.promotions.startDate,
-                    endDate:                      data.promotions.endDate,
-                    quantity:                     data.promotions.quantity,
-                    type:                         data.promotions.type,
-                    repeat:                       data.promotions.repeat 
-                }
-
-                setPromotion(currentPromotion);
+            
+                setPromotion(data.promotions);
 
                 Swal.fire({
                     title: '',
@@ -132,17 +123,8 @@ export const PromotionProvider: FC                  = ({ children }) => {
 
             if(response && response.data) {
                 const { data }                      = response;
-                
-                const currentPromotion              = {
-                    code:                         data.promotions.code,
-                    startDate:                    data.promotions.startDate,
-                    endDate:                      data.promotions.endDate,
-                    quantity:                     data.promotions.quantity,
-                    type:                         data.promotions.type,
-                    repeat:                       data.promotions.repeat 
-                }
-
-                setPromotion(currentPromotion);
+            
+                setPromotion(data.promotions);
                        
                 Swal.fire({
                     title: '',

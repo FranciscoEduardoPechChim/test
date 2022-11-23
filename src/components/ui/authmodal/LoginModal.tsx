@@ -11,7 +11,7 @@ import styles from "./AuthModal.module.css";
 import "react-toastify/dist/ReactToastify.css";
 import { googleClientId } from "credentials";
 import PasswordForgot from "../authmodal/PasswordForgot";
-
+//import { gapi } from 'gapi-script';
 
 const LoginModal = () => {
   const router = useRouter();
@@ -25,9 +25,9 @@ const LoginModal = () => {
     rememberme: false,
   });
 
-
   useEffect(() => {
-    const correo = localStorage.getItem("correo");
+
+    const correo = (typeof window !== "undefined") ? localStorage.getItem("correo"):"";
 
     if (correo) {
       setFormulario({
@@ -36,6 +36,16 @@ const LoginModal = () => {
         rememberme: true,
       });
     }
+
+    
+    // const initClient = () => {
+    //     gapi.client.init({
+    //       clientId: googleClientId,
+    //       scope: ''
+    //     });
+    // };
+
+    // gapi.load('client:auth2', initClient);
   }, []);
 
   const { correo, password, rememberme } = formulario;
@@ -71,7 +81,13 @@ const LoginModal = () => {
     setModalShow(!modalShow)
   };
 
+  const onSuccess = (res:any) => {
+    console.log('success:', res);
+  }
 
+  const onFailure = (err:any) => {
+      console.log('failed:', err);
+  }
   return (
     <>
       <Modal
@@ -131,28 +147,57 @@ const LoginModal = () => {
                 <hr />
               </div>
 
-              <GoogleLogin
-                clientId={googleClientId}
-                buttonText="Inicia sesión con google"
-                onSuccess={signInWithGoogle}
-                onFailure={signInWithGoogle}
-                cookiePolicy={"single_host_origin"}
-                render={(renderProps) => (
+              {/* <GoogleLogin
+                clientId            = {googleClientId}
+                buttonText          = "Inicia sesión con google"
+                onSuccess           = {signInWithGoogle}
+                onFailure           = {signInWithGoogle}
+                cookiePolicy        = {"single_host_origin"}
+                render              = {(renderProps:any) => {
+                  return(
+                    <div
+                      onClick         = {renderProps.onClick}
+                      className       = "col-10 mb-3 text-center pointer"
+                    >
+                      <div className  = {styles.modalGoogleBtn}>
+                        <img
+                          className   = "me-3"
+                          src         = "/images/icons/google-icon.png"
+                          alt         = "Inicia sesión con google"
+                        />
+                        Inicia sesión con Google
+                      </div>
+                    </div>
+                  );
+                }}
+              /> */}
+
+
+            <GoogleLogin
+              clientId            = {googleClientId}
+              buttonText          = "Inicia sesión con google"
+              render              = {(renderProps:any) => {
+                return(
                   <div
-                    onClick={renderProps.onClick}
-                    className="col-10 mb-3 text-center pointer"
+                    onClick         = {renderProps.onClick}
+                    className       = "col-10 mb-3 text-center pointer"
                   >
-                    <div className={styles.modalGoogleBtn}>
+                    <div className  = {styles.modalGoogleBtn}>
                       <img
-                        className="me-3"
-                        src="/images/icons/google-icon.png"
-                        alt="Inicia sesión con google"
+                        className   = "me-3"
+                        src         = "/images/icons/google-icon.png"
+                        alt         = "Inicia sesión con google"
                       />
                       Inicia sesión con Google
                     </div>
                   </div>
-                )}
-              />
+                );
+              }}
+              onSuccess             = {signInWithGoogle}
+              onFailure             = {signInWithGoogle}
+              cookiePolicy          = {'single_host_origin'}
+              isSignedIn            = {true}
+            />
 
               {/* <div className="col-10 mb-3 text-center">
                 <div className={styles.modalFbBtn}>

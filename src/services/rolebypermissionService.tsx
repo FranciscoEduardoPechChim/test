@@ -1,5 +1,5 @@
 //Types
-import { rolebypermissionResponse } from '../types/rolebypermissionType';
+import { rolebypermissionResponse, rolebypermissionArrayResponse } from '../types/rolebypermissionType';
 //Credentials
 import { production, development } from 'credentials';
 
@@ -28,7 +28,6 @@ export const storeRoleByPermission                  = async (roleId: string, per
         console.log('Error: ' + error);
     }
 }
-
 //GET
 export const getRoleByPermissions                   = async (access_token: string):Promise<rolebypermissionResponse|undefined> => {
     try {
@@ -70,7 +69,46 @@ export const getRoleByPermission                    = async (id: string, access_
         console.log("Error:", error);
     }
 }
+export const hasPermission                          = async (roleId: string, access_token: string):Promise<rolebypermissionArrayResponse|undefined> => {
+    try {
+        var myHeaders                               = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+        myHeaders.append("Authorization", `Bearer ${access_token}`);
 
+        const requestOptions                        = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                              = await fetch(`${development}/rolebypermissions/valid/${roleId}`, requestOptions);
+        const result:rolebypermissionArrayResponse  = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
+export const restoreRoleByPermission                = async (id: string, access_token: string):Promise<rolebypermissionResponse|undefined> => {
+    try {
+        var myHeaders                               = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+        myHeaders.append("Authorization", `Bearer ${access_token}`);
+
+        const requestOptions                        = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                              = await fetch(`${development}/rolebypermissions/restore/${id}`, requestOptions);
+        const result:rolebypermissionResponse       = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
 //DELETE
 export const destroyRoleByPermission                = async (id: string, access_token:string):Promise<rolebypermissionResponse|undefined> => {
     try {

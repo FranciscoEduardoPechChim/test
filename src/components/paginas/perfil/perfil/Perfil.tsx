@@ -6,6 +6,9 @@ import Button from "../../../ui/button/Button";
 import styles from "./Perfil.module.css";
 import Loading from "../../../ui/loading/Loading";
 
+//Middlewares
+import { hasPermission } from "../../../../middlewares/roles";
+
 const Perfil                                    = () => {
   const router                                  = useRouter();
   const { auth, fotoPerfil, logOut }            = useContext(AuthContext);
@@ -78,10 +81,13 @@ const Perfil                                    = () => {
 
           <div className={styles.nombre}>
             {auth.nombre} {auth.apellido}{" "}
-            <i
-              onClick={actualizarPerfil}
-              className={`${styles.edicionIcon} bi bi-pencil-square pointer`}
-            ></i>
+            {hasPermission('profile')  &&
+              <i
+                onClick={actualizarPerfil}
+                className={`${styles.edicionIcon} bi bi-pencil-square pointer`}
+              ></i>
+            }
+
           </div>
 
           {auth.paqueteAdquirido ? (
@@ -100,27 +106,34 @@ const Perfil                                    = () => {
       <hr />
 
       <div className="row d-flex justify-content-center">
-        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
-          <Button titulo="Mis paquetes" btn="Secondary" onClick={misPaquetes} />
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
-          <Button
-            titulo="Mis propiedades"
-            btn="Secondary"
-            onClick={misPropiedades}
-          />
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
-          <Button titulo="Mis pagos" btn="Secondary" onClick={historialPagos} />
-        </div>
-
-        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
-          <Button
-            titulo="Mis Referencias"
-            btn="Secondary"
-            onClick={referencias}
-          />
-        </div>
+        {hasPermission('packages') &&
+          <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
+            <Button titulo="Mis paquetes" btn="Secondary" onClick={misPaquetes} />
+          </div>
+        }
+        {hasPermission('properties') &&
+          <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
+            <Button
+              titulo="Mis propiedades"
+              btn="Secondary"
+              onClick={misPropiedades}
+            />
+          </div>
+        }
+        {hasPermission('payments') &&
+          <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
+            <Button titulo="Mis pagos" btn="Secondary" onClick={historialPagos} />
+          </div>
+        }
+        {hasPermission('references') &&
+          <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center mb-3">
+            <Button
+              titulo="Mis Referencias"
+              btn="Secondary"
+              onClick={referencias}
+            />
+          </div>
+        }
         <div className="col-12 text-center my-4">
           <span className={styles.btnSession} onClick={logOut}>
             <i className="bi bi-box-arrow-right" /> Cerrar sesión

@@ -45,8 +45,7 @@ const Individual = () => {
   const [mostrarPago, setMostrarPago] = useState(false);
   const [mostrarTransferencia, setMostrarTransferencia] = useState(false);
 
-   //const access_token                                                 = localStorage.getItem("token") || "";
-   const access_token                                                   = "123";
+  const access_token                                                    = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const [ price, setPrice ]                                             = useState(0);
   const [ type, setType ]                                               = useState('');
   const [ priceAnnual, setPriceAnnual ]                                 = useState(0);
@@ -426,8 +425,8 @@ const Individual = () => {
   useEffect(() => {
     const initSubscription                                              = async () => {
       if(auth.uid) {
-        const subscriptionData                                          = await isSubscription(auth.uid, access_token); 
-        const orderData                                                 = await showOrder(auth.uid, access_token);
+        const subscriptionData                                          = await isSubscription(auth.uid, (access_token) ? access_token:""); 
+        const orderData                                                 = await showOrder(auth.uid, (access_token) ? access_token:"");
 
         if(subscriptionData && typeof subscriptionData == 'boolean') {
           setSubscription(subscriptionData);

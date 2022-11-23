@@ -24,7 +24,7 @@ import styles from "./MyPromotions.module.css";
 import { isNotEmpty, isString, compareDate, isInteger, isMin, isMaxPercentage } from '../../../../helpers/validations';
 
 const MyListPromotions                                                              = () => {
-    const access_token                                                              = localStorage.getItem("token");
+    const access_token                                                              = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
     const { createPromotion, editPromotion, deletePromotion, undeletePromotion,
             showPromotion }                                                         = useContext(PromotionContext);
     const [ filterText, setFilterText ]                                             = useState('');

@@ -6,6 +6,9 @@ import { AuthContext } from "context/auth/AuthContext";
 import styles from "./Header.module.css";
 import { ChatContext } from "context/chat/ChatContext";
 
+//Middleware
+import { hasPermission } from '../../../middlewares/roles';
+
 interface Props {
   setMostrarMenu: Dispatch<SetStateAction<boolean>>;
   target: MutableRefObject<null>;
@@ -53,20 +56,19 @@ const MenuUsuario                                                   = (props: Pr
               ...props.style,
             }}
           >
-            <Link href="/perfil">
-              <div
-                className={`${styles.menuItem} pointer mx-3 my-2`}
-                onClick={() => {
-                  setMostrarMenu(false);
-                }}
-              >
-                Mi Perfil
-              </div>
-            </Link>
-
-            {auth.role === "Individual" ||
-              auth.role === "Usuario" ||
-              auth.role === "UsuarioPagado" ? null : (
+            {hasPermission('profile') &&
+              <Link href="/perfil">
+                <div
+                  className={`${styles.menuItem} pointer mx-3 my-2`}
+                  onClick={() => {
+                    setMostrarMenu(false);
+                  }}
+                >
+                  Mi Perfil
+                </div>
+              </Link>
+            }
+            {hasPermission('users') &&
               <Link href="/perfil/mis-usuarios">
                 <div
                   className={`${styles.menuItem} pointer mx-3 my-2`}
@@ -77,39 +79,44 @@ const MenuUsuario                                                   = (props: Pr
                   Mis Usuarios
                 </div>
               </Link>
-            )}
-
-            <Link href="/perfil/mis-paquetes">
-              <div
-                className={`${styles.menuItem} pointer mx-3 my-2`}
-                onClick={() => {
-                  setMostrarMenu(false);
-                }}
-              >
-                Mis Paquetes
-              </div>
-            </Link>
-            <Link href="/perfil/historial-de-pagos">
-              <div
-                className={`${styles.menuItem} pointer mx-3 my-2`}
-                onClick={() => {
-                  setMostrarMenu(false);
-                }}
-              >
-                Mis Pagos
-              </div>
-            </Link>
-            <Link href="/perfil/referencias-de-pago">
-              <div
-                className={`${styles.menuItem} pointer mx-3 my-2`}
-                onClick={() => {
-                  setMostrarMenu(false);
-                }}
-              >
-                Referencias
-              </div>
-            </Link>
-            {auth.role === "Administrador" ? (
+            }
+            {hasPermission('packages') &&
+              <Link href="/perfil/mis-paquetes">
+                <div
+                  className={`${styles.menuItem} pointer mx-3 my-2`}
+                  onClick={() => {
+                    setMostrarMenu(false);
+                  }}
+                >
+                  Mis Paquetes
+                </div>
+              </Link>
+            }
+            {hasPermission('payments') &&
+              <Link href="/perfil/historial-de-pagos">
+                <div
+                  className={`${styles.menuItem} pointer mx-3 my-2`}
+                  onClick={() => {
+                    setMostrarMenu(false);
+                  }}
+                >
+                  Mis Pagos
+                </div>
+              </Link>
+            }
+            {hasPermission('references') && 
+              <Link href="/perfil/referencias-de-pago">
+                <div
+                  className={`${styles.menuItem} pointer mx-3 my-2`}
+                  onClick={() => {
+                    setMostrarMenu(false);
+                  }}
+                >
+                  Referencias
+                </div>
+              </Link>
+            }
+            {hasPermission('admin.dasboard') &&
               <Link href="/dashboard">
                 <div
                   className={`${styles.menuItem} pointer mx-3 my-2`}
@@ -120,7 +127,7 @@ const MenuUsuario                                                   = (props: Pr
                   Dashboard
                 </div>
               </Link>
-            ) : null}
+            }
 
             <hr />
             <div

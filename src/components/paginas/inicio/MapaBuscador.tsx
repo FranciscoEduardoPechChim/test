@@ -9,6 +9,10 @@ import { useCategories, useTipoPropiedad } from "hooks/useCategories";
 import BarraCategorias from "./BarraCategorias";
 import styles from "./BarraCategoria.module.css";
 
+//Hooks
+import { usePropertiesByCoords } from '../../../hooks/useInmuebles';
+
+
 const containerStyle = {
   width: "100%",
   height: "87vh",
@@ -51,7 +55,7 @@ const MapaUbicacion = () => {
   const { categorias } = useCategories();
 
   const mapRef = useRef<GoogleMap>(null);
-  const { inmuebles, cargando } = useInmueblesCoordenadas(
+  const { inmuebles, cargando } = usePropertiesByCoords(
     southEast,
     northWest,
     southWest,
@@ -129,7 +133,7 @@ const MapaUbicacion = () => {
         options={options}
       >
         {cargando ? (
-          <Loading />
+          <Loading /> 
         ) : (
           <>
             <div onClick={handleClick}>
@@ -159,19 +163,17 @@ const MapaUbicacion = () => {
                   />
                 )} 
               </div>
-            </div>
+            </div> 
 
-            {inmuebles
-              ?.filter((inmueble) => {
-                return inmueble.publicado === true;
-              })
-              .map((inmueble) => (
+            {inmuebles && (inmuebles.length != 0) && inmuebles.map((inmueble:any, key:any) => {
+              return (
                 <Fragment key={inmueble._id}>
                   <Marker
                     animation={2}
                     position={{ lat: inmueble.lat, lng: inmueble.lng }}
                     icon={{
-                      url: "/images/icons/marcador.svg",
+                      //url: "/images/icons/marcador.svg",
+                      url: "https://res.cloudinary.com/dhcyyvrus/image/upload/v1669233956/images/Marcador_yzfk4y.png",
                       scaledSize: new google.maps.Size(50, 50),
                     }}
                     onClick={() =>
@@ -183,11 +185,12 @@ const MapaUbicacion = () => {
                     }
                   >
                     {seleccionado === inmueble._id ? (
-                     <InfoWindowMap inmueble={inmueble} />
+                     <InfoWindowMap inmueble={inmueble} handleClose={closeInfoWindow}/>
                     ) : null}
                   </Marker>
                 </Fragment>
-              ))}
+              );
+            })}
           </>
         )}
       </GoogleMap>

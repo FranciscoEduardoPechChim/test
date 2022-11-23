@@ -92,7 +92,7 @@ const RegisterModal                       = () => {
       return false;
     }
 
-    const isValid                                                   = await register(name, lastName, email, password, confirmPassword, role);
+    const isValid                                                   = await register(name, lastName, email, password, confirmPassword);
 
     if (isValid) {
         cerrarRegistro();

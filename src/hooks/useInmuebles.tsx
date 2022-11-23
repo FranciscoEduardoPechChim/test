@@ -21,6 +21,9 @@ import {
 import { Location } from "interfaces/MapInterfaces";
 import { AllInmuebles, Inmueble } from "interfaces";
 
+//Services
+import { getPropertiesByCoords } from '../services/propertyService';
+
 export const useInmuebles = () => {
   const { dirMapa } = useContext(MapContext);
   const [inmuebles, setInmuebles] = useState<InmueblesUsuario[]>();
@@ -85,6 +88,93 @@ export const useInmueble = (id: string) => {
 
   return { inmueble, cargando, imgs, setImgs };
 };
+
+export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, m2Property: number, m2Build: number, rooms: number, price: number) => {
+  const [properties,setProperties]              = useState<any>([]);
+  const [loading,setLoading]                    = useState(true);
+  const { minimoTerreno, maximoTerreno, 
+    minimoConstruidos, maximoConstruidos, 
+    minimoPrecio, maximoPrecio}                 = useContext(MapContext);
+
+    const init                                  = async () => {
+      if(southEast && northEast && southWest && northEast && category && type) {
+        const response                          = await getPropertiesByCoords(
+                                                    (typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
+                                                    (typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
+                                                    (typeof southWest.lat == 'number' && (southWest.lat != 0)) ? southWest.lat:1, 
+                                                    (typeof southWest.lng == 'number' && (southWest.lng != 0)) ? southWest.lng:1, 
+                                                    (typeof northEast.lat == 'number' && (northEast.lat != 0)) ? northEast.lat:1, 
+                                                    (typeof northEast.lng == 'number' && (northEast.lng != 0)) ? northEast.lng:1, 
+                                                    (typeof northWest.lat == 'number' && (northWest.lat != 0)) ? northWest.lat:1,
+                                                    (typeof northWest.lng == 'number' && (northWest.lng != 0)) ? northWest.lng:1, 
+                                                    category, 
+                                                    type);
+
+        if(response && response.data) {
+          const { data }                        = response;
+          let propertiesTotal                   = data.properties;
+
+          if((rooms >= 0) || (bathroom >= 0) || (parking >= 0) || (price >= 0) || (m2Property >= 0) || (m2Build >= 0)) {
+            propertiesTotal                     = (data.properties).filter((property:any) => {
+              if((rooms >= 0) && (property.habitaciones >= rooms)) {
+                return property;
+              }
+              if((bathroom >= 0) && (property.baños >= rooms)) {
+                return property;
+              }
+              if((parking >= 0) && (property.parking >= parking)) {
+                return property;
+              }
+              if((price >= 0) && (property.precio >= minimoPrecio && property.precio <= maximoPrecio)) {
+                return property;
+              }
+              if((m2Property >= 0) && (property.m2Terreno >= minimoTerreno && property.m2Terreno <= maximoTerreno)) {
+                return property;
+              }
+              if((m2Build >= 0) && (property.m2Construidos >= minimoConstruidos && property.m2Construidos <= m2Build)) {
+                return property;
+              }
+            });
+          }
+
+          propertiesTotal                       = propertiesTotal.filter((property:any) => {
+            if(property.publicado == true){
+              return property;
+            }
+          });
+
+          setProperties(propertiesTotal);
+          setLoading(false);
+        }
+      }
+    }
+
+    useEffect(() => {
+      init();
+    }, [
+      southEast,
+      northWest,
+      southWest,
+      northEast,
+      coords,
+      type,
+      category,
+      bathroom,
+      parking,
+      rooms,
+      minimoTerreno,
+      maximoTerreno,
+      minimoConstruidos,
+      maximoConstruidos,
+      minimoPrecio,
+      maximoPrecio,
+    ]);
+
+    return { 
+      inmuebles: properties, 
+      cargando: loading 
+    };
+}
 
 export const useInmueblesCoordenadas = (
   southEast: Bounds,

@@ -12,27 +12,47 @@ import { AuthContext } from "../../../context/auth/AuthContext";
 import { agregarHist } from "../../../helpers/fetch";
 import { InmueblesUsuario } from "interfaces/CrearInmuebleInterface";
 
+//React
+import { toast } from "react-toastify";
+//Helpers
+import { validate } from '../../../helpers/response';
+// Services
+import { storeHistory } from '../../../services/historyService';
 
 SwiperCore.use([EffectCube, Pagination, Autoplay]);
 
 interface Props {
   inmueble: InmueblesUsuario;
+  handleClose: () => void;
 }
 
-const InfoWindowMap               = ({ inmueble }: Props) => {
+const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
+  const access_token              = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const router                    = useRouter();
   const { auth }                  = useContext(AuthContext);
 
   const handleProperty            = async (id: string, slug: string) => {
-    const data                    = { usuario: auth.uid, inmueble: id };
+    if(id && slug) {
+      if(auth.uid && id && access_token) {
+        const response            = await storeHistory(auth.uid, id, access_token);
 
-    router.push(`/propiedades/${slug}`);
-    await agregarHist("historial", data);
+        if(response && response.errors) {
+            validate(response.errors);
+            return false;
+        }
+
+        if(response && response.ok) {
+            toast.error(response.msg);
+            return false;
+        }
+      }
+
+      router.push(`/propiedades/${slug}`);
+    }
   };
 
- 
   return (
-    <InfoWindow position={{ lat: inmueble.lat, lng: inmueble.lng }}>
+    <InfoWindow position={{ lat: inmueble.lat, lng: inmueble.lng }} onCloseClick={() => handleClose()}>
       <div className={styles.contenedorCard}>
         <div className={`${styles.imageflip}`}>
           <div className={`${styles.mainflip}`}>

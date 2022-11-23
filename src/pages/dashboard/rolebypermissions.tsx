@@ -1,15 +1,14 @@
 import { useContext } from "react";
 import { useRouter } from "next/router";
-import MyPromotions from '../../components/paginas/dashboard/promotions/MyPromotions';
+import MyRoleByPermissions from '../../components/paginas/dashboard/rolebypermissions/MyRoleByPermissions';
 import DashboardLayout from "../../components/layout/Dashboard";
 import SEO from "../../components/seo/SEO";
-import Titulo from "../../components/ui/titulo/Titulo";
 import { AuthContext } from "../../context/auth/AuthContext";
 import { PrivateRoute } from "../../hooks/usePrivateRoute";
 import NotFound from "../404";
 
 
-const MyPromotionsPage = () => {
+const MyRoleByPermissionsPage = () => {
   const router = useRouter();
   const { auth } = useContext(AuthContext);
 
@@ -19,12 +18,12 @@ const MyPromotionsPage = () => {
 
   return (
     <>
-      <SEO titulo="Administrar promociones" url={router.asPath} />
-      <DashboardLayout titulo="PROMOCIONES">
-        <MyPromotions />
+      <SEO titulo="Administrar roles por permisos" url={router.asPath} />
+      <DashboardLayout titulo="ROLES POR PERMISOS">
+        <MyRoleByPermissions />
       </DashboardLayout>
     </>
   );
 };
 
-export default PrivateRoute(MyPromotionsPage);
+export default PrivateRoute(MyRoleByPermissionsPage);
