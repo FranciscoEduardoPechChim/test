@@ -39,7 +39,7 @@ const Buscador = () => {
       onFocus={mostrarFiltros}
       ref={geosuggestEl}
       queryDelay={530}
-      country="usa"
+      country={["mx", "usa"]}
       placeholder="Busca aquí..."
       onSuggestSelect={onSuggestSelect}
       autoComplete="off"

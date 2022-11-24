@@ -156,7 +156,7 @@ const ActualizarPerfilForm = () => {
             value={direccionFisica}
             defaultValue={direccionFisica}
             queryDelay={530}
-            country="usa"
+            country={["mx", "usa"]}
             placeholder="Escoge tu ubicaicón"
             onSuggestSelect={onSuggestSelect}
             autoComplete="off"

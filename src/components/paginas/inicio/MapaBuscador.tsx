@@ -45,9 +45,9 @@ const MapaUbicacion = () => {
     filtros,
   } = useContext(MapContext);
   const [seleccionado, setSeleccionado] = useState("");
-  const [banos, setBanos] = useState(-1)
-  const [parking, setParking] = useState(-1)
-  const [habitaciones, setHabitaciones] = useState(-1)
+  const [banos, setBanos] = useState(0)
+  const [parking, setParking] = useState(0)
+  const [habitaciones, setHabitaciones] = useState(0)
   const [m2Terreno, setM2Terreno] = useState(0)
   const [m2Construidos, setM2Construidos] = useState(0)
   const [precio, setPrecio] = useState(0)
@@ -65,10 +65,7 @@ const MapaUbicacion = () => {
     tipoPropiedad,
     banos,
     parking,
-    m2Terreno,
-    m2Construidos,
-    habitaciones,
-    precio,
+    habitaciones
   );
   
   const propiedadSeleccionada = (id: string, lat: number, lng: number) => {
@@ -116,6 +113,7 @@ const MapaUbicacion = () => {
   };
 
   useEffect(() => {
+    console.log('hhh');
     onBoundsChange();
   }, [coordenadas, cargando]);
 

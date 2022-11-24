@@ -6,6 +6,7 @@ import {
   useCategories,
   useTipoPropiedad,
 } from "../../../../hooks/useCategories";
+import { useSets } from '../../../../hooks/useSets';
 import SeleccionarLugar from "../../../ui/buscador/SeleccionarLugar";
 import MapaUbicacion from "./MapaUbicacion";
 import Button from "../../../ui/button/Button";
@@ -23,6 +24,8 @@ interface Props {
   comisiones: number;
   categoria: string;
   setCategoria: Dispatch<SetStateAction<string>>;
+  set: string;
+  setSet: Dispatch<SetStateAction<string>>;
 }
 
 const FormStepOne = (props: Props) => {
@@ -36,10 +39,14 @@ const FormStepOne = (props: Props) => {
     comisiones,
     categoria,
     setCategoria,
+    set,
+    setSet
   } = props;
-  const { direccion } = useContext(MapContext);
-  const { categorias, cargando } = useCategories();
-  const { loading, propertyTypes } = useTipoPropiedad();
+  const access_token                = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const { direccion }               = useContext(MapContext);
+  const { categorias, cargando }    = useCategories();
+  const { loading, propertyTypes }  = useTipoPropiedad();
+  const { loadingSet, sets }        = useSets((access_token) ? access_token:'');
 
   const longitudTitulo = titulo.length;
 
@@ -50,13 +57,13 @@ const FormStepOne = (props: Props) => {
           Título del inmueble 
         </Form.Label>
         <Form.Control
-          type="text"
-          value={titulo}
-          name="titulo"
-          minLength={15}
-          maxLength={100}
+          type      = "text"
+          value     = {titulo}
+          name      = "titulo"
+          minLength = {15}
+          maxLength = {100}
           required
-          onChange={handleChange}
+          onChange  = {handleChange}
         />
         <Row>
           <Col>
@@ -117,6 +124,32 @@ const FormStepOne = (props: Props) => {
                   {categorias.map((categoria) => (
                     <option key={categoria._id} value={categoria._id}>
                       {categoria.nombre}
+                    </option>
+                  ))}
+                </Form.Select>
+              )}
+            </div>
+          </div>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col md={6}>
+          <div className="row mb-3">
+            <div className="col-sm-5 col-md-4 col-lg-6">
+              <div className={styles.content}>Tipo de conjunto</div>
+            </div>
+            <div className="col-sm-7 col-md-8 col-lg-6">
+              {loadingSet ? (
+                <Loading />
+              ) : (
+                <Form.Select
+                  value     = {set}
+                  onChange  = {(e:any) => setSet(e.target.value)}
+                >
+                  {sets.map((set:any) => (
+                    <option key={set._id} value={set._id}>
+                      {set.nombre}
                     </option>
                   ))}
                 </Form.Select>

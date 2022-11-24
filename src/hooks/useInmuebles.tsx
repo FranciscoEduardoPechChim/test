@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 import moment from "moment";
 import { Bounds, MapContext } from "context/map/MapContext";
+import { AuthContext } from "context/auth/AuthContext";
 import {
   bodegasCat,
   casasC,
@@ -23,6 +26,7 @@ import { AllInmuebles, Inmueble } from "interfaces";
 
 //Services
 import { getPropertiesByCoords } from '../services/propertyService';
+
 
 export const useInmuebles = () => {
   const { dirMapa } = useContext(MapContext);
@@ -89,12 +93,15 @@ export const useInmueble = (id: string) => {
   return { inmueble, cargando, imgs, setImgs };
 };
 
-export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, m2Property: number, m2Build: number, rooms: number, price: number) => {
+export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, rooms: number) => {
+  const access_token                            = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const router                                  = useRouter();
   const [properties,setProperties]              = useState<any>([]);
   const [loading,setLoading]                    = useState(true);
   const { minimoTerreno, maximoTerreno, 
     minimoConstruidos, maximoConstruidos, 
-    minimoPrecio, maximoPrecio}                 = useContext(MapContext);
+    minimoPrecio, maximoPrecio, identification} = useContext(MapContext);
+  const { auth }                                = useContext(AuthContext);
 
     const init                                  = async () => {
       if(southEast && northEast && southWest && northEast && category && type) {
@@ -112,36 +119,68 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
 
         if(response && response.data) {
           const { data }                        = response;
-          let propertiesTotal                   = data.properties;
+          let propertiesTotal                   = (data.properties).filter((property:any) => {
+            if(property.publicado == true){
+              return property;
+            }
+          });
 
-          if((rooms >= 0) || (bathroom >= 0) || (parking >= 0) || (price >= 0) || (m2Property >= 0) || (m2Build >= 0)) {
-            propertiesTotal                     = (data.properties).filter((property:any) => {
-              if((rooms >= 0) && (property.habitaciones >= rooms)) {
-                return property;
-              }
-              if((bathroom >= 0) && (property.baños >= rooms)) {
-                return property;
-              }
-              if((parking >= 0) && (property.parking >= parking)) {
-                return property;
-              }
-              if((price >= 0) && (property.precio >= minimoPrecio && property.precio <= maximoPrecio)) {
-                return property;
-              }
-              if((m2Property >= 0) && (property.m2Terreno >= minimoTerreno && property.m2Terreno <= maximoTerreno)) {
-                return property;
-              }
-              if((m2Build >= 0) && (property.m2Construidos >= minimoConstruidos && property.m2Construidos <= m2Build)) {
+          if(rooms >= 0) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(property.habitaciones >= rooms) {
                 return property;
               }
             });
           }
 
-          propertiesTotal                       = propertiesTotal.filter((property:any) => {
-            if(property.publicado == true){
-              return property;
-            }
-          });
+          if(bathroom >= 0) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(property.baños >= bathroom) {
+                return property;
+              }
+            });
+          }
+
+          if(parking >= 0) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(property.parking >= parking) {
+                return property;
+              }
+            });
+
+          }
+
+          if((Number(minimoPrecio) >= 0) && (Number(maximoPrecio) > Number(minimoPrecio))) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if((property.precio >= Number(minimoPrecio)) && (property.precio <= Number(maximoPrecio))) {
+                return property;
+              }
+            });
+          }
+
+          if((Number(minimoTerreno) >= 0) && (Number(maximoTerreno) > Number(minimoTerreno))) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if((property.m2Terreno >= Number(minimoTerreno)) && (property.m2Terreno <= Number(maximoTerreno))) {
+                return property;
+              }
+            });
+          }
+
+          if((Number(minimoConstruidos) >= 0) && (Number(maximoConstruidos) > Number(minimoConstruidos))) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if((property.m2Construidos >= Number(minimoConstruidos)) && (property.m2Construidos <= Number(maximoConstruidos))) {
+                return property;
+              }
+            });
+          }
+ 
+          if(identification != '') {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(identification == property.alias) {
+                return property;
+              }
+            });
+          }
 
           setProperties(propertiesTotal);
           setLoading(false);

@@ -25,11 +25,20 @@ const BarraCategorias = (props: Props) => {
     setMaximoConstruidos,
     setMinimoPrecio,
     setMaximoPrecio,
+    setIdentification,
+    minimoPrecio,
+    maximoPrecio,
+    minimoTerreno, 
+    maximoTerreno,
+    minimoConstruidos,
+    maximoConstruidos,
+    identification
   } = useContext(MapContext);
   const { setTipoPropiedad, propertyTypes, categorias, setCategoria, setBanos, setParking, setHabitaciones} = props;
   const { categoria, tipoPropiedad } = useContext(MapContext);
   const [selectedPro, setSelected] = useState(tipoPropiedad);
   const [selectedCat, setselectedCat] = useState(categoria);
+
 
   const seleccionarCategoria = (id: string) => {
     setCategoria(id);
@@ -291,19 +300,24 @@ const BarraCategorias = (props: Props) => {
                   e.preventDefault();
                 }}>
                 <input 
-                type="number" 
-                name="minimoPrecio" 
-                autoComplete="Off" 
-                placeholder="Mínimo"
-                onChange={e => setMinimoPrecio(e.target.value)}></input>
+                  type          = "number" 
+                  name          = "minimoPrecio" 
+                  autoComplete  = "Off" 
+                  placeholder   = "Mínimo"
+                  min           = {0}
+                  value         = {minimoPrecio}
+                  onChange      = {(e:any) =>  setMinimoPrecio((e.target.value != '') ? e.target.value:'0')}
+                />
                 
                 <input 
-                type="number" 
-                name="maximoPrecio" 
-                autoComplete="Off" 
-                placeholder="Máximo" 
-                onChange={e => setMaximoPrecio(e.target.value)}
-                ></input>
+                  type          = "number" 
+                  name          = "maximoPrecio" 
+                  autoComplete  = "Off" 
+                  placeholder   = "Máximo" 
+                  min           = {0}
+                  value         = {maximoPrecio}
+                  onChange      = {(e:any) => setMaximoPrecio((e.target.value != '' && e.target.value != '0') ? e.target.value:'10000000')}
+                />
               </form>
             </li>
             <li>
@@ -313,22 +327,27 @@ const BarraCategorias = (props: Props) => {
                   e.preventDefault();
                 }}>
                 <input 
-                type="number" 
-                name="minimoTerreno" 
-                autoComplete="Off" 
-                placeholder="Mínimo"
-                onChange={e => setMinimoTerreno(e.target.value)}></input>
+                  type          = "number" 
+                  name          = "minimoTerreno" 
+                  autoComplete  = "Off" 
+                  placeholder   = "Mínimo"
+                  min           = {0}
+                  value         = {minimoTerreno}
+                  onChange      = {(e:any) => setMinimoTerreno((e.target.value != '') ? e.target.value:'0')}
+                />
                 
                 <input 
-                type="number" 
-                name="maximoTerreno" 
-                autoComplete="Off" 
-                placeholder="Máximo" 
-                onChange={e => setMaximoTerreno(e.target.value)}></input>
-                {/* <button type="submit">Aplicar</button> */}
+                  type          = "number" 
+                  name          = "maximoTerreno" 
+                  autoComplete  = "Off" 
+                  placeholder   = "Máximo" 
+                  min           = {0}
+                  value         = {maximoTerreno}
+                  onChange      = {(e:any) => setMaximoTerreno((e.target.value != '' && e.target.value != '0') ? e.target.value:'10000')}
+                />
+  
               </form>
             </li>
-
             <li>
               <h4 className={styles.TitleFiltros}>Conjunto</h4>
               <div className={styles.buttonContainer}>
@@ -408,8 +427,6 @@ const BarraCategorias = (props: Props) => {
                 </form>
               </div>
             </li>
-
-
             <li>
             <h5 className={styles.TitleFiltros}>Construidos</h5>
               <form className={styles.form}
@@ -417,20 +434,45 @@ const BarraCategorias = (props: Props) => {
                   e.preventDefault();
                 }}>
                 <input 
-                type="text" 
-                name="minimoConstruidos" 
-                autoComplete="Off" 
-                placeholder="Mínimo" 
-                onChange={e => setMinimoConstruidos(e.target.value)}></input>
+                  type          = "number" 
+                  name          = "minimoConstruidos" 
+                  autoComplete  = "Off" 
+                  placeholder   = "Mínimo" 
+                  min           = {0}
+                  value         = {minimoConstruidos}
+                  onChange      = {(e:any) => setMinimoConstruidos((e.target.value != '') ? e.target.value:'0')}
+                />
                 
                 <input 
-                type="text" 
-                name="maximoConstruidos" 
-                autoComplete="Off" 
-                placeholder="Máximo" 
-                onChange={e => setMaximoConstruidos(e.target.value)}
-                ></input>
+                  type          = "number" 
+                  name          = "maximoConstruidos" 
+                  autoComplete  = "Off" 
+                  placeholder   = "Máximo" 
+                  min           = {0}
+                  value         = {maximoConstruidos}
+                  onChange      = {(e:any) => setMaximoConstruidos((e.target.value != '' && e.target.value != '0') ? e.target.value:'10000')}
+                />
                 {/* <button type="submit">Aplicar</button> */}
+              </form>
+            </li>
+            <li>
+              <h5 className={styles.TitleFiltros}>Identificador</h5>
+              <form className={styles.form}
+                onSubmit={e => {
+                  e.preventDefault(); 
+                }}>
+                  <div className="row">
+                    <div className="col-6 mx-2">
+                      <input 
+                        type          = "text" 
+                        name          = "alias" 
+                        autoComplete  = "Off" 
+                        placeholder   = "House One" 
+                        value         = {identification}
+                        onChange      = {(e:any) => setIdentification((e.target.value != '') ? e.target.value:'')} 
+                      />
+                    </div>
+                  </div>
               </form>
             </li>
           </ul>

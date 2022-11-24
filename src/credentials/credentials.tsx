@@ -13,6 +13,7 @@ export const desarrollosCat = "6213cb350d7c145fa7ae62ac";
 export const localesCat = "6213cb3c0d7c145fa7ae62b0";
 export const oficinasCat = "6213cb430d7c145fa7ae62b4";
 export const bodegasCat = "6213cb480d7c145fa7ae62b8";
+export const conjunto = "632380d80cdb403fc1fea301";
 
 export const googleClientId =
   "809530655280-sfv9hs2l45tcd16joedrrgvh11bc42l5.apps.googleusercontent.com";

@@ -58,6 +58,7 @@ export interface InmuebleData {
   sala?: boolean;
   secadora?: boolean;
   seguridadPrivada?: boolean;
+  set?: string;
 }
 
 export interface ActualizarInmueble {

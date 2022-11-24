@@ -14,7 +14,7 @@ import {
   InmuebleContext,
   InmuebleData,
 } from "../../../../context/inmuebles/InmuebleContext";
-import { casasC, rentas } from "credentials";
+import { casasC, rentas, conjunto } from "credentials";
 
 const FormStepOne: any = dynamic(() => import("./FormStepOne"), { ssr: false });
 
@@ -26,6 +26,7 @@ const AnadirInmueble = () => {
   const [steps, setSteps] = useState(1);
   const [tipoPropiedad, setTipoPropiedad] = useState(casasC);
   const [categoria, setCategoria] = useState(rentas);
+  const [set, setSet]             = useState(conjunto);
   const [amueblado, setAmueblado] = useState(false);
   const [agua, setAgua] = useState<any>(false);
   const [luz, setLuz] = useState<any>(false);
@@ -133,6 +134,7 @@ const AnadirInmueble = () => {
     sala: sala.value,
     secadora: secadora.value,
     seguridadPrivada: seguridadPrivada.value,
+    set
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -155,21 +157,23 @@ const AnadirInmueble = () => {
 
           <div className="col-sm-12 col-md-12 col-lg-8">
             <Form>
-              {steps === 1 ? (
+              {(steps === 1) &&
                 <>
                   <FormStepOne
-                    handleNextStep={handleNextStep}
-                    handleChange={handleChange}
-                    titulo={titulo}
-                    tipoPropiedad={tipoPropiedad}
-                    setTipoPropiedad={setTipoPropiedad}
-                    precio={precio}
-                    comisiones={comisiones}
-                    categoria={categoria}
-                    setCategoria={setCategoria}
+                    handleNextStep    = {handleNextStep}
+                    handleChange      = {handleChange}
+                    titulo            = {titulo}
+                    tipoPropiedad     = {tipoPropiedad}
+                    setTipoPropiedad  = {setTipoPropiedad}
+                    precio            = {precio}
+                    comisiones        = {comisiones}
+                    categoria         = {categoria}
+                    setCategoria      = {setCategoria}
+                    set               = {set}
+                    setSet            = {setSet}
                   />
                 </>
-              ) : null}
+              }
 
               {steps === 2 ? (
                 <>
