@@ -418,19 +418,21 @@ const Formulario = (props: Props) => {
             <div className="col-12 mb-3">
               <Form.Check
                 inline
-                type="radio"
-                name="group2"
-                label="Sí"
-                onClick={() => {
+                type            = "radio"
+                name            = "group2"
+                label           = "Sí"
+                defaultChecked  = {amueblado}
+                onClick         = {() => {
                   setAmueblado(true);
                 }}
               />
               <Form.Check
                 inline
-                type="radio"
-                name="group2"
-                label="No"
-                onClick={() => {
+                type            = "radio"
+                name            = "group2"
+                label           = "No"
+                defaultChecked  = {!amueblado}
+                onClick         = {() => {
                   setAmueblado(false);
                 }}
               />
@@ -670,12 +672,14 @@ const Formulario = (props: Props) => {
           <div className="row">
             <div className="col-12 mb-3 ">
               <Form.Control
-                as="textarea"
-                rows={7}
-                value={descripcion}
-                name="descripcion"
-                onChange={handleChange}
-                placeholder="Escribe una breve descripción del inmueble..."
+                as          = "textarea"
+                rows        = {7}
+                value       = {descripcion}
+                name        = "descripcion"
+                maxLength   = {255}
+                style       = {{ resize: 'none' }}
+                onChange    = {handleChange}
+                placeholder = "Escribe una breve descripción del inmueble..."
               />
               <div className="d-flex justify-content-center py-4">
                 {cargando ? <Loading /> : null}

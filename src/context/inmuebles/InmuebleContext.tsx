@@ -16,6 +16,11 @@ import {
 } from "helpers/fetch";
 import { Estado } from "interfaces/SolicitudInteface";
 
+//Helpers
+import { validate } from '../../helpers/response';
+//Services
+import { storeProperty } from "../../services/propertyService";
+
 export interface InmuebleData {
   titulo: string;
   categoria: string;
@@ -59,6 +64,7 @@ export interface InmuebleData {
   secadora?: boolean;
   seguridadPrivada?: boolean;
   set?: string;
+  alias?: string;
 }
 
 export interface ActualizarInmueble {
@@ -108,6 +114,11 @@ export interface ActualizarInmueble {
 }
 
 interface ContextProps {
+  createProperty: (title: string, categoryId: string, typeId: string, setId: string, alias: string | null, lat: number, lng: number, price: number, commission: number, antiquity: string | null, 
+    m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
+    level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
+    microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
+    others: string | null, address: string, description: string, userId: string, access_token: string) => Promise<boolean | undefined>;
   crearInmueble: (data: InmuebleData) => Promise<CrearInmuebleResp>;
   eliminarInmueble: (id: string) => Promise<BorrarInmuebleResp>;
   subirImagenesInmueble: (
@@ -258,6 +269,36 @@ export const InmuebleProvider: FC = ({ children }) => {
     return resp;
   };
 
+  const createProperty                          = async (title: string, categoryId: string, typeId: string, setId: string, alias: string | null, lat: number, lng: number, price: number, commission: number, antiquity: string | null, 
+    m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
+    level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
+    microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
+    others: string | null, address: string, description: string, userId: string, access_token: string) => {
+      if(title && categoryId && typeId && setId && lat && lng && address && String(price) && String(commission) && String(m2Property) && String(baths) && String(parking) && String(m2Build) && String(rooms) && String(halfbaths) && description && userId && access_token) {
+ 
+        const response                          = await storeProperty(title, categoryId, typeId, setId, alias, lat, lng, price, commission, antiquity, m2Property, baths, parking, water, gas, privatesecurity, maintenance, disabled, m2Build, rooms, halfbaths, level, light, wifi, school, swimmingpool, furnished, beds, livingroom, kitchen, refrigerator, microwave, oven, dryingmachine, closet, diningroom, aa, stove, minioven, washingmachine, others, address, description, userId, access_token);
+
+        if(response && response.errors) {
+            validate(response.errors);
+            return false;
+        }
+
+        if(response && response.ok) {
+            toast.error(response.msg);
+            return false;
+        }
+
+        if(response && response.data) {
+          toast.success(response.msg);
+          toast.success("Ahora agrega las imágenes de tu inmueble");
+          
+          return true;
+        }
+    }
+
+    return false;
+  }
+
   return (
     <InmuebleContext.Provider
       value={{
@@ -283,6 +324,7 @@ export const InmuebleProvider: FC = ({ children }) => {
         setEstado,
         misCompUser,
         setMisCompUser,
+        createProperty,
       }}
     >
       <ToastContainer />

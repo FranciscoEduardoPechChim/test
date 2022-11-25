@@ -26,6 +26,8 @@ interface Props {
   setCategoria: Dispatch<SetStateAction<string>>;
   set: string;
   setSet: Dispatch<SetStateAction<string>>;
+  alias: string | null;
+  setAlias: Dispatch<SetStateAction<string | null>>;
 }
 
 const FormStepOne = (props: Props) => {
@@ -40,7 +42,9 @@ const FormStepOne = (props: Props) => {
     categoria,
     setCategoria,
     set,
-    setSet
+    setSet,
+    alias,
+    setAlias
   } = props;
   const access_token                = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const { direccion }               = useContext(MapContext);
@@ -154,6 +158,24 @@ const FormStepOne = (props: Props) => {
                   ))}
                 </Form.Select>
               )}
+            </div>
+          </div>
+        </Col>
+        <Col md={6}>
+          <div className="row mb-3">
+            <div className="col-sm-5 col-md-4 col-lg-6">
+              <div className={styles.content}>Identificador</div>
+            </div>
+            <div className="col-sm-7 col-md-8 col-lg-6">
+              <Form.Control 
+                defaultValue  = {(alias) ? alias:''} 
+                id            = "alias" 
+                type          = "text" 
+                name          = "alias" 
+                maxLength     = {255} 
+                placeholder   = "House One"
+                onChange      = {(e:any) => setAlias(e.target.value)}
+              />
             </div>
           </div>
         </Col>

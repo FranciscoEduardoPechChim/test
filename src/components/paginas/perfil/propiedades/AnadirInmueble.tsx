@@ -19,37 +19,38 @@ import { casasC, rentas, conjunto } from "credentials";
 const FormStepOne: any = dynamic(() => import("./FormStepOne"), { ssr: false });
 
 const AnadirInmueble = () => {
-  const router = useRouter();
-  const { ubicacion, direccion } = useContext(MapContext);
-  const { crearInmueble } = useContext(InmuebleContext);
-  const [cargando, setCargando] = useState(false);
-  const [steps, setSteps] = useState(1);
-  const [tipoPropiedad, setTipoPropiedad] = useState(casasC);
-  const [categoria, setCategoria] = useState(rentas);
-  const [set, setSet]             = useState(conjunto);
-  const [amueblado, setAmueblado] = useState(false);
-  const [agua, setAgua] = useState<any>(false);
-  const [luz, setLuz] = useState<any>(false);
-  const [gas, setGas] = useState<any>(false);
-  const [internet, setInternet] = useState<any>(false);
+  const router                                  = useRouter();
+  const { ubicacion, direccion }                = useContext(MapContext);
+  const { crearInmueble, createProperty }       = useContext(InmuebleContext);
+  const [cargando, setCargando]                 = useState(false);
+  const [steps, setSteps]                       = useState(1);
+  const [tipoPropiedad, setTipoPropiedad]       = useState(casasC);
+  const [categoria, setCategoria]               = useState(rentas);
+  const [set, setSet]                           = useState(conjunto);
+  const [amueblado, setAmueblado]               = useState(false);
+  const [alias, setAlias]                       = useState('');
+  const [agua, setAgua]                         = useState<any>(false);
+  const [luz, setLuz]                           = useState<any>(false);
+  const [gas, setGas]                           = useState<any>(false);
+  const [internet, setInternet]                 = useState<any>(false);
   const [seguridadPrivada, setSeguridadPrivada] = useState<any>(false);
-  const [escuelas, setEscuelas] = useState<any>(false);
-  const [mantenimiento, setMantenimiento] = useState<any>(false);
-  const [piscina, setPiscina] = useState<any>(false);
-  const [discapacitados, setDiscapacitados] = useState<any>(false);
-  const [camas, setCamas] = useState<any>(false);
-  const [closet, setCloset] = useState<any>(false);
-  const [sala, setSala] = useState<any>(false);
-  const [comedor, setComedor] = useState<any>(false);
-  const [cocina, setCocina] = useState<any>(false);
-  const [AA, setAA] = useState<any>(false);
-  const [refrigerador, setRefrigerador] = useState<any>(false);
-  const [estufa, setEstufa] = useState<any>(false);
-  const [microondas, setMicroondas] = useState<any>(false);
-  const [minihorno, setMinihorno] = useState<any>(false);
-  const [horno, setHorno] = useState<any>(false);
-  const [lavadora, setLavadora] = useState<any>(false);
-  const [secadora, setSecadora] = useState<any>(false);
+  const [escuelas, setEscuelas]                 = useState<any>(false);
+  const [mantenimiento, setMantenimiento]       = useState<any>(false);
+  const [piscina, setPiscina]                   = useState<any>(false);
+  const [discapacitados, setDiscapacitados]     = useState<any>(false);
+  const [camas, setCamas]                       = useState<any>(false);
+  const [closet, setCloset]                     = useState<any>(false);
+  const [sala, setSala]                         = useState<any>(false);
+  const [comedor, setComedor]                   = useState<any>(false);
+  const [cocina, setCocina]                     = useState<any>(false);
+  const [AA, setAA]                             = useState<any>(false);
+  const [refrigerador, setRefrigerador]         = useState<any>(false);
+  const [estufa, setEstufa]                     = useState<any>(false);
+  const [microondas, setMicroondas]             = useState<any>(false);
+  const [minihorno, setMinihorno]               = useState<any>(false);
+  const [horno, setHorno]                       = useState<any>(false);
+  const [lavadora, setLavadora]                 = useState<any>(false);
+  const [secadora, setSecadora]                 = useState<any>(false);
 
   const { formulario, handleChange } = useForm({
     titulo: "",
@@ -91,7 +92,7 @@ const AnadirInmueble = () => {
     setSteps(steps - 1);
     router.push("/perfil/agregar-inmueble");
   };
-
+ 
   const dataInmueble: InmuebleData = {
     titulo,
     categoria,
@@ -134,17 +135,19 @@ const AnadirInmueble = () => {
     sala: sala.value,
     secadora: secadora.value,
     seguridadPrivada: seguridadPrivada.value,
-    set
+    set,
+    alias
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    setCargando(true);
     e.preventDefault();
+    console.log(dataInmueble);
+    // setCargando(true);
 
-    await crearInmueble(dataInmueble);
+    // await crearInmueble(dataInmueble);
 
-    setCargando(false);
-    handleNextStep();
+    // setCargando(false);
+    // handleNextStep();
   };
 
   return (
@@ -171,71 +174,72 @@ const AnadirInmueble = () => {
                     setCategoria      = {setCategoria}
                     set               = {set}
                     setSet            = {setSet}
+                    alias             = {alias}
+                    setAlias          = {setAlias}
                   />
                 </>
               }
-
-              {steps === 2 ? (
+              {(steps === 2) &&
                 <>
                   <Formulario
-                    handleChange={handleChange}
-                    antiguedad={antiguedad}
-                    m2Construidos={m2Construidos}
-                    m2Terreno={m2Terreno}
-                    habitaciones={habitaciones}
-                    baños={baños}
-                    medioBaños={medioBaños}
-                    parking={parking}
-                    pisos={pisos}
-                    descripcion={descripcion}
-                    otros={otros}
-                    amueblado={amueblado}
-                    setAmueblado={setAmueblado}
-                    agua={agua}
-                    luz={luz}
-                    gas={gas}
-                    internet={internet}
-                    seguridadPrivada={seguridadPrivada}
-                    escuelas={escuelas}
-                    mantenimiento={mantenimiento}
-                    piscina={piscina}
-                    discapacitados={discapacitados}
-                    camas={camas}
-                    closet={closet}
-                    sala={sala}
-                    comedor={comedor}
-                    cocina={cocina}
-                    AA={AA}
-                    refrigerador={refrigerador}
-                    estufa={estufa}
-                    microondas={microondas}
-                    minihorno={minihorno}
-                    horno={horno}
-                    lavadora={lavadora}
-                    secadora={secadora}
-                    setAgua={setAgua}
-                    setLuz={setLuz}
-                    setGas={setGas}
-                    setInternet={setInternet}
-                    setSeguridadPrivada={setSeguridadPrivada}
-                    setEscuelas={setEscuelas}
-                    setMantenimiento={setMantenimiento}
-                    setPiscina={setPiscina}
-                    setDiscapacitados={setDiscapacitados}
-                    setCamas={setCamas}
-                    setCloset={setCloset}
-                    setSala={setSala}
-                    setComedor={setComedor}
-                    setCocina={setCocina}
-                    setAA={setAA}
-                    setRefrigerador={setRefrigerador}
-                    setEstufa={setEstufa}
-                    setMicroondas={setMicroondas}
-                    setMinihorno={setMinihorno}
-                    setHorno={setHorno}
-                    setLavadora={setLavadora}
-                    setSecadora={setSecadora}
-                    cargando={cargando}
+                    handleChange      = {handleChange}
+                    antiguedad        = {antiguedad}
+                    m2Construidos     = {m2Construidos}
+                    m2Terreno         = {m2Terreno}
+                    habitaciones      = {habitaciones}
+                    baños             = {baños}
+                    medioBaños        = {medioBaños}
+                    parking           = {parking}
+                    pisos             = {pisos}
+                    descripcion       = {descripcion}
+                    otros             = {otros}
+                    amueblado         = {amueblado}
+                    setAmueblado      = {setAmueblado}
+                    agua              = {agua}
+                    luz               = {luz}
+                    gas               = {gas}
+                    internet          = {internet}
+                    seguridadPrivada  = {seguridadPrivada}
+                    escuelas          = {escuelas}
+                    mantenimiento     = {mantenimiento}
+                    piscina           = {piscina}
+                    discapacitados    = {discapacitados}
+                    camas             = {camas}
+                    closet            = {closet}
+                    sala              = {sala}
+                    comedor           = {comedor} 
+                    cocina            = {cocina}
+                    AA                = {AA}
+                    refrigerador      = {refrigerador}
+                    estufa            = {estufa}
+                    microondas        = {microondas}
+                    minihorno         = {minihorno}
+                    horno             = {horno}
+                    lavadora          = {lavadora}
+                    secadora          = {secadora}
+                    setAgua           = {setAgua}
+                    setLuz            = {setLuz}
+                    setGas            = {setGas}
+                    setInternet       = {setInternet}
+                    setSeguridadPrivada = {setSeguridadPrivada}
+                    setEscuelas       = {setEscuelas}
+                    setMantenimiento  = {setMantenimiento}
+                    setPiscina        = {setPiscina}
+                    setDiscapacitados = {setDiscapacitados}
+                    setCamas          = {setCamas}
+                    setCloset         = {setCloset}
+                    setSala           = {setSala}
+                    setComedor        = {setComedor}
+                    setCocina         = {setCocina}
+                    setAA             = {setAA}
+                    setRefrigerador   = {setRefrigerador}
+                    setEstufa         = {setEstufa}
+                    setMicroondas     = {setMicroondas}
+                    setMinihorno      = {setMinihorno}
+                    setHorno          = {setHorno}
+                    setLavadora       = {setLavadora}
+                    setSecadora       = {setSecadora}
+                    cargando          = {cargando}
                   />
                   <div className="col-12 my-3">
                     {cargando ? (
@@ -249,18 +253,19 @@ const AnadirInmueble = () => {
                     )}
 
                     <span className="mx-2" />
-                    {cargando ? (
+                    {(cargando) ? (
                       <Button
                         titulo="Siguiente"
-                        onClick={handleSubmit}
                         btn="Disabled"
                       />
                     ) : (
-                      <Button titulo="Siguiente" onClick={handleSubmit} />
+                      (descripcion != '') ? 
+                      <Button titulo="Siguiente" onClick={handleSubmit} />:
+                      <Button titulo="Siguiente" btn="Disabled" />
                     )}
                   </div>
                 </>
-              ) : null}
+              }
             </Form>
           </div>
           <div className="col-sm-12 col-md-12 col-lg-8">
