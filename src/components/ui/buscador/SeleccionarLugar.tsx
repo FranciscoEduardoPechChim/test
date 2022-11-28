@@ -32,7 +32,7 @@ const SeleccionarLugar = () => {
       <Geosuggest
         ref={geosuggestEl}
         queryDelay={530}
-        country="usa"
+        country={["mx", "usa"]}
         placeholder="Busca tu colonia aquí..."
         onSuggestSelect={onSuggestSelect}
         autoComplete="off"

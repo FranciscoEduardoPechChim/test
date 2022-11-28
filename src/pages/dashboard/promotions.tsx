@@ -9,7 +9,7 @@ import { PrivateRoute } from "../../hooks/usePrivateRoute";
 import NotFound from "../404";
 
 
-const MisUsuariosPage = () => {
+const MyPromotionsPage = () => {
   const router = useRouter();
   const { auth } = useContext(AuthContext);
 
@@ -27,4 +27,4 @@ const MisUsuariosPage = () => {
   );
 };
 
-export default PrivateRoute(MisUsuariosPage);
+export default PrivateRoute(MyPromotionsPage);

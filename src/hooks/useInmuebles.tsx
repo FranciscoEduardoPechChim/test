@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 import moment from "moment";
 import { Bounds, MapContext } from "context/map/MapContext";
+import { AuthContext } from "context/auth/AuthContext";
 import {
   bodegasCat,
   casasC,
@@ -20,6 +23,10 @@ import {
 } from "interfaces/CrearInmuebleInterface";
 import { Location } from "interfaces/MapInterfaces";
 import { AllInmuebles, Inmueble } from "interfaces";
+
+//Services
+import { getPropertiesByCoords } from '../services/propertyService';
+
 
 export const useInmuebles = () => {
   const { dirMapa } = useContext(MapContext);
@@ -85,6 +92,128 @@ export const useInmueble = (id: string) => {
 
   return { inmueble, cargando, imgs, setImgs };
 };
+
+export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, rooms: number) => {
+  const access_token                            = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const router                                  = useRouter();
+  const [properties,setProperties]              = useState<any>([]);
+  const [loading,setLoading]                    = useState(true);
+  const { minimoTerreno, maximoTerreno, 
+    minimoConstruidos, maximoConstruidos, 
+    minimoPrecio, maximoPrecio, identification} = useContext(MapContext);
+  const { auth }                                = useContext(AuthContext);
+
+    const init                                  = async () => {
+      if(southEast && northEast && southWest && northEast && category && type) {
+        const response                          = await getPropertiesByCoords(
+                                                    (typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
+                                                    (typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
+                                                    (typeof southWest.lat == 'number' && (southWest.lat != 0)) ? southWest.lat:1, 
+                                                    (typeof southWest.lng == 'number' && (southWest.lng != 0)) ? southWest.lng:1, 
+                                                    (typeof northEast.lat == 'number' && (northEast.lat != 0)) ? northEast.lat:1, 
+                                                    (typeof northEast.lng == 'number' && (northEast.lng != 0)) ? northEast.lng:1, 
+                                                    (typeof northWest.lat == 'number' && (northWest.lat != 0)) ? northWest.lat:1,
+                                                    (typeof northWest.lng == 'number' && (northWest.lng != 0)) ? northWest.lng:1, 
+                                                    category, 
+                                                    type);
+
+        if(response && response.data) {
+          const { data }                        = response;
+          let propertiesTotal                   = (data.properties).filter((property:any) => {
+            if(property.publicado == true){
+              return property;
+            }
+          });
+
+          if(rooms >= 0) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(property.habitaciones >= rooms) {
+                return property;
+              }
+            });
+          }
+
+          if(bathroom >= 0) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(property.baños >= bathroom) {
+                return property;
+              }
+            });
+          }
+
+          if(parking >= 0) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(property.parking >= parking) {
+                return property;
+              }
+            });
+
+          }
+
+          if((Number(minimoPrecio) >= 0) && (Number(maximoPrecio) > Number(minimoPrecio))) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if((property.precio >= Number(minimoPrecio)) && (property.precio <= Number(maximoPrecio))) {
+                return property;
+              }
+            });
+          }
+
+          if((Number(minimoTerreno) >= 0) && (Number(maximoTerreno) > Number(minimoTerreno))) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if((property.m2Terreno >= Number(minimoTerreno)) && (property.m2Terreno <= Number(maximoTerreno))) {
+                return property;
+              }
+            });
+          }
+
+          if((Number(minimoConstruidos) >= 0) && (Number(maximoConstruidos) > Number(minimoConstruidos))) {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if((property.m2Construidos >= Number(minimoConstruidos)) && (property.m2Construidos <= Number(maximoConstruidos))) {
+                return property;
+              }
+            });
+          }
+ 
+          if(identification != '') {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(identification == property.alias) {
+                return property;
+              }
+            });
+          }
+
+          setProperties(propertiesTotal);
+          setLoading(false);
+        }
+      }
+    }
+
+    useEffect(() => {
+      init();
+    }, [
+      southEast,
+      northWest,
+      southWest,
+      northEast,
+      coords,
+      type,
+      category,
+      bathroom,
+      parking,
+      rooms,
+      minimoTerreno,
+      maximoTerreno,
+      minimoConstruidos,
+      maximoConstruidos,
+      minimoPrecio,
+      maximoPrecio,
+    ]);
+
+    return { 
+      inmuebles: properties, 
+      cargando: loading 
+    };
+}
 
 export const useInmueblesCoordenadas = (
   southEast: Bounds,

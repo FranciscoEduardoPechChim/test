@@ -3,12 +3,15 @@ import { useRouter } from "next/router";
 import { AuthContext } from "../context/auth/AuthContext";
 import Loading from "../components/ui/loading/Loading";
 
+//Middlewares
+import { isAdmin, isSuperAdmin } from "middlewares/roles";
+
 export const AdminRoute = (Component: any) => {
   return function RutaPrivada(props: FC) {
     const { auth } = useContext(AuthContext);
     const router = useRouter();
 
-    if (auth.role !== "Administrador") {
+    if (!(isAdmin() || isSuperAdmin())) {
       useEffect(() => {
         router.replace("/");
       }, []);

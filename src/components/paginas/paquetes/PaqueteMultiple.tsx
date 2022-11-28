@@ -43,8 +43,7 @@ interface Props {
 }
 
 const PaqueteMultiple                                                   = (props: Props) => {
-  //const access_token                                                    = localStorage.getItem("token") || "";
-  const access_token                                                    = "123";
+  const access_token                                                    = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const { titulo, precio, descripcion, options, avanzado, usuario, id } = props;
   const { auth, abrirLogin, actualizarRol }                             = useContext(AuthContext);
   const { isValidPromotion, isSubscription, showOrder }                 = useContext(PromotionContext);
@@ -408,8 +407,8 @@ const PaqueteMultiple                                                   = (props
   useEffect(() => {
     const initSubscription                                              = async () => {
       if(auth.uid) {
-        const subscriptionData                                          = await isSubscription(auth.uid, access_token); 
-        const orderData                                                 = await showOrder(auth.uid, access_token);
+        const subscriptionData                                          = await isSubscription(auth.uid, (access_token) ? access_token:""); 
+        const orderData                                                 = await showOrder(auth.uid, (access_token) ? access_token:"");
 
         if(subscriptionData && typeof subscriptionData == 'boolean') {
           setSubscription(subscriptionData);

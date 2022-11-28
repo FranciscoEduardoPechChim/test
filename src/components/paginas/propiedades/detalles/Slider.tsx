@@ -12,15 +12,12 @@ import styles from "./Inmueble.module.css";
 SwiperCore.use([Pagination, Navigation]);
 
 interface Props {
-  inmuebles: {
-    inmueble: InmueblesUsuario;
-    ok: boolean;
-  };
+  inmuebles: InmueblesUsuario;
 }
 
 const Slider = ({ inmuebles }: Props) => {
   const [fullscreen, setFullscreen] = useState<any>(true);
-  const [show, setShow] = useState(false);
+  const [show, setShow]             = useState(false);
 
   function handleShow() {
     setFullscreen(true);
@@ -29,7 +26,7 @@ const Slider = ({ inmuebles }: Props) => {
 
   return (
     <div className="text-center">
-      {inmuebles.inmueble.imgs.length === 0 ? (
+      {inmuebles.imgs.length === 0 ? (
         <div className={styles.noImage}>
           Aun no hay imágenes <br /> para mostrar {":("}
         </div>
@@ -60,7 +57,7 @@ const Slider = ({ inmuebles }: Props) => {
       >
         {
           <>
-            {inmuebles.inmueble.imgs.map((image, i) => {
+            {inmuebles.imgs.map((image, i) => {
               const sepracion = image.split(".");
               const extension = sepracion[sepracion.length - 1];
               const extensionesValidas = ["mp4"];
@@ -86,7 +83,7 @@ const Slider = ({ inmuebles }: Props) => {
                       onClick={handleShow}
                       className={`${styles.slideImg} pointer`}
                       src={image}
-                      alt={inmuebles.inmueble.titulo}
+                      alt={inmuebles.titulo}
                     />
                   )}
                 </SwiperSlide>
@@ -108,7 +105,7 @@ const Slider = ({ inmuebles }: Props) => {
           closeVariant="white"
           className={`${styles.modalHeader} close-white`}
         >
-          <Modal.Title>{inmuebles.inmueble.titulo}</Modal.Title>
+          <Modal.Title>{inmuebles.titulo}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <SliderInmuebles inmuebles={inmuebles} />

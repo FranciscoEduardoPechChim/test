@@ -9,16 +9,14 @@ import styles from "./Inmueble.module.css";
 SwiperCore.use([Pagination, Navigation]);
 
 interface Props {
-  inmuebles: {
-    inmueble: InmueblesUsuario;
-    ok: boolean;
-  };
+  inmuebles: InmueblesUsuario;
+    
 }
 
 const SliderInmuebles = ({ inmuebles }: Props) => {
   return (
     <>
-      {inmuebles.inmueble.imgs.length === 0 ? (
+      {inmuebles.imgs.length === 0 ? (
         <div className={styles.noImage}>
           Aun no hay imágenes <br /> para mostrar {":("}
         </div>
@@ -44,11 +42,11 @@ const SliderInmuebles = ({ inmuebles }: Props) => {
         navigation={true}
         className="mySwiper"
       >
-        {inmuebles.inmueble.imgs.length === 0 ? (
+        {inmuebles.imgs.length === 0 ? (
           "No hay imágenes para mostrar"
         ) : (
           <>
-            {inmuebles.inmueble.imgs.map((image) => {
+            {inmuebles.imgs.map((image) => {
               const sepracion = image.split(".");
               const extension = sepracion[sepracion.length - 1];
               const extensionesValidas = ["mp4"];
@@ -69,7 +67,7 @@ const SliderInmuebles = ({ inmuebles }: Props) => {
                         <img
                           className={styles.imagenes}
                           src={image}
-                          alt={inmuebles.inmueble.titulo}
+                          alt={inmuebles.titulo}
                         />
                       </div>
                     </div>

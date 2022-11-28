@@ -57,3 +57,21 @@
   color: #ccc;
   margin: 150px 0;
 }
+
+.resetpassword {
+  margin-top: 2.5rem;
+}
+
+.modalContent {
+  border-radius: 15px;
+  border: none;
+}
+
+.modalLabels {
+  font-family:  "Open Sans";
+  font-style:   normal;
+  font-weight:  500;
+  font-size:    14px;
+  text-align:   center;
+  color:      #5e5e5e;
+}

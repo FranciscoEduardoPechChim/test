@@ -87,14 +87,14 @@ const BorrarImgs = () => {
   };
 
   const actualizarImgs = async () => {
-    const token = localStorage.getItem("token") || "";
+    const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
     const data: ActualizarInmueble = { ...inmuebleState, imgs };
     const imgsAborrar = { imgs: borrarImgs };
 
     await fetch(`${production}/subidas/imagenes/${auth.uid}/${idInmueble}`, {
       method: "PUT",
-      headers: { "Content-type": "application/json", "x-token": token },
+      headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
       body: JSON.stringify(imgsAborrar),
     });
 

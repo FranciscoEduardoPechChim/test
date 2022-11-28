@@ -4,16 +4,12 @@ export interface RoleByPermission {
     roleName:               string;
     permissionId:           string;
     permissionName:         string;
+    deleted?:               boolean;
 }
 
-export interface PermissionsByGroup{
-    Administrador?:         RoleByPermission[];
-    Usuario?:               RoleByPermission[];
-    Individual?:            RoleByPermission[];
-    Básico?:                RoleByPermission[];
-    Intermedio?:            RoleByPermission[];
-    Avanzado?:              RoleByPermission[];
-    UsuarioPagado?:         RoleByPermission[];
-    SuperAdministrador?:    RoleByPermission[];
+export interface PermissionsByGroup {
+    _id:                    string;
+    roles:                  string;
+    permissions:            RoleByPermission[];
+    deleted?:               boolean;
 }
-

@@ -18,6 +18,8 @@ import { MapContext } from "../../../context/map/MapContext";
 import SortIcon from '@material-ui/icons/ArrowDropDown';
 import { Box, InputLabel, MenuItem, FormControl, Select, SelectChangeEvent } from '@mui/material';
 
+//Middlewares
+import { hasPermission } from "../../../middlewares/roles";
 
 // interface Notificacion {
 //   de: string;
@@ -146,9 +148,11 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
                 </div>
               </Link>
 
-              <div className="my-1">
-                <Button titulo="chats" onClick={handleShowCanvas} />
-              </div>
+              {hasPermission('chats') &&
+                <div className="my-1">
+                  <Button titulo="chats" onClick={handleShowCanvas} />
+                </div>
+              }
 
               <MenuUsuario
                 setMostrarMenu={setMostrarMenu}
@@ -157,17 +161,19 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
                 mostrarMenu={mostrarMenu}
               />
 
-              <Notificaciones
-                notificaciones={notificaciones}
-                setNotificaciones={setNotificaciones}
-                target={target}
-                cargando={cargando}
-                solicitudes={solicitudes}
-                setSolicitudes={setSolicitudes}
-                contador={contador}
-                setContador={setContador}
-                notificacionRef={notificacionRef}
-              />
+              {hasPermission('notifications') &&
+                <Notificaciones
+                  notificaciones={notificaciones}
+                  setNotificaciones={setNotificaciones}
+                  target={target}
+                  cargando={cargando}
+                  solicitudes={solicitudes}
+                  setSolicitudes={setSolicitudes}
+                  contador={contador}
+                  setContador={setContador}
+                  notificacionRef={notificacionRef}
+                />
+              }
             </Nav>
           )}
         </Navbar.Collapse>

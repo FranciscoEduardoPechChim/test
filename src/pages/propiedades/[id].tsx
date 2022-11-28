@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { GetStaticPaths, GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Detalles from "../../components/paginas/propiedades/detalles/Detalles";
@@ -10,58 +11,79 @@ import { production } from "../../credentials/credentials";
 import { InmueblesUsuario } from "../../interfaces/CrearInmuebleInterface";
 import NotFound from "../404";
 
+//Services
+import { getPropertyByURL } from '../../services/propertyService';
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const resp = await fetch(`${production}/inmuebles/`);
-  const data = await resp.json();
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   const resp = await fetch(`${production}/inmuebles/`);
+//   const data = await resp.json();
 
-  const paths = data.inmuebles.map((path: InmueblesUsuario) => {
-    return { params: { id: path.slug.toString() } };
-  });
+//   const paths = data.inmuebles.map((path: InmueblesUsuario) => {
+//     return { params: { id: path.slug.toString() } };
+//   });
 
-  return { paths, fallback: "blocking" };
-};
+//   return { paths, fallback: "blocking" };
+// };
 
-export const getStaticProps: GetStaticProps = async (context) => {
-  const id = context.params!.id;
-  const resp = await fetch(`${production}/inmuebles/url/${id}`);
-  const data = await resp.json();
+// export const getStaticProps: GetStaticProps = async (context) => {
+//   const id = context.params!.id;
+//   const resp = await fetch(`${production}/inmuebles/url/${id}`);
+//   const data = await resp.json();
 
-  return { props: { inmuebles: data }, revalidate: 15, notFound: !data };
-};
+//   return { props: { inmuebles: data }, revalidate: 15, notFound: !data };
+// };
 
-interface Props {
-  inmuebles: {
-    inmueble: InmueblesUsuario;
-    ok: boolean;
-  };
-}
+// interface Props {
+//   inmuebles: {
+//     inmueble: InmueblesUsuario;
+//     ok: boolean;
+//   };
+// }
 
 const Ubicacion: any = dynamic(
   () => import("../../components/paginas/propiedades/detalles/Ubicación"),
   { ssr: false }
 );
 
-const Propiedad                                     = ({ inmuebles }: Props) => {
+const Propiedad                                     = () => {
+  const router                                      = useRouter();
+  const { asPath, query }                           = router;
+  const { id }                                      = query;
   const { auth }                                    = useContext(AuthContext);
+  const [ property, setProperty ]                   = useState<any>({});
 
-  if (!inmuebles.inmueble.publicado) {
-    return <NotFound />;
+  const init                                        = async () => {
+    if(id && (typeof id == 'string')) {
+      const response                                = await getPropertyByURL(id);
+
+      if(response && response.data) {
+        setProperty(response.data.properties);
+      }
+    }
   }
 
+  useEffect(() => {
+    setProperty({});
+    init();
+  }, [id]);
+
+
+  if (!property.publicado) {
+    return <NotFound />;
+  }
 
   return (
     <>
       <SEO
-        titulo={inmuebles.inmueble.titulo}
-        url={`/${inmuebles.inmueble.slug}`}
-        descripcion={inmuebles.inmueble.descripcion}
-        img={inmuebles.inmueble.imgs[0] ? inmuebles.inmueble.imgs[0] : ""}
+        titulo      = {property.titulo}
+        url         = {`/${property.slug}`}
+        descripcion = {property.descripcion}
+        img         = {property.imgs[0] ? property.imgs[0] : ""}
       />
-      <Slider inmuebles={inmuebles} />
-      <Detalles inmuebles={inmuebles} />
-      <Ubicacion inmuebles={inmuebles} />
-      {auth.uid && (auth.role != 'Usuario' || ((auth.correo == 'Eduardoest@internet360.com.mx') || (auth.correo == 'Eduardoest@i360.com.mx') || (auth.correo == 'franciscopech1996@example.com'))) && <Contact inmuebles={inmuebles} />}
+      <Slider inmuebles = {property} />
+      <Detalles inmuebles = {property} />
+      <Ubicacion inmuebles = {property} />
+      {auth.uid && (auth.role != 'Usuario' || ((auth.correo == 'Eduardoest@internet360.com.mx') || (auth.correo == 'Eduardoest@i360.com.mx') || (auth.correo == 'franciscopech1996@example.com'))) && <Contact inmuebles = {property} />}
     </>
   );
 };

@@ -1,29 +1,26 @@
 //Interfaces
 import { Errors } from '../interfaces/AuthInterface';
-import { RoleByPermission } from '../interfaces/RoleByPermissionInterface';
+import { PermissionsByGroup } from '../interfaces/RoleByPermissionInterface';
 
-export type rolebypermissionResponse   = {
-    "ok"?:                  boolean,
-    "msg"?:                 string,
-    "data"?:                rolebypermission,
-    "errors"?:              Errors[]
+export type rolebypermissionResponse        = {
+    "ok"?:                                  boolean,
+    "msg"?:                                 string,
+    "data"?:                                rolebypermission,
+    "errors"?:                              Errors[]
 }
 
-export type rolebypermission           = { 
-    "rolebypermissions":    permissionsbygroup,
-    "total"?:               number
+export type rolebypermission                = { 
+    "rolebypermissions":                    PermissionsByGroup[],
+    "total"?:                               number
 }
 
-export type permissionsbygroup         = {
-    "Administrador"?:                  RoleByPermission[],
-    "Usuario"?:                        RoleByPermission[],
-    "Individual"?:                     RoleByPermission[],
-    "Básico"?:                         RoleByPermission[],
-    "Intermedio"?:                     RoleByPermission[],
-    "Avanzado"?:                       RoleByPermission[],
-    "UsuarioPagado"?:                  RoleByPermission[],
-    "SuperAdministrador"?:             RoleByPermission[]
+export type rolebypermissionArrayResponse   = {
+    "ok"?:                                  boolean,
+    "msg"?:                                 string,
+    "data"?:                                rolebypermissionarray,
+    "errors"?:                              Errors[]
 }
 
-
-
+export type rolebypermissionarray           = {
+    "rolebypermissions":                    any,
+}

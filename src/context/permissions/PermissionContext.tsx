@@ -6,17 +6,18 @@ import { validate } from '../../helpers/response';
 //Interfaces
 import { Permission } from '../../interfaces/PermissionInterface';
 //Services
-import { storePermission, updatePermission, destroyPermission, restorePermission, getPermission } from '../../services/permissionService';
+import { storePermission, updatePermission, destroyPermission, restorePermission, getPermission, getPermissionByRole } from '../../services/permissionService';
 //Extras
 import Swal from "sweetalert2";
 
 interface ContextProps {
-    permission:          Permission;
-    createPermission:    (name: string, label: string, description: string | null, access_token: string) => Promise<boolean | undefined>;
-    editPermission:      (id: string, name: string, label: string, description: string | null, access_token: string) => Promise<boolean | undefined>;
-    deletePermission:    (id: string, access_token: string) => Promise<boolean | undefined>;
-    undeletePermission:  (id: string, access_token: string) => Promise<boolean | undefined>;
-    showPermission:      (id: string, access_token: string) => Promise<Permission | undefined>;
+    permission:                 Permission;
+    createPermission:           (name: string, label: string, description: string | null, access_token: string) => Promise<boolean | undefined>;
+    editPermission:             (id: string, name: string, label: string, description: string | null, access_token: string) => Promise<boolean | undefined>;
+    deletePermission:           (id: string, access_token: string) => Promise<boolean | undefined>;
+    undeletePermission:         (id: string, access_token: string) => Promise<boolean | undefined>;
+    showPermission:             (id: string, access_token: string) => Promise<Permission | undefined>;
+    showPermissionByRole:       (id: string, access_token: string) => Promise<Permission[] | Permission | undefined>;
 }
 
 export const PermissionContext                      = createContext({} as ContextProps);
@@ -187,6 +188,19 @@ export const PermissionProvider: FC                 = ({ children }) => {
             }
         }
     }
+    const showPermissionByRole                      = async (id: string, access_token: string) => {
+        if(id && access_token) {
+            const response                          = await getPermissionByRole(id, access_token);
+
+            if(response && response.ok) {
+                toast.error(response.msg);
+            }
+
+            if(response && response.data) {      
+                return response.data.permissions;
+            }
+        }
+    }
     return (
         <PermissionContext.Provider
           value={{
@@ -195,7 +209,8 @@ export const PermissionProvider: FC                 = ({ children }) => {
            deletePermission,
            editPermission,
            undeletePermission,
-           showPermission
+           showPermission,
+           showPermissionByRole
           }}
         >
           {children}

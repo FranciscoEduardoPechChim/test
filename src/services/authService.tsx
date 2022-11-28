@@ -1,7 +1,7 @@
 //Types
 import { loginResponse, recoveryPassword } from '../types/authType';
 //Credentials
-import { production } from 'credentials';
+import { development, production } from 'credentials';
 
 //POST
 export const session                            = async (email:string, password: string):Promise<loginResponse | undefined> => {
@@ -27,15 +27,14 @@ export const session                            = async (email:string, password:
         console.log('Error: ' + error);
     }
 }
-export const signup                             = async (name: string, lastName: string, email: string, password: string, confirmPassword: string, role: string):Promise<loginResponse | undefined> => {
+export const signup                             = async (name: string, lastName: string, email: string, password: string, confirmPassword: string):Promise<loginResponse | undefined> => {
     try {
         let body                                = { 
             name:                               name,
             lastName:                           lastName,
             email:                              email, 
             password:                           password,
-            confirmPassword:                    confirmPassword,
-            role:                               role
+            confirmPassword:                    confirmPassword
         };
 
         const requestOptions                    = {
@@ -54,6 +53,7 @@ export const signup                             = async (name: string, lastName:
         console.log('Error: ' + error);
     }
 }
+
 
 //Delete service and change in backend
 export const sendEmailWelcome                   = async (name: string, lastName: string, email: string):Promise<loginResponse | undefined> => {

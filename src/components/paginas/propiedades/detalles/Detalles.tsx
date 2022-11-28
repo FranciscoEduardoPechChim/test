@@ -1,30 +1,60 @@
 import { useContext, useState, useEffect } from "react";
-import { Accordion } from "react-bootstrap";
+import { Accordion, Form } from "react-bootstrap";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { formatPrice } from "../../../../helpers/formatPrice";
 import { publicadoHace } from "../../../../helpers/horaMes";
 import { InmueblesUsuario } from "../../../../interfaces/CrearInmuebleInterface";
 import styles from "./Inmueble.module.css";
 
+//React
+import { toast } from "react-toastify";
+//Services
+import { updatePropertyByAlias } from '../../../../services/propertyService';
+//Helpers
+import { validate } from '../../../../helpers/response';
+
 interface Props {
-  inmuebles: {
-    inmueble: InmueblesUsuario;
-    ok: boolean;
-  };
+  inmuebles: InmueblesUsuario;
 }
 
 const Detalles                          = ({ inmuebles }: Props) => {
+  const access_token                    = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const { auth, validRole }             = useContext(AuthContext);
   const [isRole, setIsRole]             = useState(false);
-  
+  const [alias, setAlias]               = useState('');   
+  const [result, setResult]             = useState('');
+
   useEffect(() => {
     const initRole                      = async () => {
       const role                        = await validRole();
-      setIsRole(role);
+      setIsRole((role) ? role:false);
     }
 
     initRole();
   }, [validRole]);
+
+  const onSubmit                       = async () => {
+    if(inmuebles && alias && access_token) {
+      const response                   = await updatePropertyByAlias(inmuebles._id, alias, access_token);
+      
+      if(response && response.errors) {
+        setResult('');
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        setResult('');
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        setResult(alias);
+      }
+
+    }
+  }
 
   return (
     <section className="mb-4">
@@ -34,28 +64,28 @@ const Detalles                          = ({ inmuebles }: Props) => {
             <div className="row d-flex justify-content-between">
               <div className="col-12 text-sm-center text-md-start text-lg-start text-center">
                 <div className={`${styles.inmuebleTitle} mb-3`}>
-                  {inmuebles.inmueble.titulo}
+                  {inmuebles.titulo}
                 </div>
               </div>
               <div className="col-sm-12 col-md-5 col-lg-5 text-sm-center text-md-start text-lg-start text-center">
                 <div className={styles.inmueblePrecio}>
-                  {formatPrice(inmuebles.inmueble.precio)}
+                  {formatPrice(inmuebles.precio)}
                 </div>
               </div>
               <div className="col-sm-12 col-md-3 col-lg-3 text-sm-center text-md-start text-lg-start text-center">
                 <div className="mt-3">
                   <span className={`${styles.inmuebleTipo} m-1`}>
-                    {inmuebles.inmueble.categoria.nombre}
+                    {inmuebles.categoria.nombre}
                   </span>
                   {/* <div className={styles.divisor}></div> */}
                   <span className={`${styles.inmuebleTipo2} m-1`}>
-                    {inmuebles.inmueble.tipoPropiedad.nombre}
+                    {inmuebles.tipoPropiedad.nombre}
                   </span>
                 </div>
               </div>
               <div className="col-sm-12 col-md-4 col-lg-4 text-sm-center text-md-end text-lg-end text-center">
                 <div className={`${styles.inmuebleTiempo} mt-3`}>
-                  Publicado {publicadoHace(inmuebles.inmueble.createdAt)}
+                  Publicado {publicadoHace(inmuebles.createdAt)}
                 </div>
               </div>
             </div>
@@ -86,7 +116,15 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             className={`${styles.inmuebleSubcontent} mb-1`}
                             style={{ fontSize: "16px" }}
                           >
-                            {inmuebles.inmueble._id}
+                            {(inmuebles.alias || result)
+                              ? ((inmuebles.alias) ? inmuebles.alias:(result) ? result:'')
+                              : 
+                              (isRole) ? 
+                              <Form>
+                                <Form.Control defaultValue={alias} id="alias" type="text" name="alias" maxLength={255} placeholder="House one" onChange={(event:any) => setAlias(event.target.value) } onBlur={() => onSubmit()} />
+                              </Form>
+                              :'S/N'
+                              }
                             <br />
                             <br />
                           </div>
@@ -113,8 +151,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             M² de construcción
                           </div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.m2Construidos
-                              ? inmuebles.inmueble.m2Construidos
+                            {inmuebles.m2Construidos
+                              ? inmuebles.m2Construidos
                               : "S/N"}
                             <br />
                             <br />
@@ -142,8 +180,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             M² de terreno
                           </div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.m2Terreno
-                              ? inmuebles.inmueble.m2Terreno
+                            {inmuebles.m2Terreno
+                              ? inmuebles.m2Terreno
                               : "S/N"}
                             <br />
                             <br />
@@ -171,8 +209,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             Habitaciones
                           </div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.habitaciones
-                              ? inmuebles.inmueble.habitaciones
+                            {inmuebles.habitaciones
+                              ? inmuebles.habitaciones
                               : "S/N"}
                             <br />
                             <br />
@@ -200,8 +238,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             Baños completos
                           </div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.baños
-                              ? inmuebles.inmueble.baños
+                            {inmuebles.baños
+                              ? inmuebles.baños
                               : "S/N"}
                             <br />
                             <br />
@@ -229,8 +267,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             Medios baños
                           </div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.medioBaños
-                              ? inmuebles.inmueble.medioBaños
+                            {inmuebles.medioBaños
+                              ? inmuebles.medioBaños
                               : "S/N"}
                             <br />
                             <br />
@@ -258,8 +296,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             Estacionamientos
                           </div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.parking
-                              ? inmuebles.inmueble.parking
+                            {inmuebles.parking
+                              ? inmuebles.parking
                               : "S/N"}
                             <br />
                             <br />
@@ -285,8 +323,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                         <td>
                           <div className={styles.inmuebleContent}>Pisos</div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.pisos
-                              ? inmuebles.inmueble.pisos
+                            {inmuebles.pisos
+                              ? inmuebles.pisos
                               : "S/N"}
                             <br />
                             <br />
@@ -314,8 +352,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                             Antigüedad
                           </div>
                           <div className={`${styles.inmuebleSubcontent} mb-1`}>
-                            {inmuebles.inmueble.antiguedad
-                              ? inmuebles.inmueble.antiguedad
+                            {inmuebles.antiguedad
+                              ? inmuebles.antiguedad
                               : "S/N"}
                             <br />
                             <br />
@@ -365,7 +403,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.agua ? "Sí" : "No"}
+                                  {inmuebles.agua ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -394,7 +432,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.luz ? "Sí" : "No"}
+                                  {inmuebles.luz ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -423,7 +461,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.gas ? "Sí" : "No"}
+                                  {inmuebles.gas ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -452,7 +490,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.internet ? "Sí" : "No"}
+                                  {inmuebles.internet ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -481,7 +519,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.seguridadPrivada
+                                  {inmuebles.seguridadPrivada
                                     ? "Sí"
                                     : "No"}
                                   <br />
@@ -512,7 +550,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.escuelas ? "Sí" : "No"}
+                                  {inmuebles.escuelas ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -541,7 +579,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.mantenimiento
+                                  {inmuebles.mantenimiento
                                     ? "Sí"
                                     : "No"}
                                   <br />
@@ -572,7 +610,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.piscinas ? "Sí" : "No"}
+                                  {inmuebles.piscinas ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -601,7 +639,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.discapacitados
+                                  {inmuebles.discapacitados
                                     ? "Sí"
                                     : "No"}
                                   <br />
@@ -636,12 +674,12 @@ const Detalles                          = ({ inmuebles }: Props) => {
                         ></img>
                       </div> */}
                       <>
-                        {inmuebles.inmueble.usuario.telefonoPersonal ? (
+                        {inmuebles.usuario.telefonoPersonal ? (
                           <div
                             className={`${styles.socialMiniCard} mb-2 pointer d-none d-xxl-block`}
                           >
                             <a
-                              href={`https://api.whatsapp.com/send?phone=${inmuebles.inmueble.usuario.telefonoPersonal}&text=%C2%A1Hola!%20acabo%20de%20ver%20una%20propiedad%20tuya.%20Quisiera%20m%C3%A1s%20informaci%C3%B3n.`}
+                              href={`https://api.whatsapp.com/send?phone=${inmuebles.usuario.telefonoPersonal}&text=%C2%A1Hola!%20acabo%20de%20ver%20una%20propiedad%20tuya.%20Quisiera%20m%C3%A1s%20informaci%C3%B3n.`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -655,12 +693,12 @@ const Detalles                          = ({ inmuebles }: Props) => {
                       </>
 
                       <>
-                        {inmuebles.inmueble.usuario.facebookpage ? (
+                        {inmuebles.usuario.facebookpage ? (
                           <div
                             className={`${styles.socialMiniCard} mb-2 pointer d-none d-xxl-block`}
                           >
                             <a
-                              href={`https://www.${inmuebles.inmueble.usuario.facebookpage}`}
+                              href={`https://www.${inmuebles.usuario.facebookpage}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -673,12 +711,12 @@ const Detalles                          = ({ inmuebles }: Props) => {
                         ) : null}
                       </>
                       <>
-                        {inmuebles.inmueble.usuario.instagram ? (
+                        {inmuebles.usuario.instagram ? (
                           <div
                             className={`${styles.socialMiniCard} mb-2 pointer d-none d-xxl-block`}
                           >
                             <a
-                              href={`https://www.${inmuebles.inmueble.usuario.instagram}`}
+                              href={`https://www.${inmuebles.usuario.instagram}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -695,23 +733,23 @@ const Detalles                          = ({ inmuebles }: Props) => {
                       <div className={styles.perfilCard}>
                         <div className={styles.perfilCardImg}>
                           <img
-                            src={inmuebles.inmueble.usuario.img}
+                            src={inmuebles.usuario.img}
                             style={{
                               width: "100%",
                               borderTopLeftRadius: 30,
                               borderTopRightRadius: 30,
                             }}
-                            alt={inmuebles.inmueble.usuario.nombre}
+                            alt={inmuebles.usuario.nombre}
                           />
                         </div>
                         {/* <Modaltitle titulo="Juan Pérez Hernández"/> */}
                         <div className={styles.perfilCardNombre}>
-                          {inmuebles.inmueble.usuario.nombre}{" "}
-                          {inmuebles.inmueble.usuario.apellido}
+                          {inmuebles.usuario.nombre}{" "}
+                          {inmuebles.usuario.apellido}
                         </div>
                         <div className={styles.perfilCardLine}></div>
                         <div className={styles.perfilCardCiudad}>
-                          {inmuebles.inmueble.usuario.direccionFisica}
+                          {inmuebles.usuario.direccionFisica}
                         </div>
                       </div>
                     </td>
@@ -759,7 +797,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.camas ? "Sí" : "No"}
+                                  {inmuebles.camas ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -788,7 +826,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.closet ? "Sí" : "No"}
+                                  {inmuebles.closet ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -817,7 +855,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.sala ? "Sí" : "No"}
+                                  {inmuebles.sala ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -846,7 +884,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.comedor ? "Sí" : "No"}
+                                  {inmuebles.comedor ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -875,7 +913,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.cocina ? "Sí" : "No"}
+                                  {inmuebles.cocina ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -902,7 +940,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.AA ? "Sí" : "No"}
+                                  {inmuebles.AA ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -931,7 +969,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.refrigerador
+                                  {inmuebles.refrigerador
                                     ? "Sí"
                                     : "No"}
                                   <br />
@@ -962,7 +1000,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.estufa ? "Sí" : "No"}
+                                  {inmuebles.estufa ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -991,7 +1029,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.microondas ? "Sí" : "No"}
+                                  {inmuebles.microondas ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -1020,7 +1058,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.minihorno ? "Sí" : "No"}
+                                  {inmuebles.minihorno ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -1049,7 +1087,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.horno ? "Sí" : "No"}
+                                  {inmuebles.horno ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -1078,7 +1116,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.lavadora ? "Sí" : "No"}
+                                  {inmuebles.lavadora ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -1107,7 +1145,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.secadora ? "Sí" : "No"}
+                                  {inmuebles.secadora ? "Sí" : "No"}
                                   <br />
                                   <br />
                                 </div>
@@ -1136,8 +1174,8 @@ const Detalles                          = ({ inmuebles }: Props) => {
                                 <div
                                   className={`${styles.inmuebleSubcontent} mb-1`}
                                 >
-                                  {inmuebles.inmueble.otros
-                                    ? inmuebles.inmueble.otros
+                                  {inmuebles.otros
+                                    ? inmuebles.otros
                                     : 'No hay descripción para "Otros"'}
                                   <br />
                                   <br />

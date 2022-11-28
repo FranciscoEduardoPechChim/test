@@ -24,7 +24,7 @@ import styles from "./MyPermissions.module.css";
 import { isNotEmpty, isString, isLength } from '../../../../helpers/validations';
 
 const MyListPermissions                                                             = () => {
-    const access_token                                                              = localStorage.getItem("token");
+    const access_token                                                              = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
     const { createPermission, editPermission, deletePermission, undeletePermission,
             showPermission }                                                        = useContext(PermissionContext);
     const [ filterText, setFilterText ]                                             = useState('');

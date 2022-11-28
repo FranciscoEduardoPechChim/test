@@ -15,10 +15,8 @@ import { MapContext } from "context/map/MapContext";
 import { SocketContext } from "context/socket/SocketContext";
 
 interface Props {
-  inmuebles: {
-    inmueble: InmueblesUsuario;
-    ok: boolean;
-  };
+  inmuebles: InmueblesUsuario;
+    
 }
 
 const containerStyle = {
@@ -45,7 +43,7 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
     const favorito = {
       usuario: auth.uid,
       inmueble: inmuebleId,
-      propietario: inmuebles.inmueble.usuario._id,
+      propietario: inmuebles.usuario._id,
     };
     const resp = await agregarFav("favoritos", favorito);
 
@@ -70,16 +68,16 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
     const solicitudCorreo = {
       nombre: auth.nombre,
       apellido: auth.apellido,
-      titulo: inmuebles.inmueble.titulo,
-      id: inmuebles.inmueble.usuario._id,
-      img: inmuebles.inmueble.imgs[0],
-      slug: inmuebles.inmueble.slug,
+      titulo: inmuebles.titulo,
+      id: inmuebles.usuario._id,
+      img: inmuebles.imgs[0],
+      slug: inmuebles.slug,
     };
 
     const solicitud = {
       usuario: auth.uid,
-      propietario: inmuebles.inmueble.usuario,
-      inmueble: inmuebles.inmueble._id,
+      propietario: inmuebles.usuario,
+      inmueble: inmuebles._id,
       estado: "Pendiente",
     };
 
@@ -100,8 +98,8 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
   const comoLlegar                              = () => setComoLLegar(!comoLLegar);
 
   const destination                             = {
-    lat: inmuebles.inmueble.lat,
-    lng: inmuebles.inmueble.lng,
+    lat: inmuebles.lat,
+    lng: inmuebles.lng,
   };
 
   const origin                                  = { lat: ubicacionUsuario.lat, lng: ubicacionUsuario.lng };
@@ -109,7 +107,8 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
   useEffect(() => {
     const initRole                              = async () => {
       const role                                = await validRole();
-      setIsRole(role);
+
+      setIsRole((role) ? role:false);
     }
 
     const directionsService                     = new google.maps.DirectionsService();
@@ -141,16 +140,16 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
             <GoogleMap
               mapContainerStyle={containerStyle}
               center={{
-                lat: inmuebles.inmueble.lat,
-                lng: inmuebles.inmueble.lng,
+                lat: inmuebles.lat,
+                lng: inmuebles.lng,
               }}
               zoom={comoLLegar ? 10 : 16}
               options={options}
             >
               <Marker
                 position={{
-                  lat: inmuebles.inmueble.lat,
-                  lng: inmuebles.inmueble.lng,
+                  lat: inmuebles.lat,
+                  lng: inmuebles.lng,
                 }}
                 icon={{
                   url: "/images/icons/marcador.svg",
@@ -187,7 +186,7 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
           </div>
           <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <div className={`${styles.inmuebleTitleUbicacion} mb-4`}>
-              {inmuebles.inmueble.titulo}
+              {inmuebles.titulo}
             </div>
             <div className="mb-4">
               <div className="row">
@@ -198,14 +197,14 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
                       alt="..."
                       width={25}
                     />
-                    {inmuebles.inmueble.direccion}
+                    {inmuebles.direccion}
                   </div>
                 </div>
               </div>
             </div>
             <div className={styles.inmuebleContent}>
-              {inmuebles.inmueble.descripcion
-                ? inmuebles.inmueble.descripcion
+              {inmuebles.descripcion
+                ? inmuebles.descripcion
                 : "Aún no hay descripción para este inmueble"}
             </div>
           </div>
@@ -214,7 +213,7 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
                 <div className="d-flex justify-content-center col-12 text-center my-5">
                  {auth.uid ? (
                    <>
-                     {auth.uid !== inmuebles.inmueble.usuario._id ? (
+                     {auth.uid !== inmuebles.usuario._id ? (
                        <Button
                          titulo="Solicitar compartir"
                          onClick={solicitarCompartir}
@@ -227,7 +226,7 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
                  {auth.uid ? (
                    <Button
                      titulo="Añadir a favoritos"
-                     onClick={() => agregarFavorito(inmuebles.inmueble._id)}
+                     onClick={() => agregarFavorito(inmuebles._id)}
                    />
                  ) : null}
                </div>

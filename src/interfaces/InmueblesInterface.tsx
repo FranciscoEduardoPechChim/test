@@ -57,6 +57,7 @@ export interface Inmueble {
   secadora?: boolean;
   seguridadPrivada?: boolean;
   imgs: string[];
+  alias?: string;
 }
 
 export interface Categoria {

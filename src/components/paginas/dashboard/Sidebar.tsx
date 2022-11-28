@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import {
@@ -12,17 +12,21 @@ import "react-pro-sidebar/dist/css/styles.css";
 import styles from "./Dashboard.module.css";
 import { AuthContext } from "context/auth/AuthContext";
 
+//Middlewares
+import { isSuperAdmin, hasPermission } from '../../../middlewares/roles';
+
 interface Props {
   handleToggleSidebar: (value: boolean) => void;
   toggled: boolean;
   collapsed: boolean;
 }
 
-const Sidebar = ({ handleToggleSidebar, toggled, collapsed }: Props) => {
-  const { logOut } = useContext(AuthContext);
-  const router = useRouter();
+const Sidebar                       = ({ handleToggleSidebar, toggled, collapsed }: Props) => {
+  const { logOut }                  = useContext(AuthContext);
+  const router                      = useRouter();
 
-  const goToHome = () => router.push("/");
+  const goToHome                    = () => router.push("/");
+
   return (
     <ProSidebar
       toggled={toggled}
@@ -44,18 +48,24 @@ const Sidebar = ({ handleToggleSidebar, toggled, collapsed }: Props) => {
           <br />
         </SidebarHeader>
         <SidebarContent className="py-4">
-          <MenuItem>
-            <i className="bi bi-grid-3x3 me-2" />
-            <Link href="/dashboard">Resumen</Link>
-          </MenuItem>
-          <MenuItem>
-            <i className="bi bi-people-fill me-2"></i>
-            <Link href="/dashboard/Usuarios">Usuarios</Link>
-          </MenuItem>
-          <MenuItem>
-            <i className="bi bi-house-fill me-2"></i>
-            <Link href="/dashboard/Inmuebles">Inmuebles</Link>
-          </MenuItem>
+          {hasPermission('admin.info') &&
+            <MenuItem>
+              <i className="bi bi-grid-3x3 me-2" />
+              <Link href="/dashboard">Resumen</Link>
+            </MenuItem>
+          }
+          {hasPermission('admin.users') &&
+            <MenuItem>
+              <i className="bi bi-people-fill me-2"></i>
+              <Link href="/dashboard/Usuarios">Usuarios</Link>
+            </MenuItem>
+          }
+          {hasPermission('admin.estates') &&
+            <MenuItem>
+              <i className="bi bi-house-fill me-2"></i>
+              <Link href="/dashboard/Inmuebles">Inmuebles</Link>
+            </MenuItem>
+          }
           {/* <MenuItem>
             <i className="bi bi-tags-fill me-2"></i>
             <Link href="/dashboard/categorias">Categorías</Link>
@@ -63,22 +73,36 @@ const Sidebar = ({ handleToggleSidebar, toggled, collapsed }: Props) => {
           <MenuItem>
             <i className="bi bi-building me-2"></i> Tipo de propiedad
           </MenuItem> */}
-          <MenuItem>
-            <i className="bi bi-wallet2 me-2"></i>
-            <Link href="/dashboard/pagos/wallet">Wallet</Link>
-          </MenuItem>
-          <MenuItem>
-            <i className="bi bi-gift me-2"></i>
-            <Link href="/dashboard/promotions">Promociones</Link>
-          </MenuItem> 
-          <MenuItem>
-            <i className="bi bi-book me-2"></i>
-            <Link href="/dashboard/permissions">Permisos</Link>
-          </MenuItem>
-          <MenuItem>
-            <i className="bi bi-receipt-cutoff me-2"></i>
-            <Link href="/dashboard/pagos/referencias">Referencias</Link>
-          </MenuItem>
+          {hasPermission('admin.wallet') &&
+            <MenuItem>
+              <i className="bi bi-wallet2 me-2"></i>
+              <Link href="/dashboard/pagos/wallet">Wallet</Link>
+            </MenuItem>
+          }
+          {hasPermission('admin.promotion') &&
+            <MenuItem>
+              <i className="bi bi-gift me-2"></i>
+              <Link href="/dashboard/promotions">Promociones</Link>
+            </MenuItem> 
+          }
+          {hasPermission('admin.permissions') &&
+            <MenuItem>
+              <i className="bi bi-book me-2"></i>
+              <Link href="/dashboard/permissions">Permisos</Link>
+            </MenuItem>
+          }
+          {hasPermission('admin.rolebypermissions') &&
+            <MenuItem>
+              <i className="bi bi-cone-striped me-2"></i>
+              <Link href="/dashboard/rolebypermissions">Roles por permisos</Link>
+            </MenuItem>
+          } 
+          {hasPermission('admin.references') &&
+            <MenuItem>
+              <i className="bi bi-receipt-cutoff me-2"></i>
+              <Link href="/dashboard/pagos/referencias">Referencias</Link>
+            </MenuItem>
+          }
         </SidebarContent>
 
         {/* <div className={styles.position}>

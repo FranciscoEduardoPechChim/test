@@ -3,8 +3,7 @@ import { FormEvent, useContext, useState, useMemo, useEffect } from "react";
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Container, Row, Col } from "react-bootstrap";
 //Components
-import FilterComponent from '../../../ui/filters/FilterComponent';
-import FormPermission from '../../../ui/forms/FormPermission';
+import FormRoleByPermission from '../../../ui/forms/FormRoleByPermission';
 import ActionComponent from '../../../ui/actions/Actions';
 import PathModal from '../../../ui/authmodal/PathModal';
 import SortIcon from '@material-ui/icons/ArrowDownward';
@@ -15,51 +14,50 @@ import Button from "../../../ui/button/Button";
 import Card from '@material-ui/core/Card';
 //Context
 import { RoleByPermissionContext } from '../../../../context/rolebypermissions/RoleByPermissionContext';
+import { PermissionContext } from '../../../../context/permissions/PermissionContext';
 //Hooks
 import { useRoleByPermissions } from '../../../../hooks/useRoleByPermissions';
 //Style
 import styles from "./MyRoleByPermissions.module.css";
 //Validations
-import { isNotEmpty, isString, isLength } from '../../../../helpers/validations';
+import { isNotEmpty } from '../../../../helpers/validations';
 
 const MyListRoleByPermissions                                                       = () => {
-    const access_token                                                              = localStorage.getItem("token");
+    const access_token                                                              = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
     const { createRoleByPermission, editRoleByPermission, deleteRoleByPermission, 
-            showRoleByPermission }                                                  = useContext(RoleByPermissionContext);
-    const [ filterText, setFilterText ]                                             = useState('');
+            showRoleByPermission, undeleteRoleByPermission }                        = useContext(RoleByPermissionContext);
+    const { showPermissionByRole }                                                  = useContext(PermissionContext);
     const [ selectAction, setSelectAction ]                                         = useState('');
     const [ selectId, setSelectId ]                                                 = useState('');
     const [ actions, setActions ]                                                   = useState('create');
     const [ modalShow, setModalShow ]                                               = useState(false);
     const [ errorRoleId, setErrorRoleId ]                                           = useState([]);
     const [ errorPermissionId, setErrorPermissionId ]                               = useState([]);
-    const [ data, setData ]                                                         = useState({});
-    const { loadings, roleByPermissions, init }                                     = useRoleByPermissions((access_token) ? access_token:'');
-    
-    const INITIAL_STATE                                                             = {
-        Administrador:                                                              undefined,
-        Usuario:                                                                    undefined,
-        Individual:                                                                 undefined,
-        Básico:                                                                     undefined,
-        Intermedio:                                                                 undefined,
-        Avanzado:                                                                   undefined,
-        UsuarioPagado:                                                              undefined,
-        SuperAdministrador:                                                         undefined
-    }
-
-    const { formulario, handleChange, reset, length, setLength, setFormulario }     = useForm(INITIAL_STATE);
-    const { Administrador, Usuario, Individual, Básico, Intermedio, Avanzado, 
-        UsuarioPagado, SuperAdministrador }                                         = formulario;
+    const [ permissionTagsKey, setPermissionTagsKey ]                               = useState<any[]>([]);
+    const [ permissionTags, setPermissionTags ]                                     = useState<string[]>([]);
+    const [ permissions, setPermissions ]                                           = useState<any>([]);
+    const [ selectRole, setSelectRole ]                                             = useState('');
+    const { loadings, roleByPermissions, roles, init, edit, updateRoles }           = useRoleByPermissions((access_token) ? access_token:'');
 
     const columns = [
         {
             name:       'Roles',
-            selector:   (row:any) => row.name,
+            selector:   (row:any) => row.roles,
             sortable:   true
         },
         {
             name:       'Permisos',
-            selector:   (row:any) => row.label,
+            selector:   (row:any) => {
+                if(!row.deleted) {
+                    for(let i=0; i < row.permissions.length; i++) {
+                        if(!row.permissions[i].deleted) {
+                            return row.permissions[0].permissionName + '...';
+                        }
+                    }
+                }
+
+                return row.permissions[0].permissionName + '...'; 
+            },
             sortable:   true
         },
         {
@@ -74,32 +72,29 @@ const MyListRoleByPermissions                                                   
         rangeSeparatorText: '-',
         selectAllRowsItem: true,
         selectAllRowsItemText: 'Todos',
-    };
+    }
 
-    const filteredItems                                                             = permissions.filter((item:any) => {
-        return ((item.name && item.name.toLowerCase().includes(filterText.toLowerCase())) 
-            || (item.label && item.label.includes(filterText.toLowerCase())) 
-            || (item.description && item.description.includes(filterText.toLowerCase())))
-    });
+    const getRoleByPermission                                                       = async (id: string, access_token: string, value: any) => {
+        const response                                                              = await showRoleByPermission(id, access_token);
+        const responsePermission                                                    = await showPermissionByRole((response) ? response._id:'', access_token);
+        const resultName                                                            = [];  
+        const resultKey                                                             = [];
 
-    const subHeaderComponentMemo                                                    = useMemo(() => {
-		return (
-            <FilterComponent onFilter={(e:any) => setFilterText(e.target.value)} filterText={filterText} />
-		);
-	}, [filterText]);
+        await edit((response) ? response._id:'');
 
-    const getPermission                                                             = async (id: string, access_token: string, value: any) => {
-        const response                                                              = await showPermission(id, access_token);
-
-        if(response) {     
-            setFormulario({
-                name:           response.name,
-                label:          response.label,
-                description:    (response.description) ? response.description:'',
-            });
-       
-            setLength((response.description) ? (response.description.length):0);
-            setData(response);
+        if(response && responsePermission) {
+            setPermissions(responsePermission);
+            setSelectRole(response._id);
+    
+            for(let i=0; i < response.permissions.length; i++) {
+                if(!response.permissions[i].deleted){
+                    resultKey.push(response.permissions[i].permissionId);
+                    resultName.push(response.permissions[i].permissionName);
+                }
+            }
+               
+            setPermissionTagsKey(resultKey);
+            setPermissionTags(resultName);
             setActions(value);
             setModalShow(true);
         }
@@ -114,14 +109,11 @@ const MyListRoleByPermissions                                                   
         }
     
         switch(name) {
-          case 'name':
-            setErrorName(messageError);
+          case 'roleId':
+            setErrorRoleId(messageError);
           return true;
-          case 'label':
-            setErrorLabel(messageError);
-          return true;
-          case 'description':
-            setErrorDescription(messageError);
+          case 'permissionId':
+            setErrorPermissionId(messageError);
           return true;
           default:
           return true;
@@ -133,13 +125,13 @@ const MyListRoleByPermissions                                                   
          
             switch(event.target.value) {
                 case 'show':
-                    getPermission(id, access_token, event.target.value);
+                    getRoleByPermission(id, access_token, event.target.value);
                 break;
                 case 'edit':
-                    getPermission(id, access_token, event.target.value);
+                    getRoleByPermission(id, access_token, event.target.value);
                 break;
                 case 'delete':
-                    const deleteResponse                                            = await deletePermission(id, access_token);
+                    const deleteResponse                                            = await deleteRoleByPermission(id, access_token);
 
                     if(deleteResponse) {
                         init();
@@ -147,7 +139,7 @@ const MyListRoleByPermissions                                                   
                     }
                 break;
                 case 'restore':
-                    const restoreResponse                                           = await undeletePermission(id, access_token);
+                    const restoreResponse                                           = await undeleteRoleByPermission(id, access_token);
                     if(restoreResponse) {
                         init();
                         modalClose();
@@ -162,35 +154,60 @@ const MyListRoleByPermissions                                                   
 
     const handleCreate                                                              = async () => {
         setActions('create');
-        setLength(0);
         setModalShow(true);
     }
 
     const modalClose                                                                = () => {
-        setErrorName([]); setErrorLabel([]); setErrorDescription([]);
+        setErrorRoleId([]); setErrorPermissionId([]); 
         setSelectAction('');
-        reset();
-        setData({});
+        setSelectRole('');
+        setPermissionTags([]);
+        setPermissionTagsKey([]);
+        setPermissions([]);
+        updateRoles();
         setModalShow(false);
+    }
+
+    const handleChangeSelectMulti                                                   = (event: SelectChangeEvent<typeof permissionTags>) => {
+        const {target: { value }}                                                   = event;
+        const permissionArray                                                       = (typeof value === 'string') ? value.split(',') : value;
+        const result                                                                = [];
+
+        for(let i=0; i< permissions.length; i++) {
+            if(permissionArray.includes(permissions[i].name)) {
+                result.push(permissions[i]._id);
+            }
+        }
+
+        setPermissionTagsKey(result);
+        setPermissionTags(permissionArray);
+    }
+
+    const handleChangeSelect                                                        = async (input: any) => { 
+        if(input && access_token) {
+            const response                                                          = await showPermissionByRole(input, access_token);
+
+            setPermissions(response);
+            setSelectRole(input);
+        }
     }
 
     const onSubmit                                                                  = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        setErrorName([]); setErrorLabel([]); setErrorDescription([]); 
+        setErrorRoleId([]); setErrorPermissionId([]); 
 
-        const formName                                                              = formValidate('name', [isNotEmpty(name), isString(name)]);
-        const formLabel                                                             = formValidate('label', [isNotEmpty(label), isString(label)]);
-        const formDescription                                                       = formValidate('description', [isLength(0, 255, (description) ? description:'')]);
-    
-        if(formName || formLabel || formDescription ) {
+        const formRoles                                                             = formValidate('roleId', [isNotEmpty(selectRole)]);
+        const formPermissions                                                       = formValidate('permissionId', [isNotEmpty(permissionTagsKey)]);
+
+        if(formRoles || formPermissions ) {
             return false;
         }
         
         if(access_token) {
             const isValid                                                           = (actions == 'create') ? 
-                await createPermission(name, label, (description != '') ? description:null, access_token):
-                await editPermission(selectId, name, label, (description != '') ? description:null, access_token);
+                await createRoleByPermission(selectRole, permissionTagsKey.join(','), access_token):
+                await editRoleByPermission(selectId, selectRole, permissionTagsKey.join(','), access_token);
         
             if(isValid) {
                 init();
@@ -216,13 +233,12 @@ const MyListRoleByPermissions                                                   
                         <Row className="justify-content-center">
                             <DataTable
                                 columns                     = {columns}
-                                data                        = {filteredItems}
+                                data                        = {roleByPermissions}
                                 sortIcon                    = {<SortIcon />}
                                 noDataComponent             = {<span className='my-4'>Al parecer aún no tienes ningún permiso</span>}
                                 pagination 
                                 paginationComponentOptions  = {paginationComponentOptions}
                                 subHeader
-                                subHeaderComponent          = {subHeaderComponentMemo}
                                 persistTableHead
                                 progressPending             = {loadings} 
                                 progressComponent           = {<Loading />}
@@ -232,24 +248,26 @@ const MyListRoleByPermissions                                                   
                 </Row>
             </Container>
             <PathModal 
-                title                       = {'Permisos'}
-                routeName                   = {'permissions'}
+                title                       = {'Roles por permisos'}
+                routeName                   = {'rolebypermissions'}
                 modalShow                   = {modalShow}
                 onSubmit                    = {onSubmit}
             >
-                <FormPermission 
+                <FormRoleByPermission 
                     action                  = {actions}
-                    data                    = {data}
-                    descriptionLength       = {length}
-                    errorName               = {errorName}
-                    errorLabel              = {errorLabel}
-                    errorDescription        = {errorDescription} 
+                    roleId                  = {selectRole}
+                    permissionId            = {permissionTags}
+                    selectRoles             = {roles}
+                    selectPermissions       = {permissions}
+                    errorRoleId             = {errorRoleId}
+                    errorPermissionId       = {errorPermissionId}
                     modalClose              = {modalClose}
-                    handleChange            = {handleChange}
+                    handleChangeSelect      = {handleChangeSelect}
+                    handleChangeSelectMulti = {handleChangeSelectMulti}
                 />
-            </PathModal>
+            </PathModal> 
         </>
     );
 };
 
-export default MyListRooleByPermissions;
+export default MyListRoleByPermissions;

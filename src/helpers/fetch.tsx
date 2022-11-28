@@ -89,17 +89,17 @@ export const fetchConToken = async (
   method = "GET"
 ) => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   if (method === "GET") {
     const resp = await fetch(url, {
-      headers: { "x-token": token },
+      headers: { "x-token": (token) ? token:"" },
     });
     return await resp.json();
   } else {
     const resp = await fetch(url, {
       method,
-      headers: { "Content-type": "application/json", "x-token": token },
+      headers: { "Content-type": "application/json", "x-token": (token) ? token: "" },
       body: JSON.stringify(data),
     });
 
@@ -126,11 +126,11 @@ export const fetchSolicitud = async (
   data: any
 ): Promise<ContactResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -142,11 +142,11 @@ export const fetchEnviarSolicitud = async (
   data: any
 ): Promise<SolicitudResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -158,11 +158,11 @@ export const fetchAceptarRechazarSolicitud = async (
   data: any
 ): Promise<AprobadoRechazado> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "PUT",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -204,11 +204,11 @@ export const fetchInmueble = async (
   data?: any
 ): Promise<CrearInmuebleResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -220,11 +220,11 @@ export const fetchActualizarInmueble = async (
   data: ActualizarInmueble
 ): Promise<InmueblesResponse> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "PUT",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -236,11 +236,11 @@ export const fetchBorrarInmueble = async (
   method = "DELETE"
 ): Promise<BorrarInmuebleResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method,
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
   });
 
   return await resp.json();
@@ -251,11 +251,11 @@ export const actualizarPerfilFetch = async (
   data: ActualizarUsuario
 ): Promise<RespActualizar> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "PUT",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -267,11 +267,11 @@ export const actualizarRolUsuario = async (
   data: any
 ): Promise<RespActualizar> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "PUT",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -283,11 +283,11 @@ export const agregarFav = async (
   data: FavData
 ): Promise<FavResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -296,11 +296,11 @@ export const agregarFav = async (
 
 export const eliminarFavorito = async (endpoint: string): Promise<FavResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "DELETE",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
   });
 
   return await res.json();
@@ -311,11 +311,11 @@ export const agregarHist = async (
   data: HistData
 ): Promise<HistorialResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -326,11 +326,11 @@ export const eliminarHist = async (
   endpoint: string
 ): Promise<HistorialResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "DELETE",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
   });
 
   return await res.json();
@@ -341,11 +341,11 @@ export const subirFotoPerfil = async (
   data: any
 ): Promise<SubirFoto> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "x-token": token },
+    headers: { "x-token": (token) ? token:"" },
     body: data,
   });
 
@@ -357,11 +357,11 @@ export const subirComprobanteFetch = async (
   data: any
 ): Promise<ReferenciaNumero> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "x-token": token },
+    headers: { "x-token": (token) ? token:"" },
     body: data,
   });
 
@@ -373,11 +373,11 @@ export const subirFotosInmueble = async (
   data: any
 ): Promise<SubirImagenesInmueble> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "x-token": token },
+    headers: { "x-token": (token) ? token:"" },
     body: data,
   });
 
@@ -389,11 +389,11 @@ export const enviarNuevoMensaje = async (
   data: any
 ): Promise<MensajesResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -402,10 +402,10 @@ export const enviarNuevoMensaje = async (
 
 export const obtenerMensajes = async (endpoint: string): Promise<any> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
-    headers: { "x-token": token },
+    headers: { "x-token": (token) ? token:"" },
   });
 
   return await resp.json();
@@ -416,11 +416,11 @@ export const crearChat = async (
   data: CrearChat
 ): Promise<CrearChatResponse> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -432,11 +432,11 @@ export const anadirPaqueteInv = async (
   data: Pedido
 ): Promise<PedidoIndividualResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -448,11 +448,11 @@ export const agregarUsuario = async (
   data: UsuariosPagado
 ): Promise<CrearUsuarioResp> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -464,11 +464,11 @@ export const generarRefInd = async (
   data: any
 ): Promise<NuevaReferencia> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -480,11 +480,11 @@ export const generarRefMul = async (
   data: any
 ): Promise<NuevaReferencia> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify(data),
   });
 
@@ -495,11 +495,11 @@ export const aprobarRef = async (
   endpoint: string
 ): Promise<ReferenciaNumero> => {
   const url = `${production}/${endpoint}`;
-  const token = localStorage.getItem("token") || "";
+  const token = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
 
   const res = await fetch(url, {
     method: "PUT",
-    headers: { "Content-type": "application/json", "x-token": token },
+    headers: { "Content-type": "application/json", "x-token": (token) ? token:"" },
     body: JSON.stringify({ estado: true }),
   });
 

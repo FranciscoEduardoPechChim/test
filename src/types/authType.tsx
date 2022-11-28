@@ -16,7 +16,7 @@ export type recoveryPassword = {
 
 export type Login           = { 
     "user":                 Auth,
-    "access_token":         string
+    "access_token"?:        string
 }
 
 
