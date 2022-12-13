@@ -169,8 +169,8 @@ const MapaUbicacion = () => {
                     animation={2}
                     position={{ lat: inmueble.lat, lng: inmueble.lng }}
                     icon={{
-                      //url: "/images/icons/marcador.svg",
-                      url: "https://res.cloudinary.com/dhcyyvrus/image/upload/v1669233956/images/Marcador_yzfk4y.png",
+                      url: "/images/icons/marcador.svg",
+                      //url: "https://res.cloudinary.com/dhcyyvrus/image/upload/v1669233956/images/Marcador_yzfk4y.png",
                       scaledSize: new google.maps.Size(50, 50),
                     }}
                     onClick={() =>

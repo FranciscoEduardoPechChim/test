@@ -154,8 +154,8 @@ const AnadirImagenes                    = (props: Props) => {
         <img
           className={`${styles.btnicon} pointer`}
           onClick={() => remove(i)}
-          //src="/images/icons/properties-icons/rechazado.png"
-          src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660533/images/rechazado_lwm2vl.png"
+          src="/images/icons/properties-icons/rechazado.png"
+          //src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660533/images/rechazado_lwm2vl.png"
           alt=""
         />
       </div>
@@ -222,8 +222,8 @@ const AnadirImagenes                    = (props: Props) => {
                 <div className="text-center">
                   <img
                     className="my-4 pointer"
-                    //src="/images/content/agregafoto.png"
-                    src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660510/images/agregafoto_ntinp3.png"
+                    src="/images/content/agregafoto.png"
+                    //src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660510/images/agregafoto_ntinp3.png"
                     alt="red1a1"
                     style={{ width: '70%' }}
                   />
