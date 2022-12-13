@@ -299,19 +299,19 @@ export const InmuebleProvider: FC = ({ children }) => {
         }
 
         if(response && response.data) {
-          // if(images.length > 0) {
-          //   const load                          = await loadImagesProperty('create', userId, response.data.properties[0]._id, images, [], [], access_token);
+          if(images.length > 0) {
+            const load                          = await loadImagesProperty('create', userId, response.data.properties[0]._id, images, [], [], access_token);
 
-          //   if(load && load.errors) {
-          //     validate(response.errors);
-          //     return false;
-          //   }
+            if(load && load.errors) {
+              validate(response.errors);
+              return false;
+            }
 
-          //   if(load && load.ok) {
-          //       toast.error(response.msg);
-          //       return false;
-          //   }
-          // }
+            if(load && load.ok) {
+                toast.error(response.msg);
+                return false;
+            }
+          }
 
           return true;
         }
@@ -340,17 +340,17 @@ export const InmuebleProvider: FC = ({ children }) => {
         }
 
         if(response && response.data) {
-          // const load                            = await loadImagesProperty('update', userId, response.data.properties[0]._id, [], [], [], access_token);
+          const load                            = await loadImagesProperty('update', userId, response.data.properties[0]._id, [], [], [], access_token);
 
-          // if(load && load.errors) {
-          //   validate(response.errors);
-          //   return false;
-          // }
+          if(load && load.errors) {
+            validate(response.errors);
+            return false;
+          }
 
-          // if(load && load.ok) {
-          //   toast.error(response.msg);
-          //   return false;
-          // }
+          if(load && load.ok) {
+            toast.error(response.msg);
+            return false;
+          }
         
           return true;
         }
