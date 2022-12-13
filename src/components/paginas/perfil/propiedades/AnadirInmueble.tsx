@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { Form } from "react-bootstrap";
@@ -14,58 +14,70 @@ import {
   InmuebleContext,
   InmuebleData,
 } from "../../../../context/inmuebles/InmuebleContext";
+import { AuthContext } from "context/auth/AuthContext";
 import { casasC, rentas, conjunto } from "credentials";
 
 const FormStepOne: any = dynamic(() => import("./FormStepOne"), { ssr: false });
 
-const AnadirInmueble = () => {
+interface Props {
+  action: string;
+  data?:  any;
+}
+
+const AnadirInmueble                            = ({ action, data }: Props) => {
+  const access_token                            = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const router                                  = useRouter();
-  const { ubicacion, direccion }                = useContext(MapContext);
-  const { crearInmueble, createProperty }       = useContext(InmuebleContext);
+  const { ubicacion, direccion, setUbicacion, 
+    setDireccion }                              = useContext(MapContext);
+  const { createProperty, editProperty }        = useContext(InmuebleContext);
+  const { auth }                                = useContext(AuthContext);
   const [cargando, setCargando]                 = useState(false);
   const [steps, setSteps]                       = useState(1);
-  const [tipoPropiedad, setTipoPropiedad]       = useState(casasC);
-  const [categoria, setCategoria]               = useState(rentas);
-  const [set, setSet]                           = useState(conjunto);
-  const [amueblado, setAmueblado]               = useState(false);
-  const [alias, setAlias]                       = useState('');
-  const [agua, setAgua]                         = useState<any>(false);
-  const [luz, setLuz]                           = useState<any>(false);
-  const [gas, setGas]                           = useState<any>(false);
-  const [internet, setInternet]                 = useState<any>(false);
-  const [seguridadPrivada, setSeguridadPrivada] = useState<any>(false);
-  const [escuelas, setEscuelas]                 = useState<any>(false);
-  const [mantenimiento, setMantenimiento]       = useState<any>(false);
-  const [piscina, setPiscina]                   = useState<any>(false);
-  const [discapacitados, setDiscapacitados]     = useState<any>(false);
-  const [camas, setCamas]                       = useState<any>(false);
-  const [closet, setCloset]                     = useState<any>(false);
-  const [sala, setSala]                         = useState<any>(false);
-  const [comedor, setComedor]                   = useState<any>(false);
-  const [cocina, setCocina]                     = useState<any>(false);
-  const [AA, setAA]                             = useState<any>(false);
-  const [refrigerador, setRefrigerador]         = useState<any>(false);
-  const [estufa, setEstufa]                     = useState<any>(false);
-  const [microondas, setMicroondas]             = useState<any>(false);
-  const [minihorno, setMinihorno]               = useState<any>(false);
-  const [horno, setHorno]                       = useState<any>(false);
-  const [lavadora, setLavadora]                 = useState<any>(false);
-  const [secadora, setSecadora]                 = useState<any>(false);
+  const [tipoPropiedad, setTipoPropiedad]       = useState((action == 'create') ? casasC:((data && data.tipoPropiedad._id) ? data.tipoPropiedad._id:casasC));
+  const [categoria, setCategoria]               = useState((action == 'create') ? rentas:((data && data.categoria._id) ? data.categoria._id:rentas));
+  const [set, setSet]                           = useState((action == 'create') ? conjunto:((data && data && data.set) ? data.set:conjunto));
+  const [amueblado, setAmueblado]               = useState((action == 'create') ? false:((data && data.amueblado) ? data.amueblado:false));
+  const [alias, setAlias]                       = useState((action == 'create') ? '':((data && data.alias) ? data.alias:''));
+  const [agua, setAgua]                         = useState<any>((action == 'create') ? false:((data && data.agua) ? data.agua:false));
+  const [luz, setLuz]                           = useState<any>((action == 'create') ? false:((data && data.luz) ? data.luz:false));
+  const [gas, setGas]                           = useState<any>((action == 'create') ? false:((data && data.gas) ? data.gas:false));
+  const [internet, setInternet]                 = useState<any>((action == 'create') ? false:((data && data.internet) ? data.internet:false));
+  const [seguridadPrivada, setSeguridadPrivada] = useState<any>((action == 'create') ? false:((data && data.seguridadPrivada) ? data.seguridadPrivada:false));
+  const [escuelas, setEscuelas]                 = useState<any>((action == 'create') ? false:((data && data.escuelas) ? data.escuelas:false));
+  const [mantenimiento, setMantenimiento]       = useState<any>((action == 'create') ? false:((data && data.mantenimiento) ? data.mantenimiento:false));
+  const [piscina, setPiscina]                   = useState<any>((action == 'create') ? false:((data && data.piscinas) ? data.piscinas:false));
+  const [discapacitados, setDiscapacitados]     = useState<any>((action == 'create') ? false:((data && data.discapacitados) ? data.discapacitados:false));
+  const [camas, setCamas]                       = useState<any>((action == 'create') ? false:((data && data.camas) ? data.camas:false));
+  const [closet, setCloset]                     = useState<any>((action == 'create') ? false:((data && data.closet) ? data.closet:false));
+  const [sala, setSala]                         = useState<any>((action == 'create') ? false:((data && data.sala) ? data.sala:false));
+  const [comedor, setComedor]                   = useState<any>((action == 'create') ? false:((data && data.comedor) ? data.comedor:false));
+  const [cocina, setCocina]                     = useState<any>((action == 'create') ? false:((data && data.cocina) ? data.cocina:false));
+  const [AA, setAA]                             = useState<any>((action == 'create') ? false:((data && data.AA) ? data.AA:false));
+  const [refrigerador, setRefrigerador]         = useState<any>((action == 'create') ? false:((data && data.refrigerador) ? data.refrigerador:false));
+  const [estufa, setEstufa]                     = useState<any>((action == 'create') ? false:((data && data.estufa) ? data.estufa:false));
+  const [microondas, setMicroondas]             = useState<any>((action == 'create') ? false:((data && data.microondas) ? data.microondas:false));
+  const [minihorno, setMinihorno]               = useState<any>((action == 'create') ? false:((data && data.minihorno) ? data.minihorno:false));
+  const [horno, setHorno]                       = useState<any>((action == 'create') ? false:((data && data.horno) ? data.horno:false));
+  const [lavadora, setLavadora]                 = useState<any>((action == 'create') ? false:((data && data.lavadora) ? data.lavadora:false));
+  const [secadora, setSecadora]                 = useState<any>((action == 'create') ? false:((data && data.secadora) ? data.secadora:false));
+  const [images, setImages]                     = useState<any>((action == 'create') ? []:((data && data.imgs && (data.imgs.length > 0)) ? data.imgs:[]));
+  const [removeImages, setRemoveImages]         = useState<any>([]);
+  const [imagesOrder, setImageOrder]            = useState<any>((action == 'create') ? []:((data && data.imgs && (data.imgs.length > 0)) ? data.imgs:[]));
 
-  const { formulario, handleChange } = useForm({
-    titulo: "",
-    precio: 0,
-    comisiones: 0,
-    antiguedad: "",
-    m2Construidos: 0,
-    m2Terreno: 0,
-    habitaciones: 0,
-    baños: 0,
-    medioBaños: 0,
-    parking: 0,
-    pisos: 0,
-    descripcion: "",
-    otros: "",
+  const { formulario, handleChange }            = useForm({
+    titulo:                                     (action == 'create') ? "":((data && data.titulo)    ? data.titulo:""),
+    precio:                                     (action == 'create') ? 0:((data && data.precio)     ? data.precio:0),
+    comisiones:                                 (action == 'create') ? 0:((data && data.comisiones) ? data.comisiones:0),
+    antiguedad:                                 (action == 'create') ? "":((data && data.antiguedad) ? data.antiguedad:""),
+    m2Construidos:                              (action == 'create') ? 0:((data && data.m2Construidos) ? data.m2Construidos:0),
+    m2Terreno:                                  (action == 'create') ? 0:((data && data.m2Terreno) ? data.m2Terreno:0),
+    habitaciones:                               (action == 'create') ? 0:((data && data.habitaciones) ? data.habitaciones:0),
+    baños:                                      (action == 'create') ? 0:((data && data.baños) ? data.baños:0),
+    medioBaños:                                 (action == 'create') ? 0:((data && data.medioBaños) ? data.medioBaños:0),
+    parking:                                    (action == 'create') ? 0:((data && data.parking) ? data.parking:0),
+    pisos:                                      (action == 'create') ? 0:((data && data.pisos) ? data.pisos:0),
+    descripcion:                                (action == 'create') ? "":((data && data.descripcion) ? data.descripcion:""),
+    otros:                                      (action == 'create') ? "":((data && data.otros) ? data.otros:"")
   });
 
   const {
@@ -82,84 +94,94 @@ const AnadirInmueble = () => {
     pisos,
     descripcion,
     otros,
-  } = formulario;
+  }                                             = formulario;
 
-  const handleNextStep = () => {
-    setSteps(steps + 1);
-    router.push("/perfil/agregar-inmueble");
-  };
-  const handlePrevStep = () => {
-    setSteps(steps - 1);
-    router.push("/perfil/agregar-inmueble");
-  };
+  const handleNextStep                          = (step: number) => {
+    if(step && action) {
+      setSteps(step);
+      router.push((action == 'create') ? "/perfil/agregar-inmueble":((data && data._id) ? ("/perfil/edit-property/" + data._id):"/perfil/agregar-inmueble"));
+    }
+  } 
+
+  const handlePrevStep                          = (step: number) => {
+    if(step && action) {
+      setSteps(step);
+      router.push((action == 'create') ? "/perfil/agregar-inmueble":((data && data._id) ? ("/perfil/edit-property/" + data._id):"/perfil/agregar-inmueble"));
+    }
+  }
  
-  const dataInmueble: InmuebleData = {
-    titulo,
-    categoria,
-    precio,
-    direccion,
-    lat: ubicacion.lat,
-    lng: ubicacion.lng,
-    tipoPropiedad,
-    descripcion,
-    AA: AA.value,
-    agua: agua.value,
-    amueblado,
-    antiguedad,
-    baños,
-    camas: camas.value,
-    closet: closet.value,
-    cocina: cocina.value,
-    comedor: comedor.value,
-    comisiones,
-    discapacitados: discapacitados.value,
-    escuelas: escuelas.value,
-    estufa: estufa.value,
-    gas: gas.value,
-    habitaciones,
-    horno: horno.value,
-    internet: internet.value,
-    lavadora: lavadora.value,
-    luz: luz.value,
-    m2Construidos,
-    m2Terreno,
-    mantenimiento: mantenimiento.value,
-    medioBaños,
-    microondas: microondas.value,
-    minihorno: minihorno.value,
-    otros,
-    parking,
-    piscinas: piscina.value,
-    pisos,
-    refrigerador: refrigerador.value,
-    sala: sala.value,
-    secadora: secadora.value,
-    seguridadPrivada: seguridadPrivada.value,
-    set,
-    alias
-  };
+  const handleSubmit                            = async () => {
+    if(titulo && auth.uid && categoria && String(pisos) && String(medioBaños) && String(habitaciones) && String(m2Construidos) && String(baños) && String(parking) && String(precio) && String(comisiones) && String(m2Terreno) && direccion && descripcion && ubicacion.lat && ubicacion.lng && tipoPropiedad && access_token) {
+      setCargando(true);
+      let sendImages                            = [];
+      let order: any                            = [];
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(dataInmueble);
-    // setCargando(true);
+      if(action != 'create'){
 
-    // await crearInmueble(dataInmueble);
+        // If it's delete all images
+        if((images.length == 0) && (data && data.imgs && (data.imgs.length > 0))) {
+          for(let i = 0; i < data.imgs.length; i++) {  
+            setRemoveImages([...removeImages, data.imgs[i]]);
+          }
+        }
 
-    // setCargando(false);
-    // handleNextStep();
-  };
+        // Delete images with string
+        if((images.length > 0)) {
+          for(let i = 0; i < images.length; i ++) {
+            if(!(typeof images[i] == 'string')) {
+              sendImages.push(images[i]);
+            }else {
+              order.push(i);
+            } 
+          }
+        }
+
+        //Only order without create new file
+        if(sendImages.length == 0) {
+          order                                 = [];
+
+          for(let i=0; i < imagesOrder.length; i++) {   
+            for(let j=0; j < images.length; j++){    
+              if(imagesOrder[i] == images[j]) {
+                order.push(j);
+              }
+            }
+          }
+        }
+      }
+
+      const response                            = (action == 'create') ?
+      await createProperty(titulo, categoria, tipoPropiedad, set, (typeof alias != 'undefined') ? alias:null, ubicacion.lat, ubicacion.lng, Number(precio), comisiones, (typeof antiguedad != 'undefined') ? antiguedad:null, m2Terreno, baños, parking, (typeof agua.value != 'undefined') ? agua.value:null, (typeof gas.value != 'undefined') ? gas.value:null, (typeof seguridadPrivada.value != 'undefined') ? seguridadPrivada.value:null, (typeof mantenimiento.value != 'undefined') ? mantenimiento.value:null, (typeof discapacitados.value != 'undefined') ? discapacitados.value:null, m2Construidos, habitaciones, medioBaños, pisos, (typeof luz.value != 'undefined') ? luz.value:null, (typeof internet.value != 'undefined') ? internet.value:null, (typeof escuelas.value != 'undefined') ? escuelas.value:null, (typeof piscina.value != 'undefined') ? piscina.value:null, amueblado, (typeof camas.value != 'undefined') ? camas.value:null, (typeof sala.value != 'undefined') ? sala.value:null, (typeof cocina.value != 'undefined') ? cocina.value:null, (typeof refrigerador.value != 'undefined') ? refrigerador.value:null, (typeof microondas.value != 'undefined') ? microondas.value:null, (typeof horno.value != 'undefined') ? horno.value:null, (typeof secadora.value != 'undefined') ? secadora.value:null, (typeof closet.value != 'undefined') ? closet.value:null, (typeof comedor.value != 'undefined') ? comedor.value:null, (typeof AA.value != 'undefined') ? AA.value:null, (typeof estufa.value != 'undefined') ? estufa.value:null, (typeof minihorno.value != 'undefined') ? minihorno.value:null, (typeof lavadora.value != 'undefined') ? lavadora.value:null, otros, direccion, descripcion, auth.uid, images, access_token):
+      await editProperty((data && data._id) ? data._id:'' ,titulo, categoria, tipoPropiedad, set, (typeof alias != 'undefined') ? alias:null, ubicacion.lat, ubicacion.lng, Number(precio), comisiones, (typeof antiguedad != 'undefined') ? antiguedad:null, m2Terreno, baños, parking, (typeof agua.value != 'undefined') ? agua.value:null, (typeof gas.value != 'undefined') ? gas.value:null, (typeof seguridadPrivada.value != 'undefined') ? seguridadPrivada.value:null, (typeof mantenimiento.value != 'undefined') ? mantenimiento.value:null, (typeof discapacitados.value != 'undefined') ? discapacitados.value:null, m2Construidos, habitaciones, medioBaños, pisos, (typeof luz.value != 'undefined') ? luz.value:null, (typeof internet.value != 'undefined') ? internet.value:null, (typeof escuelas.value != 'undefined') ? escuelas.value:null, (typeof piscina.value != 'undefined') ? piscina.value:null, amueblado, (typeof camas.value != 'undefined') ? camas.value:null, (typeof sala.value != 'undefined') ? sala.value:null, (typeof cocina.value != 'undefined') ? cocina.value:null, (typeof refrigerador.value != 'undefined') ? refrigerador.value:null, (typeof microondas.value != 'undefined') ? microondas.value:null, (typeof horno.value != 'undefined') ? horno.value:null, (typeof secadora.value != 'undefined') ? secadora.value:null, (typeof closet.value != 'undefined') ? closet.value:null, (typeof comedor.value != 'undefined') ? comedor.value:null, (typeof AA.value != 'undefined') ? AA.value:null, (typeof estufa.value != 'undefined') ? estufa.value:null, (typeof minihorno.value != 'undefined') ? minihorno.value:null, (typeof lavadora.value != 'undefined') ? lavadora.value:null, otros, direccion, descripcion, auth.uid, sendImages, removeImages, order, access_token);
+
+      if(response) {
+        //router.push("/perfil/mis-propiedades");
+        setCargando(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+   if(action != 'create') {
+    if(data && data.direccion) {
+      setDireccion(data.direccion);
+    }
+    if(data && data.lat && data.lng){
+      setUbicacion({lat: data.lat, lng: data.lng});
+    }
+   }
+  }, []);
 
   return (
     <section>
       <div className="container">
-        <Titulo titulo="Agrega un inmueble" />
+        <Titulo titulo={(action == 'create') ? "Agrega un inmueble":"Edita un inmueble" }/>
         <br />
         <div className="row d-flex justify-content-center">
           <Steps steps={steps} />
 
           <div className="col-sm-12 col-md-12 col-lg-8">
-            <Form>
+            <Form encType="multipart/form-data">
               {(steps === 1) &&
                 <>
                   <FormStepOne
@@ -182,6 +204,8 @@ const AnadirInmueble = () => {
               {(steps === 2) &&
                 <>
                   <Formulario
+                    handleNextStep    = {handleNextStep}
+                    handlePrevStep    = {handlePrevStep}
                     handleChange      = {handleChange}
                     antiguedad        = {antiguedad}
                     m2Construidos     = {m2Construidos}
@@ -240,36 +264,22 @@ const AnadirInmueble = () => {
                     setLavadora       = {setLavadora}
                     setSecadora       = {setSecadora}
                     cargando          = {cargando}
+                    action            = {action}
                   />
-                  <div className="col-12 my-3">
-                    {cargando ? (
-                      <Button
-                        titulo="Anterior"
-                        onClick={handlePrevStep}
-                        btn="Disabled"
-                      />
-                    ) : (
-                      <Button titulo="Anterior" onClick={handlePrevStep} />
-                    )}
-
-                    <span className="mx-2" />
-                    {(cargando) ? (
-                      <Button
-                        titulo="Siguiente"
-                        btn="Disabled"
-                      />
-                    ) : (
-                      (descripcion != '') ? 
-                      <Button titulo="Siguiente" onClick={handleSubmit} />:
-                      <Button titulo="Siguiente" btn="Disabled" />
-                    )}
-                  </div>
                 </>
               }
+              {(steps === 3) && 
+                <AnadirImagenes 
+                  handlePrevStep  = {handlePrevStep}
+                  handleSubmit    = {handleSubmit}
+                  images          = {images}
+                  setImages       = {setImages}
+                  removeImages    = {removeImages}
+                  setRemoveImages = {setRemoveImages}
+                  action          = {action}
+                />
+              }
             </Form>
-          </div>
-          <div className="col-sm-12 col-md-12 col-lg-8">
-            {steps === 3 ? <AnadirImagenes /> : null}
           </div>
         </div>
       </div>

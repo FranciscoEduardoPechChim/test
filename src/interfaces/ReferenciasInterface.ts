@@ -31,6 +31,9 @@ export interface Referencia {
   updatedAt: string;
   estado: boolean;
   comprobante: string;
+  isOxxo?: boolean;
+  authorization?: number;
+  referencesAndTicket?: number;
 }
 
 interface Paquete {

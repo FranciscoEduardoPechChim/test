@@ -3,6 +3,7 @@ import { Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import Loading from "../../../ui/loading/Loading";
 import styles from "./FormDesign.module.css";
+import Button from "../../../ui/button/Button";
 
 const options = [
   { value: false, label: "No" },
@@ -10,6 +11,8 @@ const options = [
 ];
 
 interface Props {
+  handleNextStep: (step:number) => void;
+  handlePrevStep: (step:number) => void;
   handleChange: ({
     target,
   }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -70,6 +73,7 @@ interface Props {
   setLavadora: any;
   setSecadora: any;
   cargando: boolean;
+  action: string,
 }
 
 const Formulario = (props: Props) => {
@@ -132,6 +136,9 @@ const Formulario = (props: Props) => {
     setLavadora,
     setSecadora,
     cargando,
+    action,
+    handlePrevStep,
+    handleNextStep
   } = props;
 
   const longitudOtros = otros.length;
@@ -281,10 +288,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={agua}
-                    onChange={setAgua}
-                    placeholder=""
+                    options       = {options}
+                    defaultValue  = {agua}
+                    onChange      = {setAgua}
+                    placeholder   = {(action == 'create') ? '':(agua ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -296,10 +303,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={luz}
-                    onChange={setLuz}
-                    placeholder=""
+                    options       = {options}
+                    defaultValue  = {luz}
+                    onChange      = {setLuz}
+                    placeholder   = {(action == 'create') ? '':(luz ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -311,10 +318,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={gas}
-                    onChange={setGas}
-                    placeholder=""
+                    options       = {options}
+                    defaultValue  = {gas}
+                    onChange      = {setGas}
+                    placeholder   = {(action == 'create') ? '':(gas ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -326,10 +333,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={internet}
-                    onChange={setInternet}
-                    placeholder=""
+                    options         = {options}
+                    defaultValue    = {internet}
+                    onChange        = {setInternet}
+                    placeholder     = {(action == 'create') ? '':(internet ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -341,10 +348,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={seguridadPrivada}
-                    onChange={setSeguridadPrivada}
-                    placeholder=""
+                    options         = {options}
+                    defaultValue    = {seguridadPrivada}
+                    onChange        = {setSeguridadPrivada}
+                    placeholder     = {(action == 'create') ? '':(seguridadPrivada ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -356,10 +363,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={escuelas}
-                    onChange={setEscuelas}
-                    placeholder=""
+                    options       = {options}
+                    defaultValue  = {escuelas}
+                    onChange      = {setEscuelas}
+                    placeholder   = {(action == 'create') ? '':(escuelas ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -371,10 +378,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={mantenimiento}
-                    onChange={setMantenimiento}
-                    placeholder=""
+                    options       = {options}
+                    defaultValue  = {mantenimiento}
+                    onChange      = {setMantenimiento}
+                    placeholder   = {(action == 'create') ? '':(mantenimiento ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -386,10 +393,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={piscina}
-                    onChange={setPiscina}
-                    placeholder=""
+                    options       = {options}
+                    defaultValue  = {piscina}
+                    onChange      = {setPiscina}
+                    placeholder   = {(action == 'create') ? '':(piscina ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -401,10 +408,10 @@ const Formulario = (props: Props) => {
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-5 col-xl-5 col-xxl-4">
                   <Select
-                    options={options}
-                    defaultValue={discapacitados}
-                    onChange={setDiscapacitados}
-                    placeholder=""
+                    options         = {options}
+                    defaultValue    = {discapacitados}
+                    onChange        = {setDiscapacitados}
+                    placeholder     = {(action == 'create') ? '':(discapacitados ? "Sí":"No")}
                   />
                 </div>
               </div>
@@ -446,10 +453,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={camas}
-                        onChange={setCamas}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {camas}
+                        onChange      = {setCamas}
+                        placeholder   = {(action == 'create') ? '':(camas ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -461,10 +468,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={closet}
-                        onChange={setCloset}
-                        placeholder=""
+                        options         = {options}
+                        defaultValue    = {closet}
+                        onChange        = {setCloset}
+                        placeholder     = {(action == 'create') ? '':(closet ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -476,10 +483,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={sala}
-                        onChange={setSala}
-                        placeholder=""
+                        options         = {options}
+                        defaultValue    = {sala}
+                        onChange        = {setSala}
+                        placeholder     = {(action == 'create') ? '':(sala ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -491,10 +498,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={comedor}
-                        onChange={setComedor}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {comedor}
+                        onChange      = {setComedor}
+                        placeholder   = {(action == 'create') ? '':(comedor ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -506,10 +513,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={cocina}
-                        onChange={setCocina}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {cocina}
+                        onChange      = {setCocina}
+                        placeholder   = {(action == 'create') ? '':(cocina ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -521,10 +528,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={AA}
-                        onChange={setAA}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {AA}
+                        onChange      = {setAA}
+                        placeholder   = {(action == 'create') ? '':(AA ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -536,10 +543,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={refrigerador}
-                        onChange={setRefrigerador}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {refrigerador}
+                        onChange      = {setRefrigerador}
+                        placeholder   = {(action == 'create') ? '':(refrigerador ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -551,10 +558,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={estufa}
-                        onChange={setEstufa}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {estufa}
+                        onChange      = {setEstufa}
+                        placeholder   = {(action == 'create') ? '':(estufa ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -566,10 +573,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={microondas}
-                        onChange={setMicroondas}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {microondas}
+                        onChange      = {setMicroondas}
+                        placeholder   = {(action == 'create') ? '':(microondas ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -581,10 +588,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={minihorno}
-                        onChange={setMinihorno}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {minihorno}
+                        onChange      = {setMinihorno}
+                        placeholder   = {(action == 'create') ? '':(minihorno ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -596,10 +603,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={horno}
-                        onChange={setHorno}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {horno}
+                        onChange      = {setHorno}
+                        placeholder   = {(action == 'create') ? '':(horno ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -611,10 +618,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={lavadora}
-                        onChange={setLavadora}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {lavadora}
+                        onChange      = {setLavadora}
+                        placeholder   = {(action == 'create') ? '':(lavadora ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -626,10 +633,10 @@ const Formulario = (props: Props) => {
                     </div>
                     <div className="col-sm-12 col-md-4 col-lg-6 col-xxl-4">
                       <Select
-                        options={options}
-                        defaultValue={secadora}
-                        onChange={setSecadora}
-                        placeholder=""
+                        options       = {options}
+                        defaultValue  = {secadora}
+                        onChange      = {setSecadora}
+                        placeholder   = {(action == 'create') ? '':(secadora ? "Sí":"No")}
                       />
                     </div>
                   </div>
@@ -687,10 +694,44 @@ const Formulario = (props: Props) => {
             </div>
           </div>
         </div>
-        <br />
+        <div className="col-12 my-3">
+          {cargando ? (
+            <Button 
+              titulo  = "Anterior"
+              btn     = "Disabled"
+              style   = {{ width: 160, height: 60}}
+            />
+          ) : (
+            <Button 
+              titulo  = "Anterior" 
+              onClick = {() => handlePrevStep(1)} 
+              style   = {{ width: 160, height: 60}}
+            />
+          )}
+          <span className="mx-2" />
+          {(cargando) ? (
+            <Button
+              titulo  = "Siguiente"
+              btn     = "Disabled"
+              style   = {{ width: 160, height: 60}}
+            />
+          ) : (
+            (descripcion != '') ? 
+            <Button 
+              titulo  = "Siguiente" 
+              onClick = {() => handleNextStep(3)} 
+              style   = {{ width: 160, height: 60}}
+            />:
+            <Button 
+              titulo  = "Siguiente" 
+              btn     = "Disabled" 
+              style   = {{ width: 160, height: 60}}
+            />
+          )}
+        </div>
       </div>
     </>
   );
 };
-
+ 
 export default Formulario;

@@ -26,18 +26,24 @@ import { actualizarRolUsuario } from "../../../helpers/fetch";
 
 //Material UI
 import TablePagination from '@material-ui/core/TablePagination';
+//Services
+import { updateAuthorization } from '../../../services/referenceService';
+//Helpers 
+import { validate } from '../../../helpers/response';
 
 const Referencias = () => {
-  const router = useRouter();
-  const { actualizarRol } = useContext(AuthContext);
-  const refTop = useRef<HTMLElement>(null);
-  const [seleccionado, setSeleccionado] = useState("");
-  const [desde, setDesde] = useState(0);
-  const { formulario, handleChange } = useForm({
-    numero: "",
+  const router                                      = useRouter();
+  const { actualizarRol }                           = useContext(AuthContext);
+  const refTop                                      = useRef<HTMLElement>(null);
+  const [seleccionado, setSeleccionado]             = useState("");
+  const [desde, setDesde]                           = useState(0);
+  const { referencia, setReferencia }               = useReferenciaNumero(seleccionado);
+
+  const { formulario, handleChange }                = useForm({
+    numero: ""
   });
-  const { numero } = formulario;
-  const { referencia, setReferencia } = useReferenciaNumero(seleccionado);
+  const { numero }                                  = formulario;
+
   const {
     referencias,
     setOffset,
@@ -46,10 +52,14 @@ const Referencias = () => {
     setReferencias,
   } = useReferencias(desde);
 
-  const [page, setPage]                 = useState(0);
-  const [rowsPerPage, setRowsPerPage]   = useState(10);
+  const [page, setPage]                             = useState(0);
+  const [rowsPerPage, setRowsPerPage]               = useState(10);
+  const [authorization, setAuthorization]           = useState((referencia && referencia.authorization) ? String(referencia.authorization):'');
+  const [referenceOrTicket, setReferenceOrTicket]   = useState((referencia && referencia.referencesAndTicket) ? String(referencia.referencesAndTicket):'');
+  const access_token                                = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const action                                      = (referencia && (referencia.authorization || referencia.referencesAndTicket)) ? 'update':'create';
 
-  const handleChangePage                = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage                            = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);  
     setDesde(newPage * rowsPerPage);
   };
@@ -76,7 +86,8 @@ const Referencias = () => {
     setSeleccionado(numero);
   };
 
-  const cerrarReferencia = () => setSeleccionado("");
+  const cerrarReferencia = () =>  setSeleccionado("");
+
 
   const handlePrevPage = () => {
     if (desde === 0) {
@@ -104,75 +115,100 @@ const Referencias = () => {
     precio: number,
     paquete: string,
     usuarios: number,
-    role: string
+    role: string,
+    authorization: number | undefined,
+    ticket: number | undefined
   ) => {
-    const pagoId = uuidv4();
+    if((typeof authorization == 'number') && (typeof ticket == 'number')) {
+      const pagoId = uuidv4();
 
-    const fechaPago = moment().format();
-    const fechaVencimiento = moment(fechaPago).add(1, "y").format();
-    const fechaVencimientoSem = moment(fechaPago).add(6, "M").format();
-    const fechaVencimientoTri = moment(fechaPago).add(3, "M").format();
+      const fechaPago = moment().format();
+      const fechaVencimiento = moment(fechaPago).add(1, "y").format();
+      const fechaVencimientoSem = moment(fechaPago).add(6, "M").format();
+      const fechaVencimientoTri = moment(fechaPago).add(3, "M").format();
 
-    const correoPedido: NuevoPedido = {
-      apellido: apellido,
-      nombre: nombre,
-      correo: correo,
-      idCompra: pagoId,
-      nombrePaquete: paquete,
-      precio: Number(precio),
-      importe: Number(precio) * Number(usuarios),
-    };
+      const correoPedido: NuevoPedido = {
+        apellido: apellido,
+        nombre: nombre,
+        correo: correo,
+        idCompra: pagoId,
+        nombrePaquete: paquete,
+        precio: Number(precio),
+        importe: Number(precio) * Number(usuarios),
+      };
 
-    const body: Pedido = {
-      usuario: uid,
-      paquete: pid,
-      precio: Number(precio),
-      importe:
-        paquete === "Individual"
-          ? Number(precio)
-          : Number(precio) * Number(usuarios),
-      fechaPago,
-      fechaVencimiento:
-        Number(precio) === 1250
-          ? fechaVencimientoTri
-          : Number(precio) === 1999
-          ? fechaVencimientoSem
-          : fechaVencimiento,
-      metodoPago: "Transferencia",
-      vigencia: true,
-      idPago: pagoId,
-      totalUsuarios: paquete === "Individual" ? 1 : usuarios,
-    };
+      const body: Pedido = {
+        usuario: uid,
+        paquete: pid,
+        precio: Number(precio),
+        importe:
+          paquete === "Individual"
+            ? Number(precio)
+            : Number(precio) * Number(usuarios),
+        fechaPago,
+        fechaVencimiento:
+          Number(precio) === 1250
+            ? fechaVencimientoTri
+            : Number(precio) === 1999
+            ? fechaVencimientoSem
+            : fechaVencimiento,
+        metodoPago: "Transferencia",
+        vigencia: true,
+        idPago: pagoId,
+        totalUsuarios: paquete === "Individual" ? 1 : usuarios,
+      };
 
-    const resIndi = await anadirPaqueteInv("pedidos/ref", body);
-    if (resIndi.ok) {
-      const res = await aprobarRef(`referencias/${refId}`);
-      if (res.ok) {
-        toast.success(res.msg);
-        const refAprobada = referencias?.map((ref) => {
-          if (ref._id === refId) {
-            return { ...ref, estado: true };
-          }
+      const resIndi = await anadirPaqueteInv("pedidos/ref", body);
+      if (resIndi.ok) {
+        const res = await aprobarRef(`referencias/${refId}`);
+        if (res.ok) {
+          toast.success(res.msg);
+          const refAprobada = referencias?.map((ref) => {
+            if (ref._id === refId) {
+              return { ...ref, estado: true };
+            }
 
-          return ref;
-        });
-        setReferencia({ ...referencia, estado: true });
-        setReferencias(refAprobada);
+            return ref;
+          });
+          setReferencia({ ...referencia, estado: true });
+          setReferencias(refAprobada);
+        }
+        toast.success(resIndi.msg);
+
+        role !== "Administrador"
+          ? await actualizarRolUsuario(`usuarios/rol/${uid}`, {
+              role: paquete,
+              paqueteAdquirido: pid,
+              usuarios: usuarios,
+            })
+          : null;
+
+        await nuevoPedido("correos/nuevo-pedido", correoPedido);
       }
-      toast.success(resIndi.msg);
-
-      role !== "Administrador"
-        ? await actualizarRolUsuario(`usuarios/rol/${uid}`, {
-            role: paquete,
-            paqueteAdquirido: pid,
-            usuarios: usuarios,
-          })
-        : null;
-
-      await nuevoPedido("correos/nuevo-pedido", correoPedido);
     }
   };
 
+  const handleSubmitReference           = async (hash: string) => {
+    if(authorization && referenceOrTicket && access_token && hash && action) {    
+      const response                    = await updateAuthorization(hash, Number(authorization), Number(referenceOrTicket), action, access_token);
+    
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+      
+      if(response && response.data) {
+        toast.success(response.msg);
+      }
+    
+    }
+  }
+ 
   return (
     <>
       <SEO titulo="Referencias" url={router.asPath} />
@@ -245,6 +281,42 @@ const Referencias = () => {
                                       </div>
                                     </div>
                                   </div>
+                                  <Form>
+                                    <div className="row">
+                                      <div className="col-sm-6 col-md-6 col-lg-8 mb-3">
+                                        <Form.Group>
+                                          <Form.Label className={styleRef.labelsCard} htmlFor="authorization">Autorización</Form.Label>
+                                          <Form.Control
+                                              type          = "number"
+                                              placeholder   = "01234567"
+                                              value         = {authorization}
+                                              name          = "authorization"
+                                              min           = {0}
+                                              onChange      = {(e:any) => setAuthorization(e.target.value)}
+                                              autoComplete  = "off"
+                                              disabled      = {!referencia?.comprobante}
+                                              onBlur        = {() => handleSubmitReference(referencia?._id)}
+                                            />
+                                        </Form.Group>
+                                      </div>
+                                      <div className="col-sm-6 col-md-6 col-lg-4 mb-3">
+                                        <Form.Group>
+                                          <Form.Label className={styleRef.labelsCard} htmlFor="referenceOrTicket"># comprobante</Form.Label>
+                                          <Form.Control
+                                              type          = "number"
+                                              placeholder   = "01234567"
+                                              value         = {referenceOrTicket}
+                                              name          = "referenceOrTicket"
+                                              min           = {0}
+                                              onChange      = {(e:any) => setReferenceOrTicket(e.target.value)}
+                                              autoComplete  = "off"
+                                              disabled      = {!referencia?.comprobante}
+                                              onBlur        = {() => handleSubmitReference(referencia?._id)}
+                                            />
+                                        </Form.Group>
+                                      </div>
+                                    </div>
+                                  </Form>
                                   <div className="col-8 mb-3">
                                     <div className={`${styleRef.labelsCard}`}>
                                       Usuario
@@ -282,7 +354,7 @@ const Referencias = () => {
                                   </div>
                                   <div className="col-sm-12 col-md-6 col-lg-8 mb-3">
                                     <div className={`${styleRef.labelsCard}`}>
-                                      E-mail
+                                      Correo electrónico
                                       <div
                                         className={`${styleRef.contentCard}`}
                                       >
@@ -396,23 +468,25 @@ const Referencias = () => {
                                       <>
                                         {referencia.comprobante ? (
                                           <button
-                                            onClick={() =>
-                                              confirmarRef(
-                                                referencia._id,
-                                                referencia.usuario._id,
-                                                referencia.usuario.nombre,
-                                                referencia.usuario.apellido,
-                                                referencia.usuario.correo,
-                                                referencia.paquete._id,
-                                                referencia.precio,
-                                                referencia.paquete.nombre,
-                                                referencia.totalUsuarios,
-                                                referencia.usuario.role
-                                              )
+                                            onClick={() => 
+                                                confirmarRef(
+                                                  referencia._id,
+                                                  referencia.usuario._id,
+                                                  referencia.usuario.nombre,
+                                                  referencia.usuario.apellido,
+                                                  referencia.usuario.correo,
+                                                  referencia.paquete._id,
+                                                  referencia.precio,
+                                                  referencia.paquete.nombre,
+                                                  referencia.totalUsuarios,
+                                                  referencia.usuario.role,
+                                                  referencia.authorization,
+                                                  referencia.referencesAndTicket
+                                                )
                                             }
                                             className={`${styleRef.btnAp}`}
                                           >
-                                            Confirmar
+                                            Confirmar 
                                           </button>
                                         ) : (
                                           <button
@@ -420,7 +494,7 @@ const Referencias = () => {
                                             className={`${styleRef.btnAp}`}
                                           >
                                             <i className="bi bi-lock-fill" />{" "}
-                                            Confirmar
+                                            Confirmar 
                                           </button>
                                         )}
                                       </>
@@ -517,9 +591,11 @@ const Referencias = () => {
                               </td>
                               <td className={styleRef.contentT}>
                                 <button
-                                  onClick={() =>
-                                    seleccionarReferencia(referencia.referencia)
-                                  }
+                                  onClick={() =>{
+                                    setAuthorization((referencia.authorization) ? String(referencia.authorization):'');
+                                    setReferenceOrTicket((referencia.referencesAndTicket) ? String(referencia.referencesAndTicket):'');
+                                    seleccionarReferencia(referencia.referencia);
+                                  }}
                                   className={`${styleRef.btnT1} px-2 mx-1`}
                                 >
                                   <i className="bi bi-eye" />
@@ -555,7 +631,7 @@ const Referencias = () => {
               onRowsPerPageChange   = {handleChangeRowsPerPage}
               rowsPerPageOptions    = {[10, 25, 50, 100]}
               labelRowsPerPage      = {'Cantidad'}
-              labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to}`}
+              labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to} de ${count}`}
           />
         </section>
       </DashboardLayout>

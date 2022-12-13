@@ -12,8 +12,11 @@ import MapaUbicacion from "./MapaUbicacion";
 import Button from "../../../ui/button/Button";
 import { MapContext } from "../../../../context/map/MapContext";
 
+// Context
+import { InmuebleContext } from '../../../../context/inmuebles/InmuebleContext';
+
 interface Props {
-  handleNextStep: () => void;
+  handleNextStep: (step:number) => void;
   handleChange: ({
     target,
   }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -48,11 +51,20 @@ const FormStepOne = (props: Props) => {
   } = props;
   const access_token                = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const { direccion }               = useContext(MapContext);
+  const { validAlias }              = useContext(InmuebleContext);
   const { categorias, cargando }    = useCategories();
   const { loading, propertyTypes }  = useTipoPropiedad();
   const { loadingSet, sets }        = useSets((access_token) ? access_token:'');
 
   const longitudTitulo = titulo.length;
+
+  const isValidAlias                = async (value: string) => {
+    if(value && access_token) {
+      const response                = await validAlias(value, access_token);
+
+      return response;
+    }
+  }
 
   return (
     <>
@@ -175,6 +187,7 @@ const FormStepOne = (props: Props) => {
                 maxLength     = {255} 
                 placeholder   = "House One"
                 onChange      = {(e:any) => setAlias(e.target.value)}
+                onBlur        = {(e:any) => isValidAlias(e.target.value)}
               />
             </div>
           </div>
@@ -186,7 +199,7 @@ const FormStepOne = (props: Props) => {
       <br />
       <div className="row">
         <div className="col-12 mb-3">
-          <SeleccionarLugar />
+          <SeleccionarLugar /> 
         </div>
         <div className="col-12 mb-5">
           <MapaUbicacion />
@@ -235,9 +248,17 @@ const FormStepOne = (props: Props) => {
         </div>
         <div className="col-12 my-4">
           {titulo.length === 0 || precio <= 0 || !direccion ? (
-            <Button titulo="Siguiente" btn="Disabled" />
+            <Button 
+              titulo  = "Siguiente" 
+              btn     = "Disabled" 
+              style   = {{ width: 160, height: 60}}
+            />
           ) : (
-            <Button titulo="Siguiente" onClick={handleNextStep} />
+            <Button 
+              titulo  = "Siguiente" 
+              onClick = {() => handleNextStep(2)} 
+              style   = {{ width: 160, height: 60}}
+            />
           )}
         </div>
       </div>

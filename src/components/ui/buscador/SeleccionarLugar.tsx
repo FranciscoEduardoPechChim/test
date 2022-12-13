@@ -10,7 +10,6 @@ const SeleccionarLugar = () => {
 
   const onSuggestSelect = (suggest: Suggest) => {
     if (!suggest) return;
-
     setDireccion(suggest.label);
 
     !suggest

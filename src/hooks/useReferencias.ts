@@ -18,7 +18,7 @@ export const useReferenciasUsuario = (
   const obtenerReferencias = async () => {
     const res = await fetch(`${production}/referencias/${uid}?desde=${desde}&limite=${offset}`);
     const data: ReferenciasUsuarioResp = await res.json();
-
+    
     setReferencias(data.referencias);
     setTotal(data.total);
     setCargando(false);
@@ -28,7 +28,7 @@ export const useReferenciasUsuario = (
     obtenerReferencias();
   }, [desde, offset]);
 
-  return { referencias, cargando, total, setReferencias, setOffset };
+  return { referencias, cargando, total, setReferencias, setOffset, obtenerReferencias };
 };
 
 export const useReferenciaNumero = (numero: string) => {

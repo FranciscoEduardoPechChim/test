@@ -25,6 +25,7 @@ import { Pedido } from '../../../interfaces/PedidosInterface';
 import { PromotionContext } from '../../../context/promotions/PromotionContext';
 //Services
 import { storeOrder, destroyOrder, updateOrder } from '../../../services/orderService';
+import { storeReference } from '../../../services/referenceService';
 //Validations
 import { isNotEmpty, isString } from '../../../helpers/validations';
 //Helpers
@@ -65,8 +66,12 @@ const PaqueteMultiple                                                   = (props
   const [ subscription, setSubscription ]                               = useState(false);
   const [ order, setOrder ]                                             = useState<Pedido>();
   const [ discounts, setDiscounts ]                                     = useState(0);
-  
-  const handleClose                                                     = () =>  setShow(false);
+  const [ isOxxo, setIsOxxo ]                                           = useState(false); 
+
+  const handleClose                                                     = () =>  {
+    setIsOxxo(false);
+    setShow(false);
+  }
   
   const handleShow                                                      = async () => { 
     setDiscounts(0);
@@ -93,7 +98,10 @@ const PaqueteMultiple                                                   = (props
     setShow(true);
   };
 
-  const ocultarPago                                                     = () => setMostrarPago(false);
+  const ocultarPago                                                     = () =>  {
+    setIsOxxo(false);
+    setMostrarPago(false);
+  }
   
   const handleNext                                                      = () => setShow(false);
 
@@ -136,33 +144,33 @@ const PaqueteMultiple                                                   = (props
 
   const ocultarTransferencia                                            = () => setMostrarTransferencia(false);
   
-  const pagarTransferencia                                              = () => {
+  const pagarTransferencia                                              = (oxxo:boolean) => {
     handleNext();
+    setIsOxxo(oxxo);
     setMostrarTransferencia(true);
   };
 
   const generarReferencia                                               = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const body = {
-      usuario: auth.uid,
-      paquete: id,
-      referencia: Math.floor(
-        1_000_000_000_000 + Math.random() * 9_000_000_000_000
-      ),
-      precio: Number(precio),
-      importe: Number(price),
-      totalUsuarios: avanzado ? Number(usuarios) : usuariosSeleccionados.value,
-      estado: false,
-    };
+    if(auth && auth.uid && id && String(precio) && String(price) && access_token) {
+      const reference                                                   = Math.floor(1_000_000_000_000 + Math.random() * 9_000_000_000_000);
+      const response                                                    = await storeReference(auth.uid, id, String(reference), Number(precio), Number(price) , avanzado ? Number(usuarios) : usuariosSeleccionados.value, false, avanzado ? false:isOxxo, access_token );
+  
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
 
-    const res = await generarRefMul("referencias", body);
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
 
-    if (res.ok) {
-      toast.success(res.msg);
-      router.push("/perfil/referencias-de-pago");
-    } else {
-      toast.success("Error al generear la referencia. Inténtelo de nuevo");
+      if(response && response.data) {
+        toast.success(response.msg);
+        router.push("/perfil/referencias-de-pago");
+      }
     }
   };
 
@@ -424,82 +432,84 @@ const PaqueteMultiple                                                   = (props
   }, []);
 
   return (
-    <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-      <div className={styles.paquetesCard}>
-        <div className="d-flex justify-content-center">
-          <img src="/images/icons/basico.png" alt="..." />
-        </div>
-        <div className={`${styles.paquetesCardTitle}  my-4 text-center`}>
-          {titulo}
-        </div>
-        <hr />
-        <div className={`${styles.paquetesCardPrecio} text-center`}>
-          {formatPrice(precio)} MXN
-        </div>
-        <ul>
-          <li className={styles.listItems}>Anuales</li>
-          <li className={styles.listItems}>{descripcion}</li>
-        </ul>
-        <div className={`${styles.ajusteBtn} text-center`}>
-          <>
-            {auth.uid ? (
-              <>
-                {auth.role === titulo ? (
-                  <div className="row">
-                    <div className="col-12">
-                      <button
-                        type      = "button"
-                        className = {styles.btnContract}
-                      >
-                        CONTRATADO
-                      </button>
-                    </div>
-                    {subscription && 
-                      <div className="col-12 mt-2">
-                        <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
+    <>
+      <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+        <div className={styles.paquetesCard}>
+          <div className="d-flex justify-content-center">
+            <img src="/images/icons/basico.png" alt="..." />
+          </div>
+          <div className={`${styles.paquetesCardTitle}  my-4 text-center`}>
+            {titulo}
+          </div>
+          <hr />
+          <div className={`${styles.paquetesCardPrecio} text-center`}>
+            {formatPrice(precio)} MXN
+          </div>
+          <ul>
+            <li className={styles.listItems}>Anuales</li>
+            <li className={styles.listItems}>{descripcion}</li>
+          </ul>
+          <div className={`${styles.ajusteBtn} text-center`}>
+            <>
+              {auth.uid ? (
+                <>
+                  {auth.role === titulo ? (
+                    <div className="row">
+                      <div className="col-12">
+                        <button
+                          type      = "button"
+                          className = {styles.btnContract}
+                        >
+                          CONTRATADO
+                        </button>
                       </div>
-                    }
-                  </div>
-                ) : (
-                  <>
-                    {auth.role === "Intermedio" ? (
-                      (titulo == 'Básico') ?
-                      <Button titulo="Contratar" btn="Disabled" />:
-                      <button
-                          onClick={handleShow}
-                          type="button"
-                          className={styles.btnContratar}
-                          >
-                          CONTRATAR
-                      </button>
-                    ) : (
-                      <>
-                        {auth.role === "Avanzado" ? (
-                          <Button titulo="Contratar" btn="Disabled" />
-                        ) : (
-                          <button
+                      {subscription && 
+                        <div className="col-12 mt-2">
+                          <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
+                        </div>
+                      }
+                    </div>
+                  ) : (
+                    <>
+                      {auth.role === "Intermedio" ? (
+                        (titulo == 'Básico') ?
+                        <Button titulo="Contratar" btn="Disabled" />:
+                        <button
                             onClick={handleShow}
                             type="button"
                             className={styles.btnContratar}
-                          >
+                            >
                             CONTRATAR
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            ) : (
-              <button
-                onClick={abrirLogin}
-                type="button"
-                className={styles.btnContratar}
-              >
-                CONTRATAR
-              </button>
-            )}
-          </>
+                        </button>
+                      ) : (
+                        <>
+                          {auth.role === "Avanzado" ? (
+                            <Button titulo="Contratar" btn="Disabled" />
+                          ) : (
+                            <button
+                              onClick={handleShow}
+                              type="button"
+                              className={styles.btnContratar}
+                            >
+                              CONTRATAR
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <button
+                  onClick={abrirLogin}
+                  type="button"
+                  className={styles.btnContratar}
+                >
+                  CONTRATAR
+                </button>
+              )}
+            </>
+          </div>
         </div>
       </div>
       <Modal show={show} onHide={handleClose} contentClassName={styles.modalS2}>
@@ -547,50 +557,70 @@ const PaqueteMultiple                                                   = (props
                           </div>
                         </>
                       )}
-
-                      {(!subscription) && 
-                        <div className="col-12">
-                          <div className="form-group">
-                            <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
-                            {usuarios && (usuarios >= 11) ? 
-                              <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
-                              <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
-                            }
-                            {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
-                                return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
-                            })}
-                          </div>
-                        </div>
-                      }
-                      {(subscription) && (loading) &&
-                        <div className="col-12">
-                          <Loading /> 
-                        </div>
-                      }
-
-                      {usuarios && (usuarios >= 11) && (!subscription) ?
-                          <div className="col-12 d-flex justify-content-center mt-3 mb-3">
-                            <Button titulo="Pago con tarjeta" onClick={pagar} />
-                            <Button
-                              titulo="Transferencia bancaria"
-                              onClick={pagarTransferencia}
-                            />
-                          </div>:
-                          <div className="col-12 d-flex justify-content-center mt-3 mb-3">
-                            <Button
-                              titulo="Pago con tarjeta"
-                              onClick={changePaymentCard}
-                            />
-                            <Button
-                              titulo="Transferencia bancaria"
-                              onClick={changePaymentRef}
-                            />
-                          </div>
-                      }
-
                     </div>
                   </div>
                 </div>
+
+                {(!subscription) && 
+                  <div className="row my-2 d-flex justify-content-center">
+                      <div className="col-10">
+                        <div className="form-group">
+                          <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                          {usuarios && (usuarios >= 11) ? 
+                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                          }
+                          {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                              return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                          })}
+                        </div>
+                      </div>
+                  </div>
+                }
+
+                {(subscription) && (loading) &&
+                  <div className="row d-flex justify-content-center">
+                    <div className="col-10">
+                      <Loading /> 
+                    </div>
+                  </div>
+                }
+
+                {usuarios && (usuarios >= 11) && (!subscription) ?
+                  <div className="row mt-5">
+                    <div className="col-12 col-md-6 d-flex justify-content-center my-1">
+                      <Button 
+                        titulo  = "Pagar con tarjeta" 
+                        onClick = {pagar} 
+                        style   = {{ width: 200, height: 65}}
+                      />
+                    </div>
+                    <div className="col-12 col-md-6 d-flex justify-content-center my-1">
+                      <Button
+                        titulo  = "Transferencia bancaria"
+                        onClick = {() => pagarTransferencia(false)}
+                        style   = {{ width: 200, height: 65}}
+                      />
+                    </div>
+                  </div>
+                  :
+                  <div className="row mt-5">
+                    <div className="col-12 col-md-6 d-flex justify-content-center my-1">
+                      <Button
+                        titulo  = "Pago con tarjeta"
+                        onClick = {changePaymentCard}
+                        style   = {{ width: 200, height: 65}} 
+                      />
+                    </div>
+                    <div className="col-12 col-md-6 d-flex justify-content-center my-1">
+                      <Button
+                        titulo  = "Transferencia bancaria"
+                        onClick = {changePaymentRef}
+                        style   = {{ width: 200, height: 65}} 
+                      />
+                    </div>
+                  </div>
+                }
               </>
             ) : (
               <>
@@ -621,76 +651,132 @@ const PaqueteMultiple                                                   = (props
                           ) : null}
                         </div>
                       </div>
-                      {(!subscription) && 
-                      <div className="col-12">
-                        <div className="form-group mt-4 mb-2">
-                          <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
-                          {(usuariosSeleccionados.value) ? 
-                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
-                            <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
-                          }
-                          {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
-                              return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
-                          })}
-                        </div>
-                      </div>
-                      }
-                      {(subscription) && (loading) &&
-                        <div className="col-12">
-                          <Loading /> 
-                        </div>
-                      }
-                      <div className="col-12">
-                        <div className="text-center mt-5">
-                          {!usuariosSeleccionados.value ? (
-                            (!subscription) ?
-                            <div className="d-flex justify-content-center">
-                              <Button
-                                titulo="Pago con tarjeta"
-                                btn="Disabled"
-                              />
-                              <Button
-                                titulo="Transferencia bancaria"
-                                btn="Disabled"
-                              />
-                            </div>:
-                            <div className="d-flex justify-content-center mb-1">
-                              <Button
-                                  titulo="Pago con tarjeta"
-                                  btn="Disabled"
-                                />
-                                <Button
-                                  titulo="Transferencia bancaria"
-                                  btn="Disabled"
-                                />
-                            </div>
-                          ) : (
-                            (!subscription) ?
-                              <div className="d-flex justify-content-center">
-                                <Button
-                                  titulo="Pago con tarjeta"
-                                  onClick={pagar}
-                                />
-                                <Button
-                                  titulo="Transferencia bancaria"
-                                  onClick={pagarTransferencia}
-                                />
-                              </div>:
-                              <div className="d-flex justify-content-center mb-1">
-                                <Button
-                                  titulo="Pago con tarjeta"
-                                  onClick={changePaymentCard}
-                                />
-                                <Button
-                                  titulo="Transferencia bancaria"
-                                  onClick={changePaymentRef}
-                                />
-                             </div>
-                          )}
-                        </div>
+                    </div>
+                  </div>
+                </div>
+                {(!subscription) && 
+                  <div className="row d-flex justify-content-center">
+                    <div className="col-sm-12 col-md-12 col-lg-9">
+                      <div className="form-group mt-4 mb-2">
+                        <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                        {(usuariosSeleccionados.value) ? 
+                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                        }
+                        {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                            return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                        })}
                       </div>
                     </div>
                   </div>
+                }
+                {(subscription) && (loading) &&
+                  <div className="row d-flex justify-content-center">
+                    <div className="col-sm-12 col-md-12 col-lg-9">
+                      <Loading /> 
+                    </div>
+                  </div>
+                }           
+                <div className="text-center">
+                  {!usuariosSeleccionados.value ? (
+                    (!subscription) ?
+                      <div className="row mt-5">
+                        <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                          <Button 
+                            titulo  = "Pago con tarjeta" 
+                            btn     = "Disabled" 
+                            style   = {{ width: 200, height: 65}} 
+                          />
+                        </div>
+                        <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                          <Button 
+                            titulo  = "Transferencia bancaria" 
+                            btn     = "Disabled" 
+                            style   = {{ width: 200, height: 65}} 
+                          />
+                        </div>
+                        <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                          <Button 
+                            titulo  = "Oxxo" 
+                            btn     = "Disabled" 
+                            style   = {{ width: 200, height: 65}} 
+                          />
+                        </div>
+                      </div> 
+                      :
+                      <div className="row mt-5">
+                        <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                          <Button 
+                            titulo  = "Pago con tarjeta" 
+                            btn     = "Disabled" 
+                            style   = {{ width: 200, height: 65}} 
+                          />
+                        </div>
+                        <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                          <Button 
+                            titulo  = "Transferencia bancaria" 
+                            btn     = "Disabled" 
+                            style   = {{ width: 200, height: 65}} 
+                          />
+                        </div>
+                        <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                          <Button 
+                            titulo  = "Oxxo" 
+                            btn     = "Disabled" 
+                            style   = {{ width: 200, height: 65}} 
+                          />
+                        </div>
+                      </div> 
+                      ) : (
+                            (!subscription) ?
+                            <div className="row mt-5">
+                              <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                                <Button 
+                                  titulo  = "Pagar con tarjeta" 
+                                  onClick = {pagar} 
+                                  style   = {{ width: 200, height: 65}}
+                                />
+                              </div>
+                              <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                                <Button
+                                  titulo  = "Transferencia bancaria"
+                                  onClick = {() => pagarTransferencia(false)}
+                                  style   = {{ width: 200, height: 65}}
+                                />
+                              </div>
+                              <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                                <Button
+                                  titulo  = "Oxxo"
+                                  onClick = {() => pagarTransferencia(true)}
+                                  style   = {{ width: 200, height: 65}}
+                                />
+                              </div>
+                            </div>
+                            :
+                            <div className="row">
+                              <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                                <Button
+                                    titulo  = "Pago con tarjeta"
+                                    onClick = {changePaymentCard}
+                                    style   = {{ width: 200, height: 65}}
+                                  />
+                              </div>
+                              <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                                <Button
+                                  titulo  = "Transferencia bancaria"
+                                  onClick = {changePaymentRef}
+                                  style   = {{ width: 200, height: 65}}
+                                />
+                              </div>
+                              <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                                <Button
+                                  titulo  = "Oxxo"
+                                  onClick = {changePaymentRef}
+                                  style   = {{ width: 200, height: 65}}
+                                />
+                              </div>
+                            </div>
+                          )}
                 </div>
               </>
             )}
@@ -749,10 +835,20 @@ const PaqueteMultiple                                                   = (props
           </Row>
           <div className="text-center my-4">
             {!stripe ? (
-              <Button titulo="Pagar" btn="Disabled" />
+              <Button 
+                titulo  = "Pagar" 
+                btn     = "Disabled" 
+                style   = {{ width: 200, height: 65}}
+              />
             ) : (
               <div>
-                {loading ? <Loading /> : <Button titulo="Finalizar pedido" />}
+                {loading ? 
+                <Loading /> : 
+                <Button 
+                  titulo  = "Finalizar pedido" 
+                  style   = {{ width: 200, height: 65}}
+                />
+                }
               </div>
             )}
           </div>
@@ -760,9 +856,9 @@ const PaqueteMultiple                                                   = (props
       </Modal>
 
       <Modal
-        contentClassName={styles.modalS1}
-        show={mostrarTransferencia}
-        onHide={ocultarTransferencia}
+        contentClassName  = {styles.modalS1}
+        show              = {mostrarTransferencia}
+        onHide            = {ocultarTransferencia}
       >
         <Modal.Header closeButton className={styles.modalS1header} />
         <Modaltitle titulo={titulo} />
@@ -777,21 +873,40 @@ const PaqueteMultiple                                                   = (props
           </span>
         </div>
 
-        <br />
         <Form onSubmit={generarReferencia}>
-          <div className="text-center">
-            <div className="p-4">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Id
-              maiores neque harum distinctio cumque ratione dolorum quam aperiam
-              aut repudiandae in quas architecto molestias quo est obcaecati,
-              similique, voluptatum consectetur!
+            <div className="text-justify my-4">
+              {(!isOxxo) ?
+                <div className="row d-flex justify-content-center">
+                  <div className="col-8">
+                    <ul className={`${styles.S3labels}`}>
+                      <li>Para continuar oprimir el botón &quot GENERAR REFERENCIA &quot.</li>
+                      <li>Se envíara un correo electrónico con la referencia.</li>
+                      <li>Pagar referencia en un plazo menor a 7 días hábiles.</li>
+                      <li>Tomar fotografía y subir en el apartado de <b>Referencias.</b></li>
+                    </ul>
+                  </div>
+                </div>:
+                <div className="row d-flex justify-content-center">
+                  <div className="col-8">
+                    <ul className={`${styles.S3labels}`}>
+                      <li>Para continuar oprimir el botón &quot GENERAR REFERENCIA POR OXXO &quot.</li>
+                      <li>Se envíara un correo electrónico con la referencia y un PDF.</li>
+                      <li>Pagar referencia en un plazo menor a 7 días hábiles.</li>
+                      <li>Tomar fotografía y subir en el apartado de <b>Referencias.</b></li>
+                    </ul>
+                  </div>
+                </div>
+              }
             </div>
-            <Button titulo="Generar referencia" />
-          </div>
-          <br />
+              
+            <div className="row text-center d-flex justify-content-center mb-3">
+              <div className="col-12">
+                <Button titulo={(!isOxxo) ? "Generar referencia":"Generar referencia por oxxo"} style={{ width: 200, height: 65}}/>
+              </div>
+            </div>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 };
 

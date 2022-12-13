@@ -9,7 +9,7 @@ const AgregarInmueble = () => {
   return (
     <>
       <SEO titulo="Añadir inmueble" url={asPath} />
-      <AnadirInmueble />
+      <AnadirInmueble action={'create'} />
     </>
   );
 };

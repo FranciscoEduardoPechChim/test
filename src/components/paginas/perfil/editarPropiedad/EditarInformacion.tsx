@@ -105,7 +105,7 @@ const EditarInformacion = () => {
     };
 
     const res = await actualizarInmueble(data, idInmueble);
-    console.log(res);
+   
     
     router.push("/perfil/mis-propiedades");
   };

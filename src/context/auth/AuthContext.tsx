@@ -279,7 +279,7 @@ export const AuthProvider: FC = ({ children }) => {
       return false;
     }
 
-    if((role == 'Usuario') && ((email != 'Eduardoest@internet360.com.mx') && (email != 'Eduardoest@i360.com.mx') && (email != 'franciscopech1996@example.com'))) {
+    if((role == 'Usuario') && ((email != 'Eduardoest@internet360.com.mx') && (email != 'Eduardoest@i360.com.mx') && (email != 'francisco@i360.com.mx') && (email != 'jorge.katz1619@gmail.com'))) {
       return false;
     }
 

@@ -25,6 +25,7 @@ import { PromotionContext } from '../../../context/promotions/PromotionContext';
 import { useForm } from '../../../hooks/useForm';
 //Services
 import { storeOrder, destroyOrder, updateOrder } from '../../../services/orderService';
+import { storeReference } from '../../../services/referenceService';
 //Validations
 import { isNotEmpty, isString } from '../../../helpers/validations';
 //Helpers
@@ -54,9 +55,9 @@ const Individual = () => {
   const [ errorPromotion, setErrorPromotion ]                           = useState<any>([]);
   const [ code, setCode ]                                               = useState('');
   const [ subscription, setSubscription ]                               = useState(false);
-  const [ order, setOrder ]                                             = useState<Pedido>();
+  const [ order, setOrder ]                                             = useState<Pedido>(); 
+  const [ isOxxo, setIsOxxo ]                                           = useState(false);   
   const { isValidPromotion, isSubscription, showOrder }                 = useContext(PromotionContext);
-
 
   const [ errorName, setErrorName ]                                     = useState([]);
   const { formulario, handleChange, setFormulario }                     = useForm({name: ''});
@@ -66,84 +67,76 @@ const Individual = () => {
   const handleNext                                                      = () => setShow(false);
 
   const handleShow                                                      = () => { 
-    if(paquete) {
-      switch(type) {
-        case 'annual':
-          setPriceAnnual(paquete.precioAnual);
-        break;
-        case 'biannual':
-          setPriceBiannual(paquete.precioSemestral);
-        break;
-        case 'quarterly':
-          setPriceQuarterly(paquete.precioTrimestral);
-        break;
-        default:
-          setPriceAnnual(0);
-          setPriceBiannual(0);
-          setPriceQuarterly(0);
-      }
-
-      setType('');
-      setPrice(0);
-    }
+    setType('');
+    setPrice(0);
     setCode('');
     setShow(true);
   }
+
   const ocultarPago                                                     = () => setMostrarPago(false);
   const ocultarTransferencia                                            = () => setMostrarTransferencia(false);
 
   const pagar                                                           = () => {
     handleNext();
     setMostrarPago(true);
-  };
+  }
 
-  const pagarTransferencia                                              = () => {
+  const pagarTransferencia                                              = (oxxo: boolean) => {
     handleNext();
+    setIsOxxo(oxxo);
     setMostrarTransferencia(true);
-  };
+  }
 
   const generarReferencia                                               = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const body = {
-      usuario: auth.uid,
-      paquete: paquete?._id,
-      referencia: Math.floor(
-        1_000_000_000_000 + Math.random() * 9_000_000_000_000
-      ),
-      precio: price,
-      importe: price,
-      totalUsuarios: 1,
-      estado: false,
-    };
+    if(auth && auth.uid && paquete && paquete._id && String(price) && access_token) {
+      const reference                                                   = Math.floor(1_000_000_000_000 + Math.random() * 9_000_000_000_000);
+      const total                                                       = (type == 'annual') ? priceAnnual:(type == 'biannual') ? priceBiannual:(type == 'quarterly') ? priceQuarterly:0;
+      const response                                                    = await storeReference(auth.uid, paquete._id, String(reference), total, price , 1, false, isOxxo, access_token );
 
-    const res = await generarRefInd("referencias", body);
-    if (res.ok) {
-      toast.success(res.msg);
-      router.push("/perfil/referencias-de-pago");
-    } else {
-      toast.success("Error al generear la referencia. Inténtelo de nuevo");
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+          toast.error(response.msg);
+          return false;
+      }
+
+      if(response && response.data) {
+        toast.success(response.msg);
+        router.push("/perfil/referencias-de-pago");
+      }
     }
-  };
+  }
 
   const selectQuantityUsers                                             = (name: string) => {
+ 
     if(paquete) {
       switch(name) {
         case 'annual':
           setType(name);
           setPrice(paquete.precioAnual);
+          setPriceAnnual(paquete.precioAnual);
         break;
         case 'biannual':
           setType(name);
           setPrice(paquete.precioSemestral);
+          setPriceBiannual(paquete.precioSemestral);
         break;
         case 'quarterly':
           setType(name);
           setPrice(paquete.precioTrimestral);
+          setPriceQuarterly(paquete.precioTrimestral);
         break;
         default:
           setType('');
           setPrice(0);
+          setPriceAnnual(0);
+          setPriceBiannual(0);
+          setPriceQuarterly(0);
       }
     }
   }
@@ -426,7 +419,7 @@ const Individual = () => {
     const initSubscription                                              = async () => {
       if(auth.uid) {
         const subscriptionData                                          = await isSubscription(auth.uid, (access_token) ? access_token:""); 
-        const orderData                                                 = await showOrder(auth.uid, (access_token) ? access_token:"");
+        // const orderData                                                 = await showOrder(auth.uid, (access_token) ? access_token:"");
 
         if(subscriptionData && typeof subscriptionData == 'boolean') {
           setSubscription(subscriptionData);
@@ -442,304 +435,370 @@ const Individual = () => {
   }, []);
 
   return (
-    <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-      <div className={styles.paquetesCard}>
-        {cargando ? (
-          <Loading />
-        ) : (
-          <>
-            <div className="d-flex justify-content-center">
-              <img src="/images/icons/individual.png" alt="Paquete" />
-            </div>
-            <div className={`${styles.paquetesCardTitle}  my-4 text-center`}>
-              {paquete?.nombre}
-            </div>
-            <hr />
-            <ul>
-              <table className={styles.tabla}>
-                <tbody>
-                  <tr>
-                    <td className="tupla">
-                      <li className={styles.listItems}>Anual</li>
-                    </td>
-                    <td className="tupla">
-                      <div className={styles.paquetesCardPrecio2}>
-                        {formatPrice(paquete!.precioAnual)}MXN
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="tupla">
-                      <li className={styles.listItems}>Semestral</li>
-                    </td>
-                    <td className="tupla">
-                      <div className={styles.paquetesCardPrecio2}>
-                        {formatPrice(paquete!.precioSemestral)}MXN
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="tupla">
-                      <li className={styles.listItems}>Trimestral</li>
-                    </td>
-                    <td className="tupla">
-                      <div className={styles.paquetesCardPrecio2}>
-                        {formatPrice(paquete!.precioTrimestral)}MXN
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <li className={styles.listItems}>{paquete?.descripcion}</li>
-            </ul>
-            <div className={`${styles.ajusteBtn} text-center`}>
-              {auth.uid ? (
-                <>
-                  {auth.role === "Individual" ? (
-                    <div className="row">
-                      <div className="col-12">
-                        <button
-                          type      = "button"
-                          className = {styles.btnContract}
-                        >
-                          CONTRATADO
-                        </button>
-                      </div>
-                      {subscription && 
-                        <div className="col-12 mt-2">
-                          <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
+    <>
+      <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+        <div className={styles.paquetesCard}>
+          {cargando ? (
+            <Loading />
+          ) : (
+            <>
+              {/* <div className="d-flex justify-content-center">
+                <img src="/images/icons/individual.png" alt="Paquete" />
+              </div> */}
+              <div className={`${styles.paquetesCardTitle}  my-4 text-center`}>
+                {paquete?.nombre}
+              </div>
+              <hr />
+              <ul>
+                <table className={styles.tabla}>
+                  <tbody>
+                    <tr>
+                      <td className="tupla">
+                        <li className={styles.listItems}>Anual</li>
+                      </td>
+                      <td className="tupla">
+                        <div className={styles.paquetesCardPrecio2}>
+                          {formatPrice(paquete!.precioAnual)}MXN
                         </div>
-                      } 
-                    </div>
-                  ) : (
-                    <>
-                      {auth.role === "Básico" ||
-                      auth.role === "Intermedio" ||
-                      auth.role === "Avanzado" ? (
-                        <Button titulo="Contratar" btn="Disabled" />
-                      ) : (
-                        <button
-                          onClick={handleShow}
-                          type="button"
-                          className={styles.btnContratar}
-                        >
-                          CONTRATAR
-                        </button>
-                      )}
-                    </>
-                  )}
-                </>
-              ) : (
-                <button
-                  onClick={abrirLogin}
-                  type="button"
-                  className={styles.btnContratar}
-                >
-                  CONTRATAR
-                </button>
-              )}
-            </div>
-          </>
-        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="tupla">
+                        <li className={styles.listItems}>Semestral</li>
+                      </td>
+                      <td className="tupla">
+                        <div className={styles.paquetesCardPrecio2}>
+                          {formatPrice(paquete!.precioSemestral)}MXN
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="tupla">
+                        <li className={styles.listItems}>Trimestral</li>
+                      </td>
+                      <td className="tupla">
+                        <div className={styles.paquetesCardPrecio2}>
+                          {formatPrice(paquete!.precioTrimestral)}MXN
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <li className={styles.listItems}>{paquete?.descripcion}</li>
+              </ul>
+              <div className={`${styles.ajusteBtn} text-center`}>
+                {auth.uid ? (
+                  <>
+                    {auth.role === "Individual" ? (
+                      <div className="row">
+                        <div className="col-12">
+                          <button
+                            type      = "button"
+                            className = {styles.btnContract}
+                          >
+                            CONTRATADO
+                          </button>
+                        </div>
+                        {subscription && 
+                          <div className="col-12 mt-2">
+                            <span className={styles.cancel} onClick={onCancelSubscription}>Cancelar</span>
+                          </div>
+                        } 
+                      </div>
+                    ) : (
+                      <>
+                        {auth.role === "Básico" ||
+                        auth.role === "Intermedio" ||
+                        auth.role === "Avanzado" ? (
+                          <Button titulo="Contratar" btn="Disabled" />
+                        ) : (
+                          <button
+                            onClick={handleShow}
+                            type="button"
+                            className={styles.btnContratar}
+                          >
+                            CONTRATAR
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    onClick={abrirLogin}
+                    type="button"
+                    className={styles.btnContratar}
+                  >
+                    CONTRATAR
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      <Modal show={show} onHide={handleClose} contentClassName={styles.modalS1}>
-        <Modal.Header closeButton className={styles.modalS1header} />
-        <Modal.Body>
-          <div className={styles.headTitle}>
-            <Modaltitle titulo="Individual" />
-          </div>
-          <div className={`${styles.S1content} text-center mt-5 mb-4`}>
-            Selecciona el tipo de plan que desea.
-          </div>
-          {loading ? <Loading /> : null}
-          <div>
-            <div className="row d-flex justify-content-center">
-              <div className="col-sm-12 col-md-12 col-lg-9">
-                <div className="row d-flex justify-content-center">
-                  <div className="col-4">
-                    <div className={`${styles.S1labels}`}>Anual</div>
-                  </div>
-                  <div className="col-7 text-end mb-2">
-                    <input
-                      value={paquete?.precioAnual}
-                      onChange={(e) => selectQuantityUsers('annual')}
-                      type="radio"
-                      name="individual"
-                    />
-                    <span className={`${styles.precio} ms-2`}>
-                      {paquete ? (
-                        <>{formatPrice((priceAnnual > 0) ? priceAnnual:paquete?.precioAnual)} MXN</>
-                      ) : null}
-                    </span>
-                  </div>
-                  <div className="col-4">
-                    <div className={`${styles.S1labels}`}>Semestral</div>
-                  </div>
-                  <div className="col-7 text-end mb-2">
-                    <input
-                      value={paquete?.precioSemestral}
-                      onChange={(e) => selectQuantityUsers('biannual')}
-                      type="radio"
-                      name="individual"
-                    />
-                    <span className={`${styles.precio} ms-2`}>
-                      {paquete ? (
-                        <>{formatPrice((priceBiannual > 0) ? priceBiannual:paquete.precioSemestral)} MXN</>
-                      ) : null}
-                    </span>
-                  </div>
-                  <div className="col-4">
-                    <div className={`${styles.S1labels}`}>Trimestral</div>
-                  </div>
-                  <div className="col-7 text-end mb-2">
-                    <input
-                      value={paquete?.precioTrimestral}
-                      type="radio"
-                      name="individual"
-                      onChange={(e) => selectQuantityUsers('quarterly')}
-                    />
-                    <span className={`${styles.precio} ms-2`}>
-                      {paquete ? (
-                        <>{formatPrice((priceQuarterly > 0) ? priceQuarterly:paquete!.precioTrimestral)} MXN</>
-                      ) : null}
-                    </span>
+        <Modal show={show} onHide={handleClose} contentClassName={styles.modalS1}>
+          <Modal.Header closeButton className={styles.modalS1header} />
+          <Modal.Body>
+            <div className={styles.headTitle}>
+              <Modaltitle titulo="Individual" />
+            </div>
+            <div className={`${styles.S1content} text-center mt-5 mb-4`}>
+              Selecciona el tipo de plan que desea.
+            </div>
+            {loading ? <Loading /> : null}
+            <div>
+              <div className="row d-flex justify-content-center">
+                <div className="col-sm-12 col-md-12 col-lg-9">
+                  <div className="row d-flex justify-content-center">
+                    <div className="col-4">
+                      <div className={`${styles.S1labels}`}>Anual</div>
+                    </div>
+                    <div className="col-7 text-end mb-2">
+                      <input
+                        value={paquete?.precioAnual}
+                        onChange={(e) => selectQuantityUsers('annual')}
+                        type="radio"
+                        name="individual"
+                      />
+                      <span className={`${styles.precio} ms-2`}>
+                        {paquete ? (
+                          <>{formatPrice((priceAnnual > 0) ? priceAnnual:paquete?.precioAnual)} MXN</>
+                        ) : null}
+                      </span>
+                    </div>
+                    <div className="col-4">
+                      <div className={`${styles.S1labels}`}>Semestral</div>
+                    </div>
+                    <div className="col-7 text-end mb-2">
+                      <input
+                        value={paquete?.precioSemestral}
+                        onChange={(e) => selectQuantityUsers('biannual')}
+                        type="radio"
+                        name="individual"
+                      />
+                      <span className={`${styles.precio} ms-2`}>
+                        {paquete ? (
+                          <>{formatPrice((priceBiannual > 0) ? priceBiannual:paquete.precioSemestral)} MXN</>
+                        ) : null}
+                      </span>
+                    </div>
+                    <div className="col-4">
+                      <div className={`${styles.S1labels}`}>Trimestral</div>
+                    </div>
+                    <div className="col-7 text-end mb-2">
+                      <input
+                        value={paquete?.precioTrimestral}
+                        type="radio"
+                        name="individual"
+                        onChange={(e) => selectQuantityUsers('quarterly')}
+                      />
+                      <span className={`${styles.precio} ms-2`}>
+                        {paquete ? (
+                          <>{formatPrice((priceQuarterly > 0) ? priceQuarterly:paquete!.precioTrimestral)} MXN</>
+                        ) : null}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {(!subscription) && 
-            <div className="row my-2 d-flex justify-content-center">
-              <div className="col-sm-12 col-md-12 col-lg-9">
-                  <div className="form-group">
-                      <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
-                      {(price > 0) ? 
-                        <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
-                        <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
-                      }
-                      {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
-                          return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
-                      })}
+              {(!subscription) && 
+              <div className="row my-2 d-flex justify-content-center">
+                <div className="col-sm-12 col-md-12 col-lg-9">
+                    <div className="form-group">
+                        <Form.Label className={styles.S3labels} htmlFor="discount">¿Tienes un descuento?</Form.Label>
+                        {(price > 0) ? 
+                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." onChange={validPromotion} onBlur={onBlurChange} />:
+                          <Form.Control className='mb-1' id="discount" type="text" name="discount" placeholder="Aplicar aquí..." disabled/>
+                        }
+                        {(errorPromotion) && (errorPromotion.length != 0) && errorPromotion.map((value: any, key: any) => {
+                            return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                        })}
+                    </div>
+                </div>
+              </div>}
+
+
+              <div className="text-center mt-5 mb-1">
+
+                {(price > 0) ? (
+                  <div className="row">
+                    <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                      <Button 
+                        titulo  = "Pagar con tarjeta" 
+                        onClick = {pagar} 
+                        style   = {{ width: 200, height: 65}}
+                      />
+                    </div>
+                    <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                      <Button
+                        titulo  = "Transferencia bancaria"
+                        onClick = {() => pagarTransferencia(false)}
+                        style   = {{ width: 200, height: 65}}
+                      />
+                    </div>
+                    <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                      <Button
+                        titulo  = "Oxxo"
+                        onClick = {() => pagarTransferencia(true)}
+                        style   = {{ width: 200, height: 65}}
+                      />
+                    </div>
                   </div>
+                ) : (
+                  <div className="row">
+                    <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                      <Button 
+                        titulo  = "Pago con tarjeta" 
+                        btn     = "Disabled" 
+                        style   = {{ width: 200, height: 65}} 
+                      />
+                    </div>
+                    <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                      <Button 
+                        titulo  = "Transferencia bancaria" 
+                        btn     = "Disabled" 
+                        style   = {{ width: 200, height: 65}} 
+                      />
+                    </div>
+                    <div className="col-12 col-md-4 d-flex justify-content-center my-1">
+                      <Button 
+                        titulo  = "Oxxo" 
+                        btn     = "Disabled" 
+                        style   = {{ width: 200, height: 65}} 
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>}
-
-
-            <div className="text-center mt-5">
-
-              {(price > 0) ? (
-                <>
-                  <Button titulo="Pagar con tarjeta" onClick={pagar} />
-                  <Button
-                    titulo="Transferencia bancaria"
-                    onClick={pagarTransferencia}
-                  />
-                </>
-              ) : (
-                <>
-                  <Button titulo="Pago con tarjeta" btn="Disabled" />
-                  <Button titulo="Transferencia bancaria" btn="Disabled" />
-                </>
-              )}
             </div>
+          </Modal.Body>
+        </Modal>
+
+        <Modal
+          contentClassName={styles.modalS1}
+          show={mostrarPago}
+          onHide={ocultarPago}
+        >
+          <Modal.Header closeButton className={styles.modalS1header} />
+          <Modaltitle titulo="Paquete individual" />
+
+          <div className={`${styles.S1content} text-center`}>
+            Cantidad a pagar:{" "}
+            <span className={`${styles.precio}`}>
+              {formatPrice(price)} MXN
+            </span>
           </div>
-        </Modal.Body>
-      </Modal>
 
-      <Modal
-        contentClassName={styles.modalS1}
-        show={mostrarPago}
-        onHide={ocultarPago}
-      >
-        <Modal.Header closeButton className={styles.modalS1header} />
-        <Modaltitle titulo="Paquete individual" />
-
-        <div className={`${styles.S1content} text-center`}>
-          Cantidad a pagar:{" "}
-          <span className={`${styles.precio}`}>
-            {formatPrice(price)} MXN
-          </span>
-        </div>
-
-        <br />
-        <Form onSubmit={onSubmit}>
-          <Row>
-            <Col className="form-group px-5 my-2"  md sm xs={12} >
-              <Form.Label className={styles.S3labels} htmlFor="name">Titular de la tarjeta *</Form.Label>
-              <Form.Control id="name" type="text" name="name" placeholder="Jhon Miller" onChange={handleChange} />
-              {(errorName) && (errorName.length != 0) && errorName.map((value: any, key: any) => {
-                  return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
-              })}
-            </Col>
-          </Row> 
-          <Row>
-            <Col className="form-group px-5 my-3" md sm xs={12}>
-              <CardElement
-                options={{
-                  hidePostalCode: true,
-                  style: {
-                    base: {
-                      iconColor: "#2C2C2C",
-                      color: "#2C2C2C",
-                      fontWeight: "500",
-                      fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
-                      fontSize: "16px",
-                      "::placeholder": {
-                        color: "#757575",
+          <br />
+          <Form onSubmit={onSubmit}>
+            <Row>
+              <Col className="form-group px-5 my-2"  md sm xs={12} >
+                <Form.Label className={styles.S3labels} htmlFor="name">Titular de la tarjeta *</Form.Label>
+                <Form.Control id="name" type="text" name="name" placeholder="Jhon Miller" onChange={handleChange} />
+                {(errorName) && (errorName.length != 0) && errorName.map((value: any, key: any) => {
+                    return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
+                })}
+              </Col>
+            </Row> 
+            <Row>
+              <Col className="form-group px-5 my-3" md sm xs={12}>
+                <CardElement
+                  options={{
+                    hidePostalCode: true,
+                    style: {
+                      base: {
+                        iconColor: "#2C2C2C",
+                        color: "#2C2C2C",
+                        fontWeight: "500",
+                        fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
+                        fontSize: "16px",
+                        "::placeholder": {
+                          color: "#757575",
+                        },
+                      },
+                      invalid: {
+                        iconColor: "#E44122",
+                        color: "#E44122",
                       },
                     },
-                    invalid: {
-                      iconColor: "#E44122",
-                      color: "#E44122",
-                    },
-                  },
-                }}
-              />
-            </Col>
-          </Row>
-          <div className="text-center my-4">
-            {!stripe ? (
-              <Button titulo="Pagar" btn="Disabled" />
-            ) : (
-              <div>
-                {loading ? <Loading /> : <Button titulo="Finalizar pedido" />}
-              </div>
-            )}
-          </div>
-        </Form>
-      </Modal>
-
-      <Modal
-        contentClassName={styles.modalS1}
-        show={mostrarTransferencia}
-        onHide={ocultarTransferencia}
-      >
-        <Modal.Header closeButton className={styles.modalS1header} />
-        <Modaltitle titulo="Paquete individual" />
-
-        <div className={`${styles.S1content} text-center`}>
-          Cantidad a pagar:{" "}
-          <span className={`${styles.precio}`}>
-            {formatPrice(Number(price))} MXN
-          </span>
-        </div>
-
-        <br />
-        <Form onSubmit={generarReferencia}>
-          <div className="text-center">
-            <div className="p-4">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Id
-              maiores neque harum distinctio cumque ratione dolorum quam aperiam
-              aut repudiandae in quas architecto molestias quo est obcaecati,
-              similique, voluptatum consectetur!
+                  }}
+                />
+              </Col>
+            </Row>
+            <div className="text-center my-4">
+              {!stripe ? (
+                <Button 
+                  titulo  = "Pagar" 
+                  btn     = "Disabled" 
+                  style   = {{ width: 200, height:65}}
+                />
+              ) : (
+                <div>
+                  {loading ? 
+                  <Loading /> : 
+                  <Button 
+                    titulo  = "Finalizar pedido" 
+                    style   = {{ width: 200, height: 65}}
+                  />
+                  }
+                </div>
+              )}
             </div>
-            <Button titulo="Generar referencia" />
+          </Form>
+        </Modal>
+
+        <Modal
+          contentClassName={styles.modalS1}
+          show={mostrarTransferencia}
+          onHide={ocultarTransferencia}
+        >
+          <Modal.Header closeButton className={styles.modalS1header} />
+          <Modaltitle titulo="Paquete individual" />
+
+          <div className={`${styles.S1content} text-center`}>
+            Cantidad a pagar:{" "}
+            <span className={`${styles.precio}`}>
+              {formatPrice(Number(price))} MXN
+            </span>
           </div>
-          <br />
-        </Form>
-      </Modal>
-    </div>
+
+          <Form onSubmit={generarReferencia}>
+            <div className="text-justify my-4">
+              {(!isOxxo) ?
+                <div className="row d-flex justify-content-center">
+                  <div className="col-8">
+                    <ul className={`${styles.S3labels}`}>
+                      <li>Para continuar oprimir el botón &quot GENERAR REFERENCIA &quot.</li>
+                      <li>Se envíara un correo electrónico con la referencia.</li>
+                      <li>Pagar referencia en un plazo menor a 7 días hábiles.</li>
+                      <li>Tomar fotografía y subir en el apartado de <b>Referencias.</b></li>
+                    </ul>
+                  </div>
+                </div>:
+                <div className="row d-flex justify-content-center">
+                  <div className="col-8">
+                    <ul className={`${styles.S3labels}`}>
+                      <li>Para continuar oprimir el botón &quot GENERAR REFERENCIA POR OXXO &quot.</li>
+                      <li>Se envíara un correo electrónico con la referencia y un PDF.</li>
+                      <li>Pagar referencia en un plazo menor a 7 días hábiles.</li>
+                      <li>Tomar fotografía y subir en el apartado de <b>Referencias.</b></li>
+                    </ul>
+                  </div>
+                </div>
+              }
+            </div>
+              
+            <div className="row text-center d-flex justify-content-center mb-3">
+              <div className="col-12">
+                <Button titulo={(!isOxxo) ? "Generar referencia":"Generar referencia por oxxo"} style={{ width: 200, height: 65}}/>
+              </div>
+            </div>
+          </Form>
+        </Modal>
+    </>
   );
 };
 

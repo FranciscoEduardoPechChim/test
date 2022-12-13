@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import {
   InmueblesResponse,
   SubirImagenesInmueble,
+  Inmueble
 } from "interfaces/InmueblesInterface";
 import {
   BorrarInmuebleResp,
@@ -19,7 +20,7 @@ import { Estado } from "interfaces/SolicitudInteface";
 //Helpers
 import { validate } from '../../helpers/response';
 //Services
-import { storeProperty } from "../../services/propertyService";
+import { storeProperty, updateProperty, getProperty, validAliasInProperty, loadImagesProperty, destroyProperty, updatePropertyByStatus } from "../../services/propertyService";
 
 export interface InmuebleData {
   titulo: string;
@@ -118,7 +119,16 @@ interface ContextProps {
     m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
     level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
     microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
-    others: string | null, address: string, description: string, userId: string, access_token: string) => Promise<boolean | undefined>;
+    others: string | null, address: string, description: string, userId: string, images: any, access_token: string) => Promise<boolean | undefined>;
+  validAlias: (id: string, access_token: string) => Promise<boolean | undefined>;
+  removeProperty: (pid: string, access_token: string) => Promise<boolean | undefined>;
+  changeStatusProperty: (pid: string, status: boolean, access_token: string) => Promise<boolean | undefined>;
+  showProperty: (pid: string, access_token: string) => Promise<Inmueble | undefined>;
+  editProperty: (id: string, title: string, categoryId: string, typeId: string, setId: string, alias: string | null, lat: number, lng: number, price: number, commission: number, antiquity: string | null, 
+    m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
+    level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
+    microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
+    others: string | null, address: string, description: string, userId: string, images: any, remove: any, order: any, access_token: string) => Promise<boolean | undefined>;
   crearInmueble: (data: InmuebleData) => Promise<CrearInmuebleResp>;
   eliminarInmueble: (id: string) => Promise<BorrarInmuebleResp>;
   subirImagenesInmueble: (
@@ -273,7 +283,7 @@ export const InmuebleProvider: FC = ({ children }) => {
     m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
     level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
     microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
-    others: string | null, address: string, description: string, userId: string, access_token: string) => {
+    others: string | null, address: string, description: string, userId: string, images: any, access_token: string) => {
       if(title && categoryId && typeId && setId && lat && lng && address && String(price) && String(commission) && String(m2Property) && String(baths) && String(parking) && String(m2Build) && String(rooms) && String(halfbaths) && description && userId && access_token) {
  
         const response                          = await storeProperty(title, categoryId, typeId, setId, alias, lat, lng, price, commission, antiquity, m2Property, baths, parking, water, gas, privatesecurity, maintenance, disabled, m2Build, rooms, halfbaths, level, light, wifi, school, swimmingpool, furnished, beds, livingroom, kitchen, refrigerator, microwave, oven, dryingmachine, closet, diningroom, aa, stove, minioven, washingmachine, others, address, description, userId, access_token);
@@ -289,16 +299,129 @@ export const InmuebleProvider: FC = ({ children }) => {
         }
 
         if(response && response.data) {
-          toast.success(response.msg);
-          toast.success("Ahora agrega las imágenes de tu inmueble");
-          
+          // if(images.length > 0) {
+          //   const load                          = await loadImagesProperty('create', userId, response.data.properties[0]._id, images, [], [], access_token);
+
+          //   if(load && load.errors) {
+          //     validate(response.errors);
+          //     return false;
+          //   }
+
+          //   if(load && load.ok) {
+          //       toast.error(response.msg);
+          //       return false;
+          //   }
+          // }
+
           return true;
         }
-    }
+      }
 
     return false;
   }
 
+  const editProperty                            = async (id: string, title: string, categoryId: string, typeId: string, setId: string, alias: string | null, lat: number, lng: number, price: number, commission: number, antiquity: string | null, 
+    m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
+    level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
+    microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
+    others: string | null, address: string, description: string, userId: string, images: any, remove: any, order:any, access_token: string) => {
+      if(id && title && categoryId && typeId && setId && lat && lng && address && String(price) && String(commission) && String(m2Property) && String(baths) && String(parking) && String(m2Build) && String(rooms) && String(halfbaths) && description && userId && access_token) {
+ 
+        const response                          = await updateProperty(id, title, categoryId, typeId, setId, alias, lat, lng, price, commission, antiquity, m2Property, baths, parking, water, gas, privatesecurity, maintenance, disabled, m2Build, rooms, halfbaths, level, light, wifi, school, swimmingpool, furnished, beds, livingroom, kitchen, refrigerator, microwave, oven, dryingmachine, closet, diningroom, aa, stove, minioven, washingmachine, others, address, description, userId, images, remove, order, access_token);
+
+        if(response && response.errors) {
+          validate(response.errors);
+          return false;
+        }
+
+        if(response && response.ok) {
+          toast.error(response.msg);
+          return false;
+        }
+
+        if(response && response.data) {
+          // const load                            = await loadImagesProperty('update', userId, response.data.properties[0]._id, [], [], [], access_token);
+
+          // if(load && load.errors) {
+          //   validate(response.errors);
+          //   return false;
+          // }
+
+          // if(load && load.ok) {
+          //   toast.error(response.msg);
+          //   return false;
+          // }
+        
+          return true;
+        }
+      }
+
+    return false;
+  }
+
+  const validAlias                              = async (id: string, access_token: string) => {
+    if(id && access_token) {
+      const response                            = await validAliasInProperty(id, access_token);
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        return true;  
+      }
+    }
+  }
+
+  const removeProperty                          = async (pid: string, access_token: string) => {
+    if(pid && access_token) {
+      const response                            = await destroyProperty(pid, access_token);
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        toast.success(response.msg);
+        return true;  
+      }
+    }
+  } 
+
+  const changeStatusProperty                    = async (pid: string, status: boolean, access_token: string) => {
+    if(pid && access_token) {
+      const response                            = await updatePropertyByStatus(pid, status, access_token);
+    
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        toast.success(response.msg);      
+        return true;
+      }
+    }
+  }
+
+  const showProperty                            = async (pid: string, access_token: string) => {
+    if(pid && access_token) {
+      const response                            = await getProperty(pid, access_token);
+
+      if(response && response.data) {
+        return response.data.properties[0];
+      }
+
+    }
+  }
+  
   return (
     <InmuebleContext.Provider
       value={{
@@ -325,6 +448,11 @@ export const InmuebleProvider: FC = ({ children }) => {
         misCompUser,
         setMisCompUser,
         createProperty,
+        validAlias,
+        removeProperty,
+        changeStatusProperty,
+        showProperty,
+        editProperty
       }}
     >
       <ToastContainer />

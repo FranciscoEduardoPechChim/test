@@ -18,6 +18,10 @@ export const useForm  = <T extends Object>(initialState: T) => {
   };
 
   const reset         = () => setFormulario(initialState);
+
+  const handleUpdate  = (name: string, value: any) => {
+    setFormulario({ ...formulario, [name]: value });
+  }
   
-  return { formulario, handleChange, reset, setFormulario, length, setLength};
+  return { formulario, handleChange, reset, setFormulario, handleUpdate, length, setLength};
 };

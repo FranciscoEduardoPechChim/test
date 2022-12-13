@@ -10,47 +10,31 @@ import { AuthContext } from "context/auth/AuthContext";
 //Material UI
 import { Tooltip } from "@material-ui/core";
 
-interface Props {
+interface Props { 
   id: string;
-  titulo: string;
   slug: string;
-  imgs: string[];
+  imgs: any;
   isActive: boolean;
+  title: string;
   handleDelete: (pid: string) => Promise<void>;
-  handleActivar: (pid: string) => Promise<void>;
-  handleDesactivar: (pid: string) => Promise<void>;
+  handleStatus: (pid: string, status: boolean) => Promise<void>;
+  handleEdit:   (pid: string) => Promise<void>;
 }
 
 const PropertiesCard                                                                        = (props: Props) => {
-  const { titulo, id, slug, imgs, isActive, handleDelete, handleActivar, handleDesactivar } = props;
-
-  const { setEditar, setIdInmueble }                                                        = useContext(InmuebleContext);
+  const { id, slug, imgs, isActive, title, handleDelete, handleStatus, handleEdit }         = props;
   const { validRole }                                                                       = useContext(AuthContext);
   const router                                                                              = useRouter();
-  const target                                                                              = useRef(null);
-  const [mostrarMenu, setMostrarMenu]                                                       = useState(false);
   const [isRole, setIsRole]                                                                 = useState(false);
 
   const goToProperty                                                                        = () => router.push("/propiedades/" + slug);
-
-  const editarInmuebleInfo                                                                  = (id: string) => {
-    setIdInmueble(id);
-    setEditar("Información");
-    router.push("/perfil/editar-info");
-  };
-
-  const editarInmuebleImg                                                                   = (id: string) => {
-    setIdInmueble(id);
-    setEditar("Imágenes");
-    router.push("/perfil/editar-fotos");
-  };
 
   const compartir                                                                           = () => toast.success(`Se ha copiado al portapapeles`);
 
   useEffect(() => {
     const initRole                                                                          = async () => {
       const role                                                                            = await validRole();
-      setIsRole(role);
+      setIsRole((role) ? role:false);
     }
 
     initRole();
@@ -90,7 +74,7 @@ const PropertiesCard                                                            
                 isActive ? styles.proContent : styles.proContentFalse
               } my-2`}
             >
-              {titulo}
+              {title}
             </div>
           </div>
         </div>
@@ -100,29 +84,18 @@ const PropertiesCard                                                            
             role="group"
             aria-label="Basic mixed styles example"
           >
-            {isActive ? (
-              <Tooltip
-                title="Pausar"
-                placement="top"
-              >
-                <button
-                  onClick={() => handleDesactivar(id)}
-                  className={`${styles.customBtn1} btn`}
-                />
-              </Tooltip>
-            ) : (
-              <Tooltip
-                title="Desausar"
-                placement="top"
-              >
-                <button
-                  onClick={() => handleActivar(id)}
-                  className={`${styles.customBtn1} btn`}
-                />
-              </Tooltip>
-            )}
-
-            {isActive ? (
+           
+            <Tooltip
+              title     = {(isActive) ? "Pausar":"Despausar"}
+              placement = "top"
+            >
+              <button
+                onClick={() => handleStatus(id, (isActive) ? false:true)}
+                className={`${styles.customBtn1} btn`}
+              />
+            </Tooltip>
+            
+            {isActive &&
               <CopyToClipboard
                 onCopy={compartir}
                 text={`https://red1a1.com/app/propiedades/${slug}`}
@@ -134,47 +107,17 @@ const PropertiesCard                                                            
                   <button type="button" className={`${styles.customBtn2} btn`} />
                 </Tooltip>
               </CopyToClipboard>
-            ) : null}
+            }
 
             <Tooltip
               title="Editar"
               placement="top"
             >
               <button
-                ref={target}
-                onClick={() => setMostrarMenu(!mostrarMenu)}
-                type="button"
-                className={`${styles.customBtn3} btn`}
+                onClick   = {() => handleEdit(id)}
+                type      = "button"
+                className = {`${styles.customBtn3} btn`}
               >
-                <Overlay
-                      target={target.current}
-                      show={mostrarMenu}
-                      placement="right"
-                    >
-                      {({ placement, arrowProps, show: _show, popper, ...props }) => (
-                        <div
-                          className={styles.menu}
-                          {...props}
-                          style={{
-                            ...props.style,
-                          }}
-                        >
-                          <div
-                            className={`${styles.menuItem} pointer mx-3 my-2`}
-                            onClick={() => editarInmuebleInfo(id)}
-                          >
-                            Editar información
-                          </div>
-
-                          <div
-                            className={`${styles.menuItem} pointer mx-3 my-2`}
-                            onClick={() => editarInmuebleImg(id)}
-                          >
-                            Editar imágenes
-                          </div>
-                        </div>
-                      )}
-                  </Overlay>
               </button>
             </Tooltip>
 

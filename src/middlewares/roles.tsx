@@ -7,7 +7,7 @@ export const validRole                      = (name: string) => {
 export const isRoot                         = () => {
     const email                             = (typeof window !== "undefined") ? localStorage.getItem("email"):"";
 
-    return (email && (email == 'francisco@i360.com.mx' || email == 'Eduardoest@internet360.com.mx' || email == 'Eduardoest@i360.com.mx' || email == 'franciscopech1996@example.com')) ? true:false;
+    return (email && (email == 'francisco@i360.com.mx' || email == 'Eduardoest@internet360.com.mx' || email == 'Eduardoest@i360.com.mx' || email == 'franciscopech1996@example.com' || email == 'jorge.katz1619@gmail.com')) ? true:false;
 }
 
 export const isSuperAdmin                   = () => {

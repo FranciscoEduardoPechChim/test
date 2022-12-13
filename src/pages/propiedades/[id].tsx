@@ -83,7 +83,7 @@ const Propiedad                                     = () => {
       <Slider inmuebles = {property} />
       <Detalles inmuebles = {property} />
       <Ubicacion inmuebles = {property} />
-      {auth.uid && (auth.role != 'Usuario' || ((auth.correo == 'Eduardoest@internet360.com.mx') || (auth.correo == 'Eduardoest@i360.com.mx') || (auth.correo == 'franciscopech1996@example.com'))) && <Contact inmuebles = {property} />}
+      {auth.uid && (auth.role != 'Usuario' || ((auth.correo == 'Eduardoest@internet360.com.mx') || (auth.correo == 'Eduardoest@i360.com.mx') || (auth.correo == 'francisco@i360.com.mx') || (auth.correo == 'jorge.katz1619@gmail.com'))) && <Contact inmuebles = {property} />}
     </>
   );
 };

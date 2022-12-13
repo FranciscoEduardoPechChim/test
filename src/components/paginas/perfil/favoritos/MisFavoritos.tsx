@@ -90,7 +90,7 @@ const MiListaFavoritos = () => {
                   onRowsPerPageChange   = {handleChangeRowsPerPage}
                   rowsPerPageOptions    = {[12, 24, 48, 98]}
                   labelRowsPerPage      = {'Cantidad'}
-                  labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to}`}
+                  labelDisplayedRows    = {({ from, to, count }) => `${from} - ${to} de ${count}`}
                 />
               </>
             )}

@@ -59,7 +59,8 @@ export const useUserProperties                        = (id: string, offset: num
     loading:                                          loading, 
     total:                                            total, 
     setProperties:                                    setProperties, 
-    setLimit:                                         setLimit 
+    setLimit:                                         setLimit,
+    init:                                             init
   };
 }
 

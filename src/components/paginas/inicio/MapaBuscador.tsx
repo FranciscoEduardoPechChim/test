@@ -113,7 +113,6 @@ const MapaUbicacion = () => {
   };
 
   useEffect(() => {
-    console.log('hhh');
     onBoundsChange();
   }, [coordenadas, cargando]);
 

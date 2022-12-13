@@ -6,7 +6,8 @@ import { useUserInmuebles } from "../../../../hooks/useUserInfo";
 import Loading from "../../../ui/loading/Loading";
 import PropertiesCard from "../../../ui/propertiescard/PropertiesCard";
 import styles from "./MisPropiedades.module.css";
- 
+import { useRouter } from "next/router";
+
 //Material UI
 import TablePagination from '@material-ui/core/TablePagination';
 //Context
@@ -15,10 +16,11 @@ import { useUserProperties } from '../../../../hooks/useUserInfo';
 const MiListaPropiedades                          = () => {
   const access_token                              = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const { auth }                                  = useContext(AuthContext);
-  const { eliminarInmueble, actualizarInmueble }  = useContext(InmuebleContext);
+  const router                                    = useRouter();
+  const { removeProperty, changeStatusProperty }  = useContext(InmuebleContext);
   const [desde, setDesde]                         = useState(0);
   const { properties, loading, total, 
-        setProperties, setLimit }                 = useUserProperties((auth.uid) ? auth.uid:'', desde, (access_token) ? access_token:'');
+        setProperties, setLimit, init }           = useUserProperties((auth.uid) ? auth.uid:'', desde, (access_token) ? access_token:'');
 
   const [page, setPage]                           = useState(0);
   const [rowsPerPage, setRowsPerPage]             = useState(12);
@@ -35,41 +37,59 @@ const MiListaPropiedades                          = () => {
     setDesde(0);
   };
 
-  const handleDelete = async (pid: string) => {
-    await eliminarInmueble(pid);
-    const nuevosInmuebles = properties?.filter(
-      (inmueble:any) => inmueble._id !== pid
-    );
-    setProperties(nuevosInmuebles);
-  };
+  const handleEdit                                = async (pid: string) => {
+    if(pid) {
+     router.push('/perfil/edit-property/' + pid);
+    }
+  }
 
-  const handleActivar = async (pid: string) => {
-    await actualizarInmueble({ publicado: true }, pid);
+  const handleDelete                              = async (pid: string) => {
+    if(pid && access_token) {
+      const response                              = await removeProperty(pid, access_token);
 
-    const inmuebleActualizado = properties?.map((inmueble:any) => {
-      if (inmueble._id === pid) {
-        return { ...inmueble, publicado: true };
+      if(response) {
+        init();
       }
+    }
+  }
 
-      return inmueble;
-    });
+  const handleStatus                              = async (pid: string, status:boolean) => {
+    if(pid && access_token) {
+      const response                              = await changeStatusProperty(pid, status, access_token);
 
-    setProperties(inmuebleActualizado);
-  };
-
-  const handleDesactivar = async (pid: string) => {
-    await actualizarInmueble({ publicado: false }, pid);
-
-    const inmuebleActualizado = properties?.map((inmueble:any) => {
-      if (inmueble._id === pid) {
-        return { ...inmueble, publicado: false };
+      if(response) {
+        init();
       }
+    }
+  }
 
-      return inmueble;
-    });
+  // const handleActivar = async (pid: string) => {
+  //   await actualizarInmueble({ publicado: true }, pid);
 
-    setProperties(inmuebleActualizado);
-  };
+  //   const inmuebleActualizado = properties?.map((inmueble:any) => {
+  //     if (inmueble._id === pid) {
+  //       return { ...inmueble, publicado: true };
+  //     }
+
+  //     return inmueble;
+  //   });
+
+  //   setProperties(inmuebleActualizado);
+  // };
+
+  // const handleDesactivar = async (pid: string) => {
+  //   await actualizarInmueble({ publicado: false }, pid);
+
+  //   const inmuebleActualizado = properties?.map((inmueble:any) => {
+  //     if (inmueble._id === pid) {
+  //       return { ...inmueble, publicado: false };
+  //     }
+
+  //     return inmueble;
+  //   });
+
+  //   setProperties(inmuebleActualizado);
+  // };
 
   return (
     <Container>
@@ -84,17 +104,17 @@ const MiListaPropiedades                          = () => {
               </h1>
             ) : (
               <>
-                {properties?.map((inmueble:any) => (
+                {properties?.map((inmueble:any, key: number) => (
                   <PropertiesCard
-                    key={inmueble._id}
-                    id={inmueble._id}
-                    slug={inmueble.slug}
-                    titulo={inmueble.titulo}
-                    imgs={inmueble.imgs}
-                    isActive={inmueble.publicado}
-                    handleDelete={handleDelete}
-                    handleActivar={handleActivar}
-                    handleDesactivar={handleDesactivar}
+                    key           = {key}
+                    id            = {inmueble._id}
+                    slug          = {inmueble.slug}
+                    title         = {inmueble.titulo}
+                    imgs          = {inmueble.imgs}
+                    isActive      = {inmueble.publicado}
+                    handleDelete  = {handleDelete}
+                    handleStatus  = {handleStatus}
+                    handleEdit    = {handleEdit}
                   />
                 ))}
                 <TablePagination
