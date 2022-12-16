@@ -45,7 +45,7 @@ const img = {
 };
 
 interface Props {
-  handleSubmit:     () => void;
+  // handleSubmit:     () => void;
   handlePrevStep:   (step:number) => void;
   images:           any,
   setImages:        (image: any) => void;
@@ -57,7 +57,7 @@ interface Props {
 const AnadirImagenes                    = (props: Props) => {
   const {
     handlePrevStep,
-    handleSubmit,
+    // handleSubmit,
     images,
     setImages,
     removeImages,
@@ -154,8 +154,8 @@ const AnadirImagenes                    = (props: Props) => {
         <img
           className={`${styles.btnicon} pointer`}
           onClick={() => remove(i)}
-          src="/images/icons/properties-icons/rechazado.png"
-          //src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660533/images/rechazado_lwm2vl.png"
+          //src="/images/icons/properties-icons/rechazado.png"
+          src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660533/images/rechazado_lwm2vl.png"
           alt=""
         />
       </div>
@@ -222,8 +222,8 @@ const AnadirImagenes                    = (props: Props) => {
                 <div className="text-center">
                   <img
                     className="my-4 pointer"
-                    src="/images/content/agregafoto.png"
-                    //src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660510/images/agregafoto_ntinp3.png"
+                    //src="/images/content/agregafoto.png"
+                    src="https://res.cloudinary.com/dhcyyvrus/image/upload/v1669660510/images/agregafoto_ntinp3.png"
                     alt="red1a1"
                     style={{ width: '70%' }}
                   />
@@ -254,7 +254,6 @@ const AnadirImagenes                    = (props: Props) => {
           <span className="mx-2" />
             <Button 
               titulo  = {(action == 'create') ? "Crear":"Actualizar"}
-              onClick = {() => handleSubmit()}
               style   = {{ width: 160, height: 60}}
             />
           </div>

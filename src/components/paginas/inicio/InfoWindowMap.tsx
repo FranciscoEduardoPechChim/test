@@ -59,35 +59,40 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
             <div className={`${styles.frontside}`}>
               <div className="card border-0">
                 <div className={styles.containerimg}>
-                  {inmueble.imgs.length === 1 ? (
+                  {(!inmueble.imgs) || (inmueble.imgs && (inmueble.imgs.length === 0)) &&
+                    <Swiper>
+                      <img className={styles.imgCard} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671216616/images/default_image_q4cpoa.jpg'} />
+                      {/* <img className={styles.imgCard} src={(inmueble.imgs.length === 1) ? inmueble.imgs[0]:'/images/content/default_image.jpg'} /> */}
+                    </Swiper>
+                  }
+                  {(inmueble.imgs) && (inmueble.imgs.length !== 0) && (inmueble.imgs.length === 1) ? (
                     <Swiper>
                       <img className={styles.imgCard} src={inmueble.imgs[0]} />
                     </Swiper>
                   ) : (
                     <Swiper
-                      effect={"cube"}
-                      grabCursor
-                      loop
-                      autoplay={{
-                        delay: 3200,
+                      effect        = {"cube"}
+                      grabCursor    = {true}
+                      loop          = {true}
+                      autoplay      ={{
+                        delay:                3200,
                         disableOnInteraction: false,
-                        pauseOnMouseEnter: true,
+                        pauseOnMouseEnter:    true,
                       }}
-                      cubeEffect={{
-                        shadow: true,
+                      cubeEffect    ={{
+                        shadow:       true,
                         slideShadows: true,
                         shadowOffset: 20,
-                        shadowScale: 0.94,
+                        shadowScale:  0.94,
                       }}
-                      className="mySwiper"
+                      className     = "mySwiper"
                     >
-                      {inmueble.imgs.map((img) => {
-                        const sepracion = img.split(".");
-
-                        const extension = sepracion[sepracion.length - 1];
-                        const extensionesValidas = ["mp4"];
+                      {inmueble.imgs.map((img:any, key:number) => {
+                        const sepracion           = img.split(".");
+                        const extension           = sepracion[sepracion.length - 1];
+                        const extensionesValidas  = ['mp4'];
                         return (
-                          <SwiperSlide key={img}>
+                          <SwiperSlide key={key}>
                             {extensionesValidas.includes(extension) ? (
                               <video
                                 src={img}
@@ -101,7 +106,7 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
                               />
                             ) : (
                               <img className={styles.imgCard} src={img} />
-                            )}
+                            )} 
                           </SwiperSlide>
                         );
                       })}
@@ -109,7 +114,7 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
                   )}
                 </div>
                 <div className="card-body">
-                  <div className={`${styles.title}`}>{inmueble.titulo}</div>
+                  <div className={`${styles.title}`}>{(inmueble.titulo.length < 25) ? inmueble.titulo:(inmueble.titulo.substr(0, 25) + '...')}</div>
                 </div>
                 </div>
             </div> 

@@ -93,7 +93,7 @@ export const useInmueble = (id: string) => {
   return { inmueble, cargando, imgs, setImgs };
 };
 
-export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, rooms: number) => {
+export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, rooms: number, set: string) => {
   const access_token                            = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const router                                  = useRouter();
   const [properties,setProperties]              = useState<any>([]);
@@ -105,6 +105,7 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
 
     const init                                  = async () => {
       if(southEast && northEast && southWest && northEast && category && type) {
+        console.log('24vf');
         const response                          = await getPropertiesByCoords(
                                                     (typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
                                                     (typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
@@ -116,6 +117,7 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
                                                     (typeof northWest.lng == 'number' && (northWest.lng != 0)) ? northWest.lng:1, 
                                                     category, 
                                                     type);
+                                                    
 
         if(response && response.data) {
           const { data }                        = response;
@@ -147,7 +149,14 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
                 return property;
               }
             });
+          }
 
+          if(set != '') {
+            propertiesTotal                     = propertiesTotal.filter((property:any) => {
+              if(property.set == set) {
+                return property;
+              }
+            });
           }
 
           if((Number(minimoPrecio) >= 0) && (Number(maximoPrecio) > Number(minimoPrecio))) {

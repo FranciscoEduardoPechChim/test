@@ -20,7 +20,7 @@ import { Estado } from "interfaces/SolicitudInteface";
 //Helpers
 import { validate } from '../../helpers/response';
 //Services
-import { storeProperty, updateProperty, getProperty, validAliasInProperty, loadImagesProperty, destroyProperty, updatePropertyByStatus } from "../../services/propertyService";
+import { storeProperty, updateImagesExists, updateProperty, getProperty, validAliasInProperty, loadImagesProperty, destroyProperty, updatePropertyByStatus } from "../../services/propertyService";
 
 export interface InmuebleData {
   titulo: string;
@@ -128,7 +128,7 @@ interface ContextProps {
     m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
     level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
     microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
-    others: string | null, address: string, description: string, userId: string, images: any, remove: any, order: any, access_token: string) => Promise<boolean | undefined>;
+    others: string | null, address: string, description: string, userId: string, images: any, remove: any, sort: any, access_token: string) => Promise<boolean | undefined>;
   crearInmueble: (data: InmuebleData) => Promise<CrearInmuebleResp>;
   eliminarInmueble: (id: string) => Promise<BorrarInmuebleResp>;
   subirImagenesInmueble: (
@@ -303,16 +303,17 @@ export const InmuebleProvider: FC = ({ children }) => {
             const load                          = await loadImagesProperty('create', userId, response.data.properties[0]._id, images, [], [], access_token);
 
             if(load && load.errors) {
-              validate(response.errors);
+              validate(load.errors);
               return false;
             }
 
             if(load && load.ok) {
-                toast.error(response.msg);
+                toast.error(load.msg);
                 return false;
             }
           }
 
+          toast.success(response.msg);
           return true;
         }
       }
@@ -324,10 +325,10 @@ export const InmuebleProvider: FC = ({ children }) => {
     m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
     level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
     microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
-    others: string | null, address: string, description: string, userId: string, images: any, remove: any, order:any, access_token: string) => {
+    others: string | null, address: string, description: string, userId: string, images: any, remove: any, sort:any, access_token: string) => {
       if(id && title && categoryId && typeId && setId && lat && lng && address && String(price) && String(commission) && String(m2Property) && String(baths) && String(parking) && String(m2Build) && String(rooms) && String(halfbaths) && description && userId && access_token) {
  
-        const response                          = await updateProperty(id, title, categoryId, typeId, setId, alias, lat, lng, price, commission, antiquity, m2Property, baths, parking, water, gas, privatesecurity, maintenance, disabled, m2Build, rooms, halfbaths, level, light, wifi, school, swimmingpool, furnished, beds, livingroom, kitchen, refrigerator, microwave, oven, dryingmachine, closet, diningroom, aa, stove, minioven, washingmachine, others, address, description, userId, images, remove, order, access_token);
+        const response                          = await updateProperty(id, title, categoryId, typeId, setId, alias, lat, lng, price, commission, antiquity, m2Property, baths, parking, water, gas, privatesecurity, maintenance, disabled, m2Build, rooms, halfbaths, level, light, wifi, school, swimmingpool, furnished, beds, livingroom, kitchen, refrigerator, microwave, oven, dryingmachine, closet, diningroom, aa, stove, minioven, washingmachine, others, address, description, userId, access_token);
 
         if(response && response.errors) {
           validate(response.errors);
@@ -340,18 +341,33 @@ export const InmuebleProvider: FC = ({ children }) => {
         }
 
         if(response && response.data) {
-          const load                            = await loadImagesProperty('update', userId, response.data.properties[0]._id, [], [], [], access_token);
+          if((images.length == 0) ) {
+            const loadWithOutImages             = await updateImagesExists(response.data.properties[0]._id, remove, sort, access_token);
 
-          if(load && load.errors) {
-            validate(response.errors);
-            return false;
+            if(loadWithOutImages && loadWithOutImages.errors) {
+              validate(loadWithOutImages.errors);
+              return false;
+            }
+
+            if(loadWithOutImages && loadWithOutImages.ok) {
+              toast.error(loadWithOutImages.msg);
+              return false;
+            }
+          }else {
+            const load                          = await loadImagesProperty('update', userId, response.data.properties[0]._id, images, remove, sort, access_token);
+
+            if(load && load.errors) {
+              validate(load.errors);
+              return false;
+            }
+
+            if(load && load.ok) {
+                toast.error(load.msg);
+                return false;
+            }
           }
 
-          if(load && load.ok) {
-            toast.error(response.msg);
-            return false;
-          }
-        
+          toast.success(response.msg);
           return true;
         }
       }

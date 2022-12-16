@@ -44,10 +44,12 @@ const MapaUbicacion = () => {
     setTipoPropiedad,
     filtros,
   } = useContext(MapContext);
-  const [seleccionado, setSeleccionado] = useState("");
+  const [set, setSet]                   = useState('');
+  const [seleccionado, setSeleccionado] = useState('');
   const [banos, setBanos] = useState(0)
   const [parking, setParking] = useState(0)
   const [habitaciones, setHabitaciones] = useState(0)
+
   const [m2Terreno, setM2Terreno] = useState(0)
   const [m2Construidos, setM2Construidos] = useState(0)
   const [precio, setPrecio] = useState(0)
@@ -65,7 +67,8 @@ const MapaUbicacion = () => {
     tipoPropiedad,
     banos,
     parking,
-    habitaciones
+    habitaciones,
+    set
   );
   
   const propiedadSeleccionada = (id: string, lat: number, lng: number) => {
@@ -147,16 +150,18 @@ const MapaUbicacion = () => {
                   <Loading />
                 ) : (
                   <BarraCategorias
-                    setTipoPropiedad={setTipoPropiedad}
-                    propertyTypes={propertyTypes}
-                    setCategoria={setCategoria}
-                    categorias={categorias}
-                    banos={banos}
-                    setBanos={setBanos}
-                    parking={parking}
-                    setParking={setParking}
-                    habitaciones={habitaciones}
-                    setHabitaciones={setHabitaciones}
+                    setTipoPropiedad    = {setTipoPropiedad}
+                    propertyTypes       = {propertyTypes}
+                    setCategoria        = {setCategoria}
+                    categorias          = {categorias}
+                    banos               = {banos}
+                    setBanos            = {setBanos}
+                    parking             = {parking}
+                    setParking          = {setParking}
+                    habitaciones        = {habitaciones}
+                    setHabitaciones     = {setHabitaciones}
+                    set                 = {set}
+                    setSet              = {setSet}
                   />
                 )} 
               </div>
@@ -167,10 +172,10 @@ const MapaUbicacion = () => {
                 <Fragment key={inmueble._id}>
                   <Marker
                     animation={2}
-                    position={{ lat: inmueble.lat, lng: inmueble.lng }}
+                    position={{ lat: (inmueble && inmueble.lat) ? inmueble.lat:0, lng: (inmueble && inmueble.lng) ? inmueble.lng:0 }}
                     icon={{
-                      url: "/images/icons/marcador.svg",
-                      //url: "https://res.cloudinary.com/dhcyyvrus/image/upload/v1669233956/images/Marcador_yzfk4y.png",
+                      //url: "/images/icons/marcador.svg",
+                      url: "https://res.cloudinary.com/dhcyyvrus/image/upload/v1669233956/images/Marcador_yzfk4y.png",
                       scaledSize: new google.maps.Size(50, 50),
                     }}
                     onClick={() =>

@@ -17,6 +17,7 @@ import {
 import { AuthContext } from "context/auth/AuthContext";
 import { casasC, rentas, conjunto } from "credentials";
 
+
 const FormStepOne: any = dynamic(() => import("./FormStepOne"), { ssr: false });
 
 interface Props {
@@ -62,7 +63,6 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
   const [secadora, setSecadora]                 = useState<any>((action == 'create') ? false:((data && data.secadora) ? data.secadora:false));
   const [images, setImages]                     = useState<any>((action == 'create') ? []:((data && data.imgs && (data.imgs.length > 0)) ? data.imgs:[]));
   const [removeImages, setRemoveImages]         = useState<any>([]);
-  const [imagesOrder, setImageOrder]            = useState<any>((action == 'create') ? []:((data && data.imgs && (data.imgs.length > 0)) ? data.imgs:[]));
 
   const { formulario, handleChange }            = useForm({
     titulo:                                     (action == 'create') ? "":((data && data.titulo)    ? data.titulo:""),
@@ -99,55 +99,59 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
   const handleNextStep                          = (step: number) => {
     if(step && action) {
       setSteps(step);
-      router.push((action == 'create') ? "/perfil/agregar-inmueble":((data && data._id) ? ("/perfil/edit-property/" + data._id):"/perfil/agregar-inmueble"));
+      router.push((action == 'create') ? "/perfil/agregar-inmueble":((data && data.slug) ? ("/perfil/edit-property/" + data.slug):"/perfil/agregar-inmueble"));
     }
   } 
 
   const handlePrevStep                          = (step: number) => {
     if(step && action) {
       setSteps(step);
-      router.push((action == 'create') ? "/perfil/agregar-inmueble":((data && data._id) ? ("/perfil/edit-property/" + data._id):"/perfil/agregar-inmueble"));
+      router.push((action == 'create') ? "/perfil/agregar-inmueble":((data && data.slug) ? ("/perfil/edit-property/" + data.slug):"/perfil/agregar-inmueble"));
     }
   }
  
-  const handleSubmit                            = async () => {
+  const handleSubmit                            = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
     if(titulo && auth.uid && categoria && String(pisos) && String(medioBaños) && String(habitaciones) && String(m2Construidos) && String(baños) && String(parking) && String(precio) && String(comisiones) && String(m2Terreno) && direccion && descripcion && ubicacion.lat && ubicacion.lng && tipoPropiedad && access_token) {
       setCargando(true);
-      let sendImages                            = [];
+      let sendImages:any                        = [];
       let order: any                            = [];
 
       if(action != 'create'){
 
-        // If it's delete all images
-        if((images.length == 0) && (data && data.imgs && (data.imgs.length > 0))) {
+        // Delete all images
+        if(images && (images.length == 0) && data && data.imgs && (data.imgs.length > 0)) {
           for(let i = 0; i < data.imgs.length; i++) {  
             setRemoveImages([...removeImages, data.imgs[i]]);
           }
         }
-
-        // Delete images with string
-        if((images.length > 0)) {
+        
+        // Delete images type string
+        if(images && (images.length > 0)){
           for(let i = 0; i < images.length; i ++) {
             if(!(typeof images[i] == 'string')) {
               sendImages.push(images[i]);
             }else {
               order.push(i);
-            } 
-          }
-        }
-
-        //Only order without create new file
-        if(sendImages.length == 0) {
-          order                                 = [];
-
-          for(let i=0; i < imagesOrder.length; i++) {   
-            for(let j=0; j < images.length; j++){    
-              if(imagesOrder[i] == images[j]) {
-                order.push(j);
-              }
             }
           }
         }
+
+        // Without new images
+        if(sendImages && (sendImages.length == 0) && data && data.imgs && (data.imgs.length > 0)) {
+          order                                 = [];
+
+          for(let i = 0; i < images.length; i++) {
+            for(let j = 0; j < data.imgs.length; j ++) {
+              if(images[i] == data.imgs[j]) {
+                order.push(j);
+              }
+            }
+
+          }
+        }
+
       }
 
       const response                            = (action == 'create') ?
@@ -155,8 +159,8 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
       await editProperty((data && data._id) ? data._id:'' ,titulo, categoria, tipoPropiedad, set, (typeof alias != 'undefined') ? alias:null, ubicacion.lat, ubicacion.lng, Number(precio), comisiones, (typeof antiguedad != 'undefined') ? antiguedad:null, m2Terreno, baños, parking, (typeof agua.value != 'undefined') ? agua.value:null, (typeof gas.value != 'undefined') ? gas.value:null, (typeof seguridadPrivada.value != 'undefined') ? seguridadPrivada.value:null, (typeof mantenimiento.value != 'undefined') ? mantenimiento.value:null, (typeof discapacitados.value != 'undefined') ? discapacitados.value:null, m2Construidos, habitaciones, medioBaños, pisos, (typeof luz.value != 'undefined') ? luz.value:null, (typeof internet.value != 'undefined') ? internet.value:null, (typeof escuelas.value != 'undefined') ? escuelas.value:null, (typeof piscina.value != 'undefined') ? piscina.value:null, amueblado, (typeof camas.value != 'undefined') ? camas.value:null, (typeof sala.value != 'undefined') ? sala.value:null, (typeof cocina.value != 'undefined') ? cocina.value:null, (typeof refrigerador.value != 'undefined') ? refrigerador.value:null, (typeof microondas.value != 'undefined') ? microondas.value:null, (typeof horno.value != 'undefined') ? horno.value:null, (typeof secadora.value != 'undefined') ? secadora.value:null, (typeof closet.value != 'undefined') ? closet.value:null, (typeof comedor.value != 'undefined') ? comedor.value:null, (typeof AA.value != 'undefined') ? AA.value:null, (typeof estufa.value != 'undefined') ? estufa.value:null, (typeof minihorno.value != 'undefined') ? minihorno.value:null, (typeof lavadora.value != 'undefined') ? lavadora.value:null, otros, direccion, descripcion, auth.uid, sendImages, removeImages, order, access_token);
 
       if(response) {
-        //router.push("/perfil/mis-propiedades");
         setCargando(false);
+        router.push("/perfil/mis-propiedades");
       }
     }
   }
@@ -181,7 +185,7 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
           <Steps steps={steps} />
 
           <div className="col-sm-12 col-md-12 col-lg-8">
-            <Form encType="multipart/form-data">
+            <Form onSubmit={handleSubmit}>
               {(steps === 1) &&
                 <>
                   <FormStepOne
@@ -271,7 +275,6 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
               {(steps === 3) && 
                 <AnadirImagenes 
                   handlePrevStep  = {handlePrevStep}
-                  handleSubmit    = {handleSubmit}
                   images          = {images}
                   setImages       = {setImages}
                   removeImages    = {removeImages}

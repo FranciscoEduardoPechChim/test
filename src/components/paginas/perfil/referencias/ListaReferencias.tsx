@@ -190,7 +190,10 @@ const ListaReferencias = () => {
                                 />      
                               </div>:
                               <>
-                                {referencia.estado ? null : (
+                                {referencia.estado ? 
+                                  <div className="d-flex justify-content-center">
+                                    Aceptada
+                                  </div>: 
                                   <div className="d-flex justify-content-center">
                                     <i
                                       onClick   = {() => handleOpenImages(referencia.usuario._id, referencia._id)}
@@ -201,7 +204,7 @@ const ListaReferencias = () => {
                                       }}
                                     />
                                   </div>
-                                )}
+                                }
                               </>
                             }
                           </td>

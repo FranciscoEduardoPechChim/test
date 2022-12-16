@@ -4,6 +4,9 @@ import { TipoPropiedad } from "interfaces/PropertyType";
 import styles from "./BarraCategoria.module.css";
 import { MapContext } from "context/map/MapContext";
 
+import { useSets } from '../../../hooks/useSets';
+import Loading from '../../ui/loading/Loading';
+
 interface Props {
   setTipoPropiedad: Dispatch<SetStateAction<string>>;
   propertyTypes: TipoPropiedad[];
@@ -15,6 +18,8 @@ interface Props {
   setParking: Dispatch<SetStateAction<number>>;
   habitaciones: number;
   setHabitaciones: Dispatch<SetStateAction<number>>;
+  set: string;
+  setSet: Dispatch<SetStateAction<string>>;
 }
 
 const BarraCategorias = (props: Props) => {
@@ -34,11 +39,13 @@ const BarraCategorias = (props: Props) => {
     maximoConstruidos,
     identification
   } = useContext(MapContext);
-  const { setTipoPropiedad, propertyTypes, categorias, setCategoria, setBanos, setParking, setHabitaciones} = props;
+  const { set, setSet, setTipoPropiedad, propertyTypes, categorias, setCategoria, setBanos, setParking, setHabitaciones} = props;
   const { categoria, tipoPropiedad } = useContext(MapContext);
   const [selectedPro, setSelected] = useState(tipoPropiedad);
   const [selectedCat, setselectedCat] = useState(categoria);
 
+  const access_token                  = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const { loadingSet, sets }          = useSets((access_token) ? access_token:'');
 
   const seleccionarCategoria = (id: string) => {
     setCategoria(id);
@@ -55,7 +62,7 @@ const BarraCategorias = (props: Props) => {
   const dropdownRef2 = useRef<HTMLDivElement>(null)
   const handleDropDownFocus2 = (state2: boolean) => {
     setOpen2(!state2);
-  };
+  };  
   const handleClickOutsideDropdown2 =(e:any)=>{
     if(open2 && !dropdownRef2.current?.contains(e.target as Node)){
       setOpen2(false)
@@ -351,80 +358,33 @@ const BarraCategorias = (props: Props) => {
             <li>
               <h4 className={styles.TitleFiltros}>Conjunto</h4>
               <div className={styles.buttonContainer}>
-              <form action="">
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}  
-                    type="radio" 
-                    id="1111" 
-                    value="valueConjunto1"
-                    checked={isRadioSelectedConjunto('valueConjunto1')}
-                    />
-                  <label className={styles.checked2} htmlFor="1111">Todos</label>
+                {(loadingSet) ? <Loading />: 
+                  <form action="">
+                    <input 
+                      onChange  = {(e) => {setSet(''); handleRadioClickConjunto(e);}}  
+                      type="radio" 
+                      id="1111" 
+                      value="valueConjunto1"
+                      checked   = {isRadioSelectedConjunto('valueConjunto1')}
+                      />
+                    <label className={styles.checked2} htmlFor="1111">Todos</label>
 
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}  
-                    type="radio" 
-                    id="2222" 
-                    value="valueConjunto2"
-                    checked={isRadioSelectedConjunto('valueConjunto2')}
-                    />
-                  <label className={styles.checked2} htmlFor="2222">Desarrollo</label>
-
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}
-                    type="radio" 
-                    id="3333" 
-                    value="valueConjunto3"
-                    checked={isRadioSelectedConjunto('valueConjunto3')}
-                    />
-                  <label className={styles.checked2} htmlFor="3333">Privada</label>
-
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}
-                    type="radio" 
-                    id="4444" 
-                    value="valueConjunto4"
-                    checked={isRadioSelectedConjunto('valueConjunto4')}
-                    />
-                  <label className={styles.checked2} htmlFor="4444">Condominios</label>
-
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}
-                    type="radio" 
-                    id="5555" 
-                    value="valueConjunto5"
-                    checked={isRadioSelectedConjunto('valueConjunto5')}
-                    />
-                  <label className={styles.checked2} htmlFor="5555">Club de golf</label>
-
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}
-                    type="radio" 
-                    id="6666" 
-                    value="valueConjunto6"
-                    checked={isRadioSelectedConjunto('valueConjunto6')}
-                    />
-                  <label className={styles.checked2} htmlFor="6666">Fraccionamiento</label>
-
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}
-                    type="radio" 
-                    id="7777" 
-                    value="valueConjunto7"
-                    checked={isRadioSelectedConjunto('valueConjunto7')}
-                    />
-                  <label className={styles.checked2} htmlFor="7777">Residencial</label>
-
-                  <input 
-                    onChange={(e) => {handleRadioClickConjunto(e);}}
-                    type="radio"
-                    id="8888" 
-                    value="valueConjunto8"
-                    checked={isRadioSelectedConjunto('valueConjunto8')}
-                    />
-                  <label className={styles.checked2} htmlFor="8888">Country club</label>
-
-                </form>
+                    {sets.map((value:any, key: number) => {
+                      return (
+                        <>
+                          <input 
+                              onChange  = {(e) => { setSet(value._id); handleRadioClickConjunto(e);}}
+                              type      = "radio" 
+                              id        = {`set_${key}`} 
+                              value     = {`value_${key}`}
+                              checked   = {isRadioSelectedConjunto(`value_${key}`)}
+                          />
+                          <label className={styles.checked2} htmlFor={`set_${key}`}>{value.nombre}</label>
+                        </>
+                      );
+                    })}
+                  </form>
+                }
               </div>
             </li>
             <li>

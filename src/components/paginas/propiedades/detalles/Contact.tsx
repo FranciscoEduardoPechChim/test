@@ -10,14 +10,23 @@ interface Props {
     
 }
 
-const Contact = ({ inmuebles }: Props) => {
-  const { auth } = useContext(AuthContext);
-  const { iniciarChat } = useContext(ChatContext);
+const Contact               = ({ inmuebles }: Props) => {
+  const access_token        = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const { auth }            = useContext(AuthContext);
+  const { chat }            = useContext(ChatContext);
 
-  const data: CrearChat = {
+  const data: CrearChat     = {
     remitente: auth.uid,
     destinatario: inmuebles.usuario._id,
   };
+ 
+  const startChat           = async () => {
+    if(auth && auth.uid && inmuebles && inmuebles.usuario.uid && access_token) {
+      if(auth.uid != inmuebles.usuario.uid) { 
+        await chat(auth.uid, inmuebles.usuario.uid, access_token);
+      }
+    }
+  }
 
   return (
     <section>
@@ -68,7 +77,7 @@ const Contact = ({ inmuebles }: Props) => {
             <div className="text-center">
               <Button
                 titulo="iniciar Chat"
-                onClick={async () => await iniciarChat(data)}
+                onClick={startChat}
               />
             </div>
           </div>

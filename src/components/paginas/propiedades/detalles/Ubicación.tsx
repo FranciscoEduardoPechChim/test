@@ -6,13 +6,19 @@ import { AuthContext } from "../../../../context/auth/AuthContext";
 import { InmueblesUsuario } from "../../../../interfaces/CrearInmuebleInterface";
 import Button from "../../../ui/button/Button";
 import styles from "./Inmueble.module.css";
-import {
+import { 
   agregarFav,
   fetchEnviarSolicitud,
   fetchSolicitud,
 } from "../../../../helpers/fetch";
 import { MapContext } from "context/map/MapContext";
 import { SocketContext } from "context/socket/SocketContext";
+
+//Services
+import { requestProperty } from '../../../../services/requestService';
+import { storeFavorite } from '../../../../services/favoriteService';
+//Helpers
+import { validate } from '../../../../helpers/response';
 
 interface Props {
   inmuebles: InmueblesUsuario;
@@ -32,68 +38,55 @@ const options = {
 };
 
 const Ubicacion                                 = ({ inmuebles }: Props) => {
-  const { auth, validRole }                      = useContext(AuthContext);
+  const access_token                            = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const { auth, validRole }                     = useContext(AuthContext);
   const { ubicacionUsuario }                    = useContext(MapContext);
   const [comoLLegar, setComoLLegar]             = useState(false);
   const [direcciones, setDirecciones]           = useState<any>();
   const { socket }                              = useContext(SocketContext);
   const [isRole, setIsRole]                     = useState(false);
 
-  const agregarFavorito                         = async (inmuebleId: string) => {
-    const favorito = {
-      usuario: auth.uid,
-      inmueble: inmuebleId,
-      propietario: inmuebles.usuario._id,
-    };
-    const resp = await agregarFav("favoritos", favorito);
-
-    if (resp.ok) {
-      toast.success(resp.msg);
-    }
-
-    if (!resp.ok) {
-      if (resp.errors) {
-        resp.errors.map((error) => {
-          toast.error(error.msg);
-        });
+  const addFavorite                             = async (id: string) => {
+    
+    if(auth && auth.uid && inmuebles && inmuebles.usuario.uid && id && access_token) {
+      const response                            = await storeFavorite(auth.uid, inmuebles.usuario.uid, id, access_token);
+    
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
       }
 
-      if (!resp.ok) {
-        toast.error(resp.msg);
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        toast.success(response.msg);
       }
     }
-  };
+  }
 
-  const solicitarCompartir                      = async () => {
-    const solicitudCorreo = {
-      nombre: auth.nombre,
-      apellido: auth.apellido,
-      titulo: inmuebles.titulo,
-      id: inmuebles.usuario._id,
-      img: inmuebles.imgs[0],
-      slug: inmuebles.slug,
-    };
+  const shareProperty                           = async () => {
+    if(inmuebles && inmuebles.usuario.uid && auth && auth.uid && access_token && socket) {
+      const response                            = await requestProperty(auth.uid, inmuebles.usuario.uid, inmuebles._id, 'Pendiente', access_token);
+       
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
 
-    const solicitud = {
-      usuario: auth.uid,
-      propietario: inmuebles.usuario,
-      inmueble: inmuebles._id,
-      estado: "Pendiente",
-    };
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
 
-    const resSolicitud = await fetchEnviarSolicitud("solicitud", solicitud);
-    if (resSolicitud.ok) {
-      socket?.emit("solicitud", resSolicitud);
-      toast.success(resSolicitud.msg);
-      const resCorreo = await fetchSolicitud(
-        "correos/solicitud-compartir",
-        solicitudCorreo
-      );
-      if (resCorreo.ok) toast.success(resCorreo.msg);
-    }
-
-    if (!resSolicitud.ok) toast.error(resSolicitud.msg);
-  };
+      if(response && response.data) {
+        socket.emit("solicitud", response.data.requests);
+        toast.success(response.msg);
+      }    
+    } 
+  }
 
   const comoLlegar                              = () => setComoLLegar(!comoLLegar);
 
@@ -215,8 +208,8 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
                    <>
                      {auth.uid !== inmuebles.usuario._id ? (
                        <Button
-                         titulo="Solicitar compartir"
-                         onClick={solicitarCompartir}
+                         titulo   = "Solicitar compartir"
+                         onClick  = {shareProperty}
                        />
                      ) : null}
                    </>
@@ -225,8 +218,8 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
                  <div className="px-2" />
                  {auth.uid ? (
                    <Button
-                     titulo="Añadir a favoritos"
-                     onClick={() => agregarFavorito(inmuebles._id)}
+                     titulo     = "Añadir a favoritos"
+                     onClick    = {() => addFavorite(inmuebles._id)}
                    />
                  ) : null}
                </div>

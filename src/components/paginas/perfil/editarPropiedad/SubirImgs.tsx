@@ -108,8 +108,7 @@ const SubirImgs = () => {
     );
 
     const imgsResp = resp.files;
-    console.log(imgsResp);
-
+  
 
     imgs.push(...imgsResp);
     await actualizarInmueble({ imgs }, idInmueble);

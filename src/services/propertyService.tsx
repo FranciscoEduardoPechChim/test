@@ -74,16 +74,15 @@ export const storeProperty                          = async (title: string, cate
         console.log('Error: ' + error);
     }
 }
-export const loadImagesProperty                     = async (action: string, uid: string, pid: string, pictures: any, remove: any, order: any, access_token: string):Promise<propertyResponse|undefined> => {
+export const loadImagesProperty                     = async (action: string, uid: string, pid: string, pictures: any, remove: any, sort: any, access_token: string):Promise<propertyResponse|undefined> => {
     try { 
-        console.log('hola');
         const formData                              = new FormData();
-        formData.append("uid", uid);
-        formData.append("pid", pid);
-        formData.append("action", action);
-        formData.append("removes", remove);
-        formData.append("order", order);
-
+        formData.set("uid", uid);
+        formData.set("pid", pid);
+        formData.set("action", action);
+        formData.set("removes", remove);
+        formData.set("sort", sort);
+        
         for (let i = 0; i < pictures.length; i++) {
           formData.append("pictures", pictures[i]);
         }
@@ -228,6 +227,31 @@ export const destroyProperty                        = async (id: string, access_
 } 
 
 //UPDATE
+export const updateImagesExists                     = async (id: string, removes: any, sort: any, access_token: string):Promise<propertyResponse|undefined> => {
+    try { 
+        let body                                    = { 
+            pid:                                    id,
+            removes:                                removes,
+            sort:                                   sort  
+        };
+        
+        const requestOptions                        = {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${access_token}`
+            },
+            body:JSON.stringify(body)
+        };
+
+        const response                              = await fetch(`${development}/inmuebles/order/${id}`, requestOptions);
+        const result:propertyResponse               = await response.json();
+            
+        return result; 
+    }catch(error) {
+        console.log('Error: ' + error);
+    }
+}
 export const updatePropertyByAlias                  = async (id: string, alias: string, access_token: string):Promise<propertyResponse|undefined> => {
     try { 
         let body                                    = { 
@@ -279,12 +303,9 @@ export const updateProperty                         = async (id: string, title: 
     m2Property: number, baths: number, parking: number, water: boolean | null, gas: boolean | null, privatesecurity: boolean | null, maintenance: boolean | null, disabled: boolean | null, m2Build: number, rooms: number, halfbaths: number,
     level: number, light: boolean | null, wifi: boolean | null, school: boolean | null, swimmingpool: boolean | null, furnished: boolean, beds: boolean | null, livingroom: boolean | null, kitchen: boolean | null, refrigerator: boolean | null,
     microwave: boolean | null, oven: boolean | null, dryingmachine: boolean | null, closet: boolean | null, diningroom: boolean | null, aa: boolean | null, stove: boolean | null, minioven: boolean | null, washingmachine: boolean | null,
-    others: string | null, address: string, description: string, userId: string, images: any, remove: any, order: any, access_token: string):Promise<propertyResponse|undefined> => {
+    others: string | null, address: string, description: string, userId: string, access_token: string):Promise<propertyResponse|undefined> => {
     try {   
         let body                                    = { 
-            images:                                images,
-            removes:                               remove,
-            order:                                 order,
             title:                                 title, 
             categoryId:                            categoryId,
             typeId:                                typeId,

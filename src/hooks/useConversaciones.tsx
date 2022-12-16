@@ -4,12 +4,13 @@ import { MensajesRespuesta, Mensaje } from "interfaces/MensajesInterface";
 import { production } from "../credentials/credentials";
 // import { Conversacion } from "../interfaces/ChatInterface";
 
-export const useConversaciones = (uid: string | undefined | null) => {
-  const [conversaciones, setConversaciones] = useState<any[]>([]);
+export const useConversaciones                = (uid: string | undefined | null) => {
+  const [conversaciones, setConversaciones]   = useState<any[]>([]);
   // const [conversaciones, setConversaciones] = useState<Conversacion[]>([]);
-  const [cargando, setCargando] = useState(false);
+  const [cargando, setCargando]               = useState(false);
+  const [total, setTotal]                     = useState(0);
 
-  const obtenerConversaciones = async () => {
+  const obtenerConversaciones                 = async () => {
     setCargando(true);
     const resp = await fetch(`${production}/chats/${uid}`);
     const data = await resp.json();
@@ -22,7 +23,7 @@ export const useConversaciones = (uid: string | undefined | null) => {
     obtenerConversaciones();
   }, [uid]);
 
-  return { conversaciones, cargando, setConversaciones };
+  return { conversaciones, cargando, setConversaciones, total, setTotal };
 };
 
 export const useUltimoMsg = (uid: string, id: string) => {

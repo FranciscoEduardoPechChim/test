@@ -112,6 +112,7 @@ export interface InmueblesUsuario {
 
 interface Usuario {
   _id: string;
+  uid?: string;
   nombre: string;
   apellido: string;
   correo: string;

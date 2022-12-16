@@ -1,3 +1,4 @@
+import { access } from "fs/promises";
 import { createContext, FC, useContext, useEffect } from "react";
 import { Socket } from "socket.io-client";
 import { useSocket } from "../../hooks/useSocket";
@@ -9,16 +10,19 @@ interface ContextProps {
   online: boolean | undefined;
 }
 
-export const SocketContext = createContext({} as ContextProps);
+export const SocketContext                = createContext({} as ContextProps);
 
-export const SocketProvider: FC = ({ children }) => {
-  const { auth } = useContext(AuthContext);
-  const { dispatch } = useContext(ChatContext);
-  const { socket, online, conectarSocket, desconectarSocket } = useSocket(
+export const SocketProvider: FC           = ({ children }) => {
+  const access_token                      = (typeof window !== "undefined") ? localStorage.getItem('token'):"";
+  const { auth }                          = useContext(AuthContext);
+  const { dispatch }                      = useContext(ChatContext);
+  const { socket, online, conectarSocket, 
+    desconectarSocket }                   = useSocket(
    // "https://red1a1-back.herokuapp.com"
-    "https://web-production-ead1.up.railway.app"
+      //"https://web-production-ead1.up.railway.app",
     //"https://develop.red1a1.com"
-    // "http://localhost:8080"
+      "http://localhost:8080", 
+    (access_token) ? access_token:''
   );
 
   useEffect(() => {

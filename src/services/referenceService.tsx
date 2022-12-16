@@ -39,8 +39,8 @@ export const loadImages                         = async (images: any, uid: strin
     try {
         const formData                          = new FormData();
         formData.append("comprobante", images);
-        formData.append("uid", uid);
-        formData.append("rid", rid);
+        formData.set("uid", uid);
+        formData.set("rid", rid);
         
         const requestOptions                    = {
             method: 'POST',

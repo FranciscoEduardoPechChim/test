@@ -114,7 +114,7 @@ const PropertiesCard                                                            
               placement="top"
             >
               <button
-                onClick   = {() => handleEdit(id)}
+                onClick   = {() => handleEdit(slug)}
                 type      = "button"
                 className = {`${styles.customBtn3} btn`}
               >
