@@ -146,3 +146,9 @@
    background-image: url("/images/icons/properties-icons/2-white.png");
    transition: 250ms;
 }
+
+.colorTotal {
+   color: #7149bc;
+   font-size: medium;
+   font-weight: 700;
+ }

@@ -108,6 +108,7 @@ export interface InmueblesUsuario {
   createdAt: number;
   imgs: string[];
   alias?: string;
+  owner?: string;
 }
 
 interface Usuario {

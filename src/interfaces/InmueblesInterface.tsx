@@ -58,6 +58,9 @@ export interface Inmueble {
   seguridadPrivada?: boolean;
   imgs: string[];
   alias?: string;
+  isFavorite?: boolean;
+  owner?: string;
+  isNewProperty?: boolean;
 }
 
 export interface Categoria {

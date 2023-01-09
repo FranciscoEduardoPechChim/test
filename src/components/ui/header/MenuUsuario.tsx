@@ -88,7 +88,7 @@ const MenuUsuario                                                   = (props: Pr
                     setMostrarMenu(false);
                   }}
                 >
-                  Mis Paquetes
+                  Mis Paquetes 
                 </div>
               </Link>
             }
@@ -100,7 +100,31 @@ const MenuUsuario                                                   = (props: Pr
                     setMostrarMenu(false);
                   }}
                 >
-                  Mis Pagos
+                  Mis Pagos 
+                </div>
+              </Link>
+            }
+            {hasPermission('followers') &&
+              <Link href="/perfil/my-followers">
+                <div
+                  className={`${styles.menuItem} pointer mx-3 my-2`}
+                  onClick={() => {
+                    setMostrarMenu(false);
+                  }}
+                >
+                  Agentes seguidos
+                </div>
+              </Link>
+            }
+            {hasPermission('properties.followers') &&
+              <Link href="/perfil/my-properties-followers">
+                <div
+                  className={`${styles.menuItem} pointer mx-3 my-2`}
+                  onClick={() => {
+                    setMostrarMenu(false);
+                  }}
+                >
+                  Propiedades seguidas
                 </div>
               </Link>
             }
@@ -133,8 +157,8 @@ const MenuUsuario                                                   = (props: Pr
             <div
               className={`${styles.menuCerrar} pointer mx-3 my-2`}
               onClick={cerrarSesion}
-            >
-              <i className="bi bi-box-arrow-right"></i> Cerrar sesión
+            > 
+              <i className="bi bi-box-arrow-right"></i> Cerrar sesión 
             </div>
           </div>
         )}

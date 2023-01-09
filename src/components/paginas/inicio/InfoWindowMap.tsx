@@ -16,8 +16,12 @@ import { InmueblesUsuario } from "interfaces/CrearInmuebleInterface";
 import { toast } from "react-toastify";
 //Helpers
 import { validate } from '../../../helpers/response';
-// Services
+//Services
 import { storeHistory } from '../../../services/historyService';
+//Middlewares
+import { isUser } from '../../../middlewares/roles';
+//Material UI
+import { Tooltip } from "@material-ui/core";
 
 SwiperCore.use([EffectCube, Pagination, Autoplay]);
 
@@ -49,7 +53,13 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
 
       router.push(`/propiedades/${slug}`);
     }
-  };
+  }
+
+  const handleOwner               = (owner: string) => {
+    if(owner) {
+      router.push(`/perfil/${owner}`);
+    }
+  }
 
   return (
     <InfoWindow position={{ lat: inmueble.lat, lng: inmueble.lng }} onCloseClick={() => handleClose()}>
@@ -75,7 +85,7 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
                       grabCursor    = {true}
                       loop          = {true}
                       autoplay      ={{
-                        delay:                3200,
+                        delay:                500,
                         disableOnInteraction: false,
                         pauseOnMouseEnter:    true,
                       }}
@@ -91,6 +101,7 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
                         const sepracion           = img.split(".");
                         const extension           = sepracion[sepracion.length - 1];
                         const extensionesValidas  = ['mp4'];
+
                         return (
                           <SwiperSlide key={key}>
                             {extensionesValidas.includes(extension) ? (
@@ -126,10 +137,21 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
                       {inmueble.categoria.nombre}
                     </span>
                   </div> 
-                  <div className={`${styles.descripcion} my-4`}>
+                  <div className={`${styles.descripcion} my-3`}>
                       {inmueble.descripcion ? inmueble.descripcion : "Sin descripción"}
                   </div>
-                  <div className={`${styles.precio} mt-3 mb-4`}>
+                  <div className={`${styles.owner} my-2`}>
+                    {(access_token && (typeof window !== "undefined") && (!isUser())) ?
+                      <a onClick={() => handleOwner((typeof inmueble.usuario == 'string') ? inmueble.usuario:'')}>
+                        {inmueble.owner ? inmueble.owner:"Sin propetario"}
+                      </a>
+                      :
+                      <a style={{ color: '#5e5e5e'}}>
+                        {inmueble.owner ? inmueble.owner:"Sin propetario"}
+                      </a>
+                    }
+                  </div>
+                  <div className={`${styles.precio} mt-2 mb-2`}>
                     {formatPrice(inmueble.precio)}
                   </div>
                   <div className="my-3">

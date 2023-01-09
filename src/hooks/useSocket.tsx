@@ -6,7 +6,6 @@ export const useSocket      = (serverPath: string, access_token: string) => {
   const [online, setOnline] = useState<boolean | undefined>(false);
 
   const conectarSocket      = useCallback(() => {
-
     const socketTemp        = io(serverPath, {
       transports:           ['websocket'],
       autoConnect:          true,

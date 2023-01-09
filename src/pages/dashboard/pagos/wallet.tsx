@@ -117,7 +117,7 @@ const wallet = () => {
                       6516035543813
                     </td>
                     <td className={styles.contentT}>
-                      2022-02-21
+                      2023-02-21
                     </td>
                     <td className={styles.contentT}>
                       Juanito Espinito
@@ -148,7 +148,7 @@ const wallet = () => {
                       6516035543813
                     </td>
                     <td className={styles.contentT}>
-                      2022-02-21
+                      2023-02-21
                     </td>
                     <td className={styles.contentT}>
                       Juanito Espinito

@@ -16,15 +16,12 @@ export const useRoleByPermissions                   = (access_token: string) => 
             const dataRoleByPermissionResponse      = await getRoleByPermissions(access_token);
             const dataRoleResponse                  = await getRolesWithoutPermissions('0', access_token);
 
-            if(dataRoleByPermissionResponse && dataRoleResponse) {
-                if(dataRoleByPermissionResponse.data && dataRoleResponse.data) {
-                    setRoleByPermissions(dataRoleByPermissionResponse.data.rolebypermissions);
-                    setRoles(dataRoleResponse.data.roles);
-                }
-
-                setLoading(false);
+            if(dataRoleByPermissionResponse && dataRoleResponse && dataRoleByPermissionResponse.data && dataRoleResponse.data) {       
+                setRoleByPermissions(dataRoleByPermissionResponse.data.rolebypermissions);
+                setRoles(dataRoleResponse.data.roles);
             }
-
+            
+            setLoading(false);
         }
     }
 

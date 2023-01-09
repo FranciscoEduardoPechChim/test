@@ -125,6 +125,65 @@ export const updateUser                         = async (id: string, name: strin
         console.log('Error: ' + error);
     }
 }
+export const updateProfile                      = async (id: string, name: string, profileCompany: string | null, phone: number | null, officePhone: number | null, lastName: string, companyName: string | null, 
+    companyLocation: string, companyLat: number, companyLng: number, website: string | null, facebook: string | null, instagram: string | null, twitter: string | null, youtube: string | null,
+    linkedin: string | null, isZone: boolean, nameZone: string | null, latZone: string | null, lngZone: string | null, rangeZone: string | null, categoryZone: string | null, typeZone: string | null, roomsZone: string | null,
+    bathsZone: string | null, garagesZone: string | null, minPriceZone: string | null, maxPriceZone: string | null, minGroundZone: string | null, maxGroundZone: string | null, setZone: string | null, minBuildZone: string | null,
+    maxBuildZone: string | null, access_token: string):Promise<userResponse | undefined> => {
+    try { 
+        let body                                = { 
+            user:                               id,
+            name:                               name,
+            lastName:                           lastName,
+            profileCompany:                     profileCompany,
+            phone:                              phone,
+            officePhone:                        officePhone,
+            companyName:                        companyName,
+            companyLocation:                    companyLocation,
+            companyLat:                         companyLat,
+            companyLng:                         companyLng,
+            website:                            website,
+            facebook:                           facebook,
+            instagram:                          instagram,
+            twitter:                            twitter,
+            youtube:                            youtube,
+            linkedin:                           linkedin,
+            isZone:                             isZone,
+            nameZone:                           nameZone,
+            latZone:                            latZone,
+            lngZone:                            lngZone,
+            rangeZone:                          rangeZone,
+            categoryZone:                       categoryZone,
+            typeZone:                           typeZone,
+            roomsZone:                          roomsZone,
+            bathsZone:                          bathsZone,
+            garagesZone:                        garagesZone,
+            minPriceZone:                       minPriceZone,
+            maxPriceZone:                       maxPriceZone,
+            minGroundZone:                      minGroundZone,
+            maxGroundZone:                      maxGroundZone,
+            setZone:                            setZone,
+            minBuildZone:                       minBuildZone,
+            maxBuildZone:                       maxBuildZone
+        };
+        
+        const requestOptions                    = {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${access_token}`
+            },
+            body:JSON.stringify(body)
+        };
+
+        const response                          = await fetch(`${development}/usuarios/profile/${id}`, requestOptions);
+        const result:userResponse               = await response.json();
+            
+        return result; 
+    }catch(error) {
+        console.log('Error: ' + error);
+    }
+}
 
 //ACTIONS
 

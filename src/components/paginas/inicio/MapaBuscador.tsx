@@ -11,7 +11,8 @@ import styles from "./BarraCategoria.module.css";
 
 //Hooks
 import { usePropertiesByCoords } from '../../../hooks/useInmuebles';
-
+//Context
+import { AuthContext } from "context/auth/AuthContext";
 
 const containerStyle = {
   width: "100%",
@@ -46,15 +47,14 @@ const MapaUbicacion = () => {
   } = useContext(MapContext);
   const [set, setSet]                   = useState('');
   const [seleccionado, setSeleccionado] = useState('');
-  const [banos, setBanos] = useState(0)
-  const [parking, setParking] = useState(0)
+  const [status,setStatus]              = useState(false);
+  const [agent, setAgent]               = useState('all');
+  const [banos, setBanos]               = useState(0)
+  const [parking, setParking]           = useState(0)
   const [habitaciones, setHabitaciones] = useState(0)
-
-  const [m2Terreno, setM2Terreno] = useState(0)
-  const [m2Construidos, setM2Construidos] = useState(0)
-  const [precio, setPrecio] = useState(0)
-  const { loading, propertyTypes } = useTipoPropiedad();
-  const { categorias } = useCategories();
+  const { loading, propertyTypes }      = useTipoPropiedad();
+  const { categorias }                  = useCategories();
+  const { auth }                        = useContext(AuthContext);
 
   const mapRef = useRef<GoogleMap>(null);
   const { inmuebles, cargando } = usePropertiesByCoords(
@@ -68,7 +68,10 @@ const MapaUbicacion = () => {
     banos,
     parking,
     habitaciones,
-    set
+    set,
+    status,
+    agent,
+    (auth && auth.uid) ? auth.uid:'all'
   );
   
   const propiedadSeleccionada = (id: string, lat: number, lng: number) => {
@@ -162,6 +165,10 @@ const MapaUbicacion = () => {
                     setHabitaciones     = {setHabitaciones}
                     set                 = {set}
                     setSet              = {setSet}
+                    status              = {status}
+                    setStatus           = {setStatus}
+                    agent               = {agent}
+                    setAgent            = {setAgent}
                   />
                 )} 
               </div>

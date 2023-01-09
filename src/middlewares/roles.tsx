@@ -43,7 +43,7 @@ export const isUserByPay                    = () => {
 }
 
 export const hasPermission                  = (name: string) => {   
-    const permission                        = (typeof window !== "undefined") ? localStorage.getItem("permissions"):"";
+    const permission                        = (typeof window !== "undefined") ? localStorage.getItem("permissions"):"";    
     const permissions                       = (permission) ? permission.split(','):[];
 
     if(isSuperAdmin() || isAdmin()) {

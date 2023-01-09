@@ -18,7 +18,7 @@ export const useCategories = () => {
     obtenerCategorias();
   }, []);
 
-  return { categorias, cargando };
+  return { categorias, cargando, setCategorias,  obtenerCategorias };
 };
 
 export const useTipoPropiedad = () => {
@@ -37,5 +37,5 @@ export const useTipoPropiedad = () => {
     obtenerTipoPropiedad();
   }, []);
 
-  return { propertyTypes, loading };
+  return { propertyTypes, loading, setPropertyTypes,obtenerTipoPropiedad };
 };

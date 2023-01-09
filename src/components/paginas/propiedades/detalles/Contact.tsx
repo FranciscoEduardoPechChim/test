@@ -4,10 +4,15 @@ import { ChatContext, CrearChat } from "../../../../context/chat/ChatContext";
 import { InmueblesUsuario } from "../../../../interfaces/CrearInmuebleInterface";
 import Button from "../../../ui/button/Button";
 import styles from "./Inmueble.module.css";
+import { toast } from "react-toastify";
+
+//Services
+import { storeFollower } from '../../../../services/followerService';
+//Helpers
+import { validate } from '../../../../helpers/response';
 
 interface Props {
   inmuebles: InmueblesUsuario;
-    
 }
 
 const Contact               = ({ inmuebles }: Props) => {
@@ -28,6 +33,26 @@ const Contact               = ({ inmuebles }: Props) => {
     }
   }
 
+  const followUser          = async () => {
+    if(auth && auth.uid && inmuebles && inmuebles.usuario.uid && (auth.uid != inmuebles.usuario.uid) && access_token) {
+      const response        = await storeFollower(auth.uid, inmuebles.usuario.uid, access_token);
+
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        toast.success(response.msg);
+      }
+    }
+  }
+  
   return (
     <section>
       <div className="row w-100 gx-0">
@@ -75,9 +100,20 @@ const Contact               = ({ inmuebles }: Props) => {
               Inicia una conversación con el asesor <br /> de este inmueble
             </div>
             <div className="text-center">
+              {(auth && auth.uid && inmuebles && inmuebles.usuario.uid && (auth.uid != inmuebles.usuario.uid)) &&
+                <>
+                  <Button
+                    titulo  = "Seguir usuario"
+                    style   = {{width: 175, height: 50}}
+                    onClick = {() => followUser()}
+                  />
+                  &nbsp;
+                </>
+              }
               <Button
-                titulo="iniciar Chat"
-                onClick={startChat}
+                titulo  = "iniciar Chat"
+                style   = {{width: 175, height: 50}}
+                onClick = {startChat}
               />
             </div>
           </div>

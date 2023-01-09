@@ -23,7 +23,7 @@ import { RespActualizar } from "../../interfaces/UserInterface";
 //Services
 import { session, signup, sendPassword, sendEmailWelcome} from '../../services/authService';
 import { hasPermission } from '../../services/rolebypermissionService';
-import { storeUser, updateUser, destroyUser } from '../../services/userService';
+import { storeUser, updateUser, destroyUser, showUser, updateProfile } from '../../services/userService';
 //Helpers
 import { validate } from '../../helpers/response';
 //Extras
@@ -39,6 +39,12 @@ interface ContextProps {
   createUser:       (name: string, lastName: string, email: string, password: string, confirmPassword: string, ownerId: string, access_token:string) => Promise<boolean | undefined>;
   editUser:         (id: string, name: string, lastName: string, email: string, password: string, confirmPassword: string, access_token:string) => Promise<boolean | undefined>;
   deleteUser:       (id: string, changeId: string, access_token: string) => Promise<boolean | undefined>;
+  getUser:          (id: string, access_token: string) => Promise<Auth | Auth[] | undefined>;
+  editProfile:      (id: string, name: string, profileCompany: string | null, phone: number | null, officePhone: number | null, lastName: string, companyName: string | null, 
+    companyLocation: string, companyLat: number, companyLng: number, website: string | null, facebook: string | null, instagram: string | null, twitter: string | null, youtube: string | null,
+    linkedin: string | null, isZone: boolean, nameZone: string | null, latZone: string | null, lngZone: string | null, rangeZone: string | null, categoryZone: string | null, typeZone: string | null, roomsZone: string | null,
+    bathsZone: string | null, garagesZone: string | null, minPriceZone: string | null, maxPriceZone: string | null, minGroundZone: string | null, maxGroundZone: string | null, setZone: string | null, minBuildZone: string | null,
+    maxBuildZone: string | null, access_token: string) => Promise<boolean | undefined>;
   crearUsuario: (
     nombre: string,
     apellido: string,
@@ -70,40 +76,42 @@ interface ContextProps {
   ) => Promise<RespActualizar>;
 }
 
-export const AuthContext = createContext({} as ContextProps);
+export const AuthContext                                    = createContext({} as ContextProps);
 
-const initialState: Auth = {
-  uid: null,
-  checking: true,
-  logged: false,
-  nombre: undefined,
-  apellido: undefined,
-  correo: undefined,
-  telefonoOficina: undefined,
-  telefonoPersonal: undefined,
-  direccionFisica: undefined,
-  sitioweb: undefined,
-  facebookpage: undefined,
-  instagram: undefined,
-  nombreInmobiliaria: undefined,
-  twitter: undefined,
-  youtube: undefined,
-  perfilEmpresarial: undefined,
-  linkedin: undefined,
-  img: undefined,
-  logo: undefined,
-  role: undefined,
-  paqueteAdquirido: undefined,
-  usuarios: undefined,
-  propietario: undefined,
-  google: undefined,
-  recibirCorreo: false,
-  ownerId: null
+const INITIAL_STATE: Auth                                   = {
+  uid:                                                      null,
+  checking:                                                 true,
+  logged:                                                   false,
+  nombre:                                                   undefined,
+  apellido:                                                 undefined,
+  correo:                                                   undefined,
+  telefonoOficina:                                          undefined,
+  telefonoPersonal:                                         undefined,
+  direccionFisica:                                          undefined,
+  sitioweb:                                                 undefined,
+  facebookpage:                                             undefined,
+  instagram:                                                undefined,
+  nombreInmobiliaria:                                       undefined,
+  twitter:                                                  undefined,
+  youtube:                                                  undefined,
+  perfilEmpresarial:                                        undefined,
+  linkedin:                                                 undefined,
+  img:                                                      undefined,
+  logo:                                                     undefined,
+  role:                                                     undefined,
+  paqueteAdquirido:                                         undefined,
+  usuarios:                                                 undefined,
+  propietario:                                              undefined,
+  google:                                                   undefined,
+  recibirCorreo:                                            false,
+  ownerId:                                                  null,
+  lat:                                                      0,
+  lng:                                                      0
 };
 
 export const AuthProvider: FC = ({ children }) => {
-  const [auth, setAuth] = useState(initialState);
-  const router = useRouter();
+  const [auth, setAuth]                                     = useState(INITIAL_STATE);
+  const router                                              = useRouter();
   const [mostrarLogin, setMostrarLogin]                     = useState(false);
   const [mostrarRegistro, setMostrarRegistro]               = useState(false);
   const [mostrarPasswordForget, setMostrarPasswordForget]   = useState(false);
@@ -159,7 +167,9 @@ export const AuthProvider: FC = ({ children }) => {
         propietario:                                        data.user.propietario,
         google:                                             undefined,
         recibirCorreo:                                      data.user.recibirCorreo,
-        ownerId:                                            (data.user.ownerId) ? data.user.ownerId:null
+        ownerId:                                            (data.user.ownerId) ? data.user.ownerId:null,
+        lat:                                                (data.user.lat) ? data.user.lat:0,
+        lng:                                                (data.user.lng) ? data.user.lng:0
       };
       
       if(data.user.role && data.user.correo && (typeof data.user.correo == 'string')) {
@@ -381,6 +391,53 @@ export const AuthProvider: FC = ({ children }) => {
         return true;
       }
     }
+  }
+  const getUser                                             = async (id: string, access_token: string) => {
+    if(id && access_token) {
+      const response                                        = await showUser(id, access_token);
+
+      if(response && response.data){
+        return response.data.users;
+      }
+    }
+  }
+  const editProfile                                         = async (id: string, name: string, profileCompany: string | null, phone: number | null, officePhone: number | null, lastName: string, companyName: string | null, 
+    companyLocation: string, companyLat: number, companyLng: number, website: string | null, facebook: string | null, instagram: string | null, twitter: string | null, youtube: string | null,
+    linkedin: string | null, isZone: boolean, nameZone: string | null, latZone: string | null, lngZone: string | null, rangeZone: string | null, categoryZone: string | null, typeZone: string | null, roomsZone: string | null,
+    bathsZone: string | null, garagesZone: string | null, minPriceZone: string | null, maxPriceZone: string | null, minGroundZone: string | null, maxGroundZone: string | null, setZone: string | null, minBuildZone: string | null,
+    maxBuildZone: string | null, access_token: string) => {
+      if(id && name && lastName && companyLocation && String(companyLat) && String(companyLng) && access_token) {
+        const response                                      = await updateProfile(id, name, profileCompany, phone, officePhone, lastName, companyName, companyLocation, companyLat, companyLng, website, facebook, instagram, twitter, youtube,
+                                                              linkedin, isZone, nameZone, latZone, lngZone, rangeZone, categoryZone, typeZone, roomsZone, bathsZone, garagesZone, minPriceZone, maxPriceZone, minGroundZone, maxGroundZone, 
+                                                              setZone, minBuildZone, maxBuildZone, access_token);
+
+        if(response && response.errors) {
+          validate(response.errors);
+          return false;
+        }
+
+        if(response && response.ok) {
+          toast.error(response.msg);
+          return false;
+        }
+
+        if(response && response.data) {
+          
+          console.log(response.data);
+          Swal.fire({
+            title: '',
+            html: response.msg,
+            icon: 'success',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: true,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Aceptar'
+          });
+
+          return true;
+        }   
+      }
   }
 
   const crearUsuario = async (
@@ -782,7 +839,9 @@ export const AuthProvider: FC = ({ children }) => {
         setMostrarPasswordForget,
         abrirPasswordForget,
         cerrarPasswordForget,
-        forgotPassword
+        forgotPassword,
+        getUser,
+        editProfile
       }}
     >
       {children}

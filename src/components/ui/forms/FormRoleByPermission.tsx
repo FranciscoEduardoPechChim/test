@@ -8,7 +8,7 @@ import style from './Form.module.css';
 
 interface Props {
     action:                     string;
-    roleId:                     string;
+    roleId:                     string;    
     permissionId:               any;
     selectRoles:                any;
     selectPermissions:          any;
@@ -49,7 +49,7 @@ const FormRoleByPermission    = ({action, selectRoles, selectPermissions, modalC
                             {action && (action != 'show') &&
                                 <Form.Select 
                                     id              = "roleId"  
-                                    value           = {(roleId == '') ? '':roleId}
+                                    value           = {roleId}
                                     style           = {{height: 55}}
                                     onChange        = {e => {
                                         handleChangeSelect(e.target.value);
@@ -66,7 +66,7 @@ const FormRoleByPermission    = ({action, selectRoles, selectPermissions, modalC
                             {action && (action == 'show') &&
                                 <Form.Select 
                                     id              = "roleId"  
-                                    value           = {(roleId == '') ? '':roleId}
+                                    value           = {roleId}
                                     style           = {{height: 55}}
                                     disabled
                                     onChange        = {e => {
@@ -98,7 +98,7 @@ const FormRoleByPermission    = ({action, selectRoles, selectPermissions, modalC
                                             id            = "demo-multiple-chip"
                                             multiple
                                             style         = {{width: '100%'}}
-                                            value         = {(permissionId.length != 0) ? permissionId:[]}
+                                            value         = {permissionId}
                                             onChange      = {handleChangeSelectMulti}
                                             input         = {<OutlinedInput id="select-multiple-chip" label="Chip" />}
                                             renderValue   = {(selected:any) => (
@@ -129,7 +129,7 @@ const FormRoleByPermission    = ({action, selectRoles, selectPermissions, modalC
                                             multiple
                                             disabled
                                             style         = {{width: '100%'}}
-                                            value         = {(permissionId.length != 0) ? permissionId:[]}
+                                            value         = {permissionId}
                                             onChange      = {handleChangeSelectMulti}
                                             input         = {<OutlinedInput id="select-multiple-chip" label="Chip" />}
                                             renderValue   = {(selected:any) => (

@@ -8,10 +8,16 @@ import {
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Solicitud } from "interfaces/SolicitudInteface";
+import { IsProperties } from "interfaces/SolicitudInteface";
 import { fetchAceptarRechazarSolicitud } from "helpers/fetch";
 import { AuthContext } from "context/auth/AuthContext";
 import NotificacionItem from "./NotificacionItem";
 import { production } from "credentials/credentials";
+
+//Services
+import { requestStatusProperty, updateIsProperties } from '../../../services/requestService';
+//Helpers
+import { validate } from '../../../helpers/response';
 
 interface Props {
   notificaciones: boolean;
@@ -23,122 +29,157 @@ interface Props {
   setContador: Dispatch<SetStateAction<number>>;
   notificacionRef: RefObject<HTMLDivElement>;
   setSolicitudes: Dispatch<SetStateAction<Solicitud[]>>;
+  isProperties: IsProperties[];
 }
 
-const Notificaciones = (props: Props) => {
-  const {
-    notificaciones,
-    setNotificaciones,
-    target,
-    cargando,
-    solicitudes,
-    contador,
-    setContador,
-    notificacionRef,
-    setSolicitudes,
-  } = props;
-  const { auth } = useContext(AuthContext);
-  
-  const router = useRouter();
-  
-  const goToProperty = (slug: string) => router.push(`propiedades/${slug}`);
+const Notificaciones                                  = (props: Props) => {
+  const { notificaciones, setNotificaciones, target, 
+    cargando, solicitudes, contador, setContador,
+    notificacionRef, setSolicitudes, isProperties }   = props;
 
-  const mostrarNotificaciones = () => {
-    setNotificaciones(!notificaciones);
-  };
+  const access_token                                  = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const { auth }                                      = useContext(AuthContext);
+  const router                                        = useRouter();
 
-  const goToSolicitudes = () => {
+  const goToProperty                                  = (slug: string) => router.push(`propiedades/${slug}`);
+
+  const mostrarNotificaciones                         = () => { setNotificaciones(!notificaciones); };
+
+  const goToSolicitudes                               = () => {
     router.push("/perfil/propiedades-compartidas");
     setNotificaciones(false);
-  };
+  }
 
-  const aprobarSolicitud = async (
-    id: string,
-    titulo: string,
-    img: string,
-    correo: string
-  ) => {
-    const aprobacion = {
-      estado: "Aprobado",
-    };
+  const statusRequest                                 = async (id: string, status: string) => {
+    if(status && access_token) {
+      const response                                  = await requestStatusProperty(id, status, access_token);
+   
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
 
-    const res = await fetchAceptarRechazarSolicitud(
-      `solicitud/aceptar/${id}`,
-      aprobacion
-    );
+      if(response && response.data && solicitudes) {
+        const solicituds: Solicitud[]                 = solicitudes.map((solicitud:any) => {
+          if (solicitud._id === id) {
+            return { ...solicitud, estado: status };
+          }
+          return solicitud;
+        });
 
-    const body = {
-      nombre: auth.nombre,
-      apellido: auth.apellido,
-      titulo,
-      img,
-      correo,
-    };
-
-    if (res.ok) {
-      await fetch(`${production}/correos/solicitud-aprobada`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      const solicitudAprobada: Solicitud[] = solicitudes?.map((solicitud) => {
-        if (solicitud._id === id) {
-          return { ...solicitud, estado: "Aprobado" };
-        }
-        return solicitud;
-      });
-      setSolicitudes(solicitudAprobada);
-      setContador((prev) => prev - 1);
-      toast.success(res.msg);
+        setSolicitudes(solicituds);
+        setContador((prev) => prev - 1);
+        toast.success(response.msg);
+      }
     }
-  };
+  }
 
-  const rechazarSolicitud = async (
-    id: string,
-    titulo: string,
-    img: string,
-    correo: string
-  ) => {
-    const rechazo = {
-      estado: "Rechazado",
-    };
+  const handleProperties                              = async (id: string, slug: string) => {
+    if(id && slug && access_token) {
+      const response                                  = await updateIsProperties(id, false, access_token);
 
-    const body = {
-      nombre: auth.nombre,
-      apellido: auth.apellido,
-      titulo,
-      img,
-      correo,
-    };
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
 
-    const res = await fetchAceptarRechazarSolicitud(
-      `solicitud/rechazar/${id}`,
-      rechazo
-    );
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
 
-    if (res.ok) {
-      await fetch(`${production}/correos/solicitud-rechazada`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      const solicitudRechazada: Solicitud[] = solicitudes?.map((solicitud) => {
-        if (solicitud._id === id) {
-          return { ...solicitud, estado: "Rechazado" };
-        }
-        return solicitud;
-      });
-      setContador((prev) => prev - 1);
-      setSolicitudes(solicitudRechazada);
-
-      toast.success(res.msg);
+      if(response && response.data) {
+        goToProperty(slug);
+      }
     }
-  };
+  }
+  // const aprobarSolicitud = async (
+  //   id: string,
+  //   titulo: string,
+  //   img: string,
+  //   correo: string
+  // ) => {
+  //   const aprobacion = {
+  //     estado: "Aprobado",
+  //   };
+
+  //   const res = await fetchAceptarRechazarSolicitud(
+  //     `solicitud/aceptar/${id}`,
+  //     aprobacion
+  //   );
+
+  //   const body = {
+  //     nombre: auth.nombre,
+  //     apellido: auth.apellido,
+  //     titulo,
+  //     img,
+  //     correo,
+  //   };
+
+  //   if (res.ok) {
+  //     await fetch(`${production}/correos/solicitud-aprobada`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-type": "application/json",
+  //       },
+  //       body: JSON.stringify(body),
+  //     });
+  //     const solicitudAprobada: Solicitud[] = solicitudes?.map((solicitud) => {
+  //       if (solicitud._id === id) {
+  //         return { ...solicitud, estado: "Aprobado" };
+  //       }
+  //       return solicitud;
+  //     });
+  //     setSolicitudes(solicitudAprobada);
+  //     setContador((prev) => prev - 1);
+  //     toast.success(res.msg);
+  //   }
+  // };
+
+  // const rechazarSolicitud = async (
+  //   id: string,
+  //   titulo: string,
+  //   img: string,
+  //   correo: string
+  // ) => {
+  //   const rechazo = {
+  //     estado: "Rechazado",
+  //   };
+
+  //   const body = {
+  //     nombre: auth.nombre,
+  //     apellido: auth.apellido,
+  //     titulo,
+  //     img,
+  //     correo,
+  //   };
+
+  //   const res = await fetchAceptarRechazarSolicitud(
+  //     `solicitud/rechazar/${id}`,
+  //     rechazo
+  //   );
+
+  //   if (res.ok) {
+  //     await fetch(`${production}/correos/solicitud-rechazada`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-type": "application/json",
+  //       },
+  //       body: JSON.stringify(body),
+  //     });
+
+  //     const solicitudRechazada: Solicitud[] = solicitudes?.map((solicitud) => {
+  //       if (solicitud._id === id) {
+  //         return { ...solicitud, estado: "Rechazado" };
+  //       }
+  //       return solicitud;
+  //     });
+  //     setContador((prev) => prev - 1);
+  //     setSolicitudes(solicitudRechazada);
+
+  //     toast.success(res.msg);
+  //   }
+  // };
 
   return (
     <>
@@ -176,14 +217,17 @@ const Notificaciones = (props: Props) => {
         ) : null}
       </div>
       <NotificacionItem
-        target={target}
-        cargando={cargando}
-        solicitudes={solicitudes}
-        notificaciones={notificaciones}
-        goToProperty={goToProperty}
-        aprobarSolicitud={aprobarSolicitud}
-        rechazarSolicitud={rechazarSolicitud}
-        goToSolicitudes={goToSolicitudes}
+        target            = {target}
+        cargando          = {cargando}
+        solicitudes       = {solicitudes}
+        notificaciones    = {notificaciones}
+        goToProperty      = {goToProperty}
+        // aprobarSolicitud  = {aprobarSolicitud}
+        // rechazarSolicitud = {rechazarSolicitud}
+        statusRequest     = {statusRequest}
+        goToSolicitudes   = {goToSolicitudes}
+        isProperties      = {isProperties}
+        handleProperties  = {handleProperties}
       />
     </>
   );

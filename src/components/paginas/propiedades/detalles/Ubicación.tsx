@@ -15,14 +15,16 @@ import { MapContext } from "context/map/MapContext";
 import { SocketContext } from "context/socket/SocketContext";
 
 //Services
-import { requestProperty } from '../../../../services/requestService';
+import { requestProperty, destroyRequest } from '../../../../services/requestService';
 import { storeFavorite } from '../../../../services/favoriteService';
 //Helpers
 import { validate } from '../../../../helpers/response';
+//Components
+import Loading from "components/ui/loading/Loading";
 
 interface Props {
   inmuebles: InmueblesUsuario;
-    
+  isRequest: boolean;
 }
 
 const containerStyle = {
@@ -36,8 +38,8 @@ const options = {
   zoomControl: true,
   fullscreenControl: true,
 };
-
-const Ubicacion                                 = ({ inmuebles }: Props) => {
+ 
+const Ubicacion                                 = ({ inmuebles, isRequest }: Props) => {
   const access_token                            = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const { auth, validRole }                     = useContext(AuthContext);
   const { ubicacionUsuario }                    = useContext(MapContext);
@@ -45,6 +47,8 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
   const [direcciones, setDirecciones]           = useState<any>();
   const { socket }                              = useContext(SocketContext);
   const [isRole, setIsRole]                     = useState(false);
+  const [isValid, setIsValid]                   = useState(isRequest);
+  const [loading, setLoading]                   = useState(false);
 
   const addFavorite                             = async (id: string) => {
     
@@ -69,23 +73,47 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
 
   const shareProperty                           = async () => {
     if(inmuebles && inmuebles.usuario.uid && auth && auth.uid && access_token && socket) {
+      setLoading(true);
+
+      let isValid                               = false;
       const response                            = await requestProperty(auth.uid, inmuebles.usuario.uid, inmuebles._id, 'Pendiente', access_token);
        
       if(response && response.errors) {
         validate(response.errors);
-        return false;
       }
 
       if(response && response.ok) {
         toast.error(response.msg);
-        return false;
       }
 
       if(response && response.data) {
+        isValid                                 = true;
         socket.emit("solicitud", response.data.requests);
         toast.success(response.msg);
       }    
+
+      setIsValid(isValid);
+      setLoading(false);
     } 
+  }
+
+  const cancelProperty                          = async () => {
+    if(auth && auth.uid && inmuebles && inmuebles._id && access_token) {
+      setLoading(true);
+      
+      const response                            = await destroyRequest(inmuebles._id, auth.uid, access_token);
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+      }
+
+      if(response && response.data) {
+        toast.success(response.msg);
+        setIsValid(false);
+      }
+     
+      setLoading(false);
+    }
   }
 
   const comoLlegar                              = () => setComoLLegar(!comoLLegar);
@@ -123,7 +151,6 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
 
     initRole();
   }, [direcciones, validRole]);
-
 
   return (
     <section className="mt-5">
@@ -206,11 +233,12 @@ const Ubicacion                                 = ({ inmuebles }: Props) => {
                 <div className="d-flex justify-content-center col-12 text-center my-5">
                  {auth.uid ? (
                    <>
-                     {auth.uid !== inmuebles.usuario._id ? (
-                       <Button
-                         titulo   = "Solicitar compartir"
-                         onClick  = {shareProperty}
-                       />
+                     {(auth.uid !== inmuebles.usuario._id) ? (
+                      (loading) ? <Loading />:
+                      <Button
+                        titulo   = {(!isValid) ? "Solicitar compartir":"Cancelar solicitud"}
+                        onClick  = {(!isValid) ? shareProperty:cancelProperty}
+                      />
                      ) : null}
                    </>
                  ) : null}

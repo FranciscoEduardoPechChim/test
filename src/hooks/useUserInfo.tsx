@@ -7,8 +7,7 @@ import { Usuario, UsuariosDir } from '../interfaces/UserInterface';
 
 //Services
 import { showUsersByOwner } from '../services/userService';
-import { getPropertiesByUser } from '../services/propertyService';
-
+import { getPropertiesByUser, getPropertiesByFollowers } from '../services/propertyService';
 
 export const useUserInfo = (uid: string | undefined | null) => {
   const [user, setUser] = useState<Usuario>();
@@ -31,16 +30,16 @@ export const useUserInfo = (uid: string | undefined | null) => {
   return { user, loading };
 };
 
-export const useUserProperties                        = (id: string, offset: number, access_token: string) => {
+export const useUserProperties                        = (id: string, offset: number, max: number, access_token: string) => {
   const [properties, setProperties]                   = useState<any>();
-  const [limit, setLimit]                             = useState(12);
+  const [limit, setLimit]                             = useState(max);
   const [loading, setLoading]                         = useState(true);
   const [total, setTotal]                             = useState(0);
-  const { orden, user }                               = useContext(InmuebleContext)
+  const { orden, user, userFavorite }                 = useContext(InmuebleContext)
 
   const init                                          = async () => {
     if(id && access_token && String(offset)) {
-      const response                                  = await getPropertiesByUser(id, limit, offset, orden, user, access_token);
+      const response                                  = await getPropertiesByUser(id, limit, offset, orden, user, userFavorite, access_token);
 
       if(response && response.data) {
         setProperties(response.data.properties);
@@ -53,6 +52,39 @@ export const useUserProperties                        = (id: string, offset: num
   useEffect(() => {
     init();
   }, [orden, total, id, limit, offset, user]);
+
+  return { 
+    properties:                                       properties, 
+    loading:                                          loading, 
+    total:                                            total, 
+    setProperties:                                    setProperties, 
+    setLimit:                                         setLimit,
+    init:                                             init
+  };
+}
+
+export const useFollowerProperties                    = (id: string, offset: number, access_token: string) => {
+  const [properties, setProperties]                   = useState<any>();
+  const [limit, setLimit]                             = useState(12);
+  const [loading, setLoading]                         = useState(true);
+  const [total, setTotal]                             = useState(0);
+  const { status, userId }                            = useContext(InmuebleContext);
+
+  const init                                          = async () => {
+    if(id && access_token && String(offset) && userId) {
+      const response                                  = await getPropertiesByFollowers(id, limit, offset, status, userId, access_token);
+      
+      if(response && response.data) {
+        setProperties(response.data.properties);
+        setTotal((typeof response.data.total == 'number') ? response.data.total:0);
+        setLoading(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+    init();
+  }, [total, id, limit, offset, status, userId]);
 
   return { 
     properties:                                       properties, 

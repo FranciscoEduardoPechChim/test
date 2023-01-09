@@ -1,4 +1,4 @@
-import { createContext, Dispatch, FC, SetStateAction, useState } from "react";
+import { createContext, Dispatch, FC, SetStateAction, useState, useContext } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import {
   InmueblesResponse,
@@ -7,7 +7,7 @@ import {
 } from "interfaces/InmueblesInterface";
 import {
   BorrarInmuebleResp,
-  CrearInmuebleResp,
+  CrearInmuebleResp, 
 } from "interfaces/CrearInmuebleInterface";
 import {
   fetchActualizarInmueble,
@@ -21,6 +21,9 @@ import { Estado } from "interfaces/SolicitudInteface";
 import { validate } from '../../helpers/response';
 //Services
 import { storeProperty, updateImagesExists, updateProperty, getProperty, validAliasInProperty, loadImagesProperty, destroyProperty, updatePropertyByStatus } from "../../services/propertyService";
+//Content
+import { SocketContext } from "context/socket/SocketContext";
+import { AuthContext } from "context/auth/AuthContext";
 
 export interface InmuebleData {
   titulo: string;
@@ -159,6 +162,12 @@ interface ContextProps {
   setEstado: Dispatch<SetStateAction<Estado | string>>;
   misCompUser: string;
   setMisCompUser: Dispatch<SetStateAction<string>>;
+  userFavorite: string;
+  setUserFavorite: Dispatch<SetStateAction<string>>;
+  status: number;
+  setStatus: Dispatch<SetStateAction<number>>;
+  userId: string;
+  setUserId: Dispatch<SetStateAction<string>>;
 }
 
 type EditarInmueble = "Información" | "Imágenes";
@@ -209,16 +218,21 @@ const InmuebleState: ActualizarInmueble = {
   secadora: undefined,
 };
 
-export const InmuebleProvider: FC = ({ children }) => {
-  const [user,setUser]            = useState<string>('all');
-  const [orden, setOrden] = useState<string>("createdAt");
-  const [solicitud, setSolicitud] = useState("Pendiente");
-  const [editar, setEditar] = useState<EditarInmueble>();
-  const [idInmueble, setIdInmueble] = useState("");
+export const InmuebleProvider: FC         = ({ children }) => {
+  const [user,setUser]                    = useState<string>('all');
+  const [userId, setUserId]               = useState('all');
+  const [userFavorite, setUserFavorite]   = useState('');
+  const { socket }                        = useContext(SocketContext);
+  const { auth }                          = useContext(AuthContext);
+  const [orden, setOrden]                 = useState<string>("createdAt");
+  const [solicitud, setSolicitud]         = useState("Pendiente");
+  const [editar, setEditar]               = useState<EditarInmueble>();
+  const [idInmueble, setIdInmueble]       = useState("");
   const [inmuebleState, setInmuebleState] = useState(InmuebleState);
-  const [dueño, setDueño] = useState("");
-  const [estado, setEstado] = useState<Estado | string>("Aprobado");
-  const [misCompUser, setMisCompUser] = useState("");
+  const [dueño, setDueño]                 = useState("");
+  const [estado, setEstado]               = useState<Estado | string>("Aprobado");
+  const [misCompUser, setMisCompUser]     = useState("");
+  const [status, setStatus]               = useState(0);
 
   const crearInmueble = async (data: InmuebleData) => {
     const resp = await fetchInmueble("inmuebles", data);
@@ -286,7 +300,7 @@ export const InmuebleProvider: FC = ({ children }) => {
     others: string | null, address: string, description: string, userId: string, images: any, access_token: string) => {
       if(title && categoryId && typeId && setId && lat && lng && address && String(price) && String(commission) && String(m2Property) && String(baths) && String(parking) && String(m2Build) && String(rooms) && String(halfbaths) && description && userId && access_token) {
  
-        const response                          = await storeProperty(title, categoryId, typeId, setId, alias, lat, lng, price, commission, antiquity, m2Property, baths, parking, water, gas, privatesecurity, maintenance, disabled, m2Build, rooms, halfbaths, level, light, wifi, school, swimmingpool, furnished, beds, livingroom, kitchen, refrigerator, microwave, oven, dryingmachine, closet, diningroom, aa, stove, minioven, washingmachine, others, address, description, userId, access_token);
+        const response                          = await storeProperty(title, categoryId, typeId, setId, alias, lat, lng, price, commission, antiquity, m2Property, baths, parking, water, gas, privatesecurity, maintenance, disabled, m2Build, rooms, halfbaths, level, light, wifi, school, swimmingpool, furnished, beds, livingroom, kitchen, refrigerator, microwave, oven, dryingmachine, closet, diningroom, aa, stove, minioven, washingmachine, others, address, description, userId, images.length, access_token);
 
         if(response && response.errors) {
             validate(response.errors);
@@ -298,7 +312,7 @@ export const InmuebleProvider: FC = ({ children }) => {
             return false;
         }
 
-        if(response && response.data) {
+        if(response && auth && auth.uid && response.data) {
           if(images.length > 0) {
             const load                          = await loadImagesProperty('create', userId, response.data.properties[0]._id, images, [], [], access_token);
 
@@ -313,6 +327,7 @@ export const InmuebleProvider: FC = ({ children }) => {
             }
           }
 
+          socket?.emit("property", response.data.properties[0]);
           toast.success(response.msg);
           return true;
         }
@@ -468,7 +483,13 @@ export const InmuebleProvider: FC = ({ children }) => {
         removeProperty,
         changeStatusProperty,
         showProperty,
-        editProperty
+        editProperty,
+        userFavorite,
+        setUserFavorite,
+        userId,
+        setUserId,
+        status,
+        setStatus
       }}
     >
       <ToastContainer />

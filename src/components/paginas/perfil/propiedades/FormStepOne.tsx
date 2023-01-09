@@ -54,7 +54,7 @@ const FormStepOne = (props: Props) => {
   const { validAlias }              = useContext(InmuebleContext);
   const { categorias, cargando }    = useCategories();
   const { loading, propertyTypes }  = useTipoPropiedad();
-  const { loadingSet, sets }        = useSets((access_token) ? access_token:'');
+  const { loadingSet, sets }        = useSets();
 
   const longitudTitulo = titulo.length;
 

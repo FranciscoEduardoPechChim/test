@@ -1,20 +1,21 @@
 import { FormEvent } from "react";
 import styles from "./Button.module.css";
 
-type Btn = "Primary" | "Secondary" | "Green" | "Add" | "Disabled";
+type Btn = "Primary" | "Secondary" | "Green" | "Add" | "Disabled" | "Danger";
 
 interface Props {
   titulo: string;
   onClick?: any;
   btn?: Btn;
+  type?: string;
   style?: any;
 }
 
-const Button = ({ titulo, onClick, btn = "Primary", style }: Props) => {
+const Button = ({ titulo, onClick, type, btn = "Primary", style }: Props) => {
   return (
     <>
       {btn === "Primary" ? (
-        <button className={`${styles.primary} pointer`} onClick={onClick} style={style}>
+        <button type={(typeof type != 'string') ? type:"submit"} className={`${styles.primary} pointer`} onClick={onClick} style={style}>
           {titulo}
         </button>
       ) : null}
@@ -24,20 +25,26 @@ const Button = ({ titulo, onClick, btn = "Primary", style }: Props) => {
         </div>
       ) : null}
       {btn === "Green" ? (
-        <button className={`${styles.Green} pointer`} onClick={onClick} style={style}>
+        <button type={(typeof type != 'string') ? type:"submit"} className={`${styles.Green} pointer`} onClick={onClick} style={style}>
           <i className="bi bi-plus-lg"></i> {titulo}
         </button>
       ) : null}
       {btn === "Add" ? (
-        <button className={`${styles.add} pointer`} onClick={onClick} style={style}>
+        <button type={(typeof type != 'string') ? type:"submit"} className={`${styles.add} pointer`} onClick={onClick} style={style}>
           {titulo}
         </button>
       ) : null}
       {btn === "Disabled" ? (
-        <button disabled className={styles.disabled} style={style}>
+        <button type={(typeof type != 'string') ? type:"submit"} disabled className={styles.disabled} style={style}>
           {titulo}
         </button>
       ) : null}
+
+      {(btn === "Danger")  &&
+        <button type={(typeof type != 'string') ? type:"submit"} className={`${styles.Danger} pointer`} style={style}>
+          {titulo}
+        </button>
+      }
     </>
   );
 };

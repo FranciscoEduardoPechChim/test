@@ -28,7 +28,7 @@ const PurpleHeader              = () => {
                 </Link>
               </li>
             }
-            {hasPermission('favorites') &&
+            {hasPermission('admin.favorites') &&
               <li className="nav-item mt-2">
                 <Link href="/perfil/mis-favoritos">
                   <div className={`${styles.purpleLinks} pointer`}>
@@ -37,15 +37,15 @@ const PurpleHeader              = () => {
                 </Link>
               </li>
             }
-            {hasPermission('profile') &&
+            {/* {hasPermission('profile') &&
               <li className="nav-item mt-2">
                 <Link href="/perfil">
                   <div className={`${styles.purpleLinks} pointer`}>
-                    Mi Cuenta
+                    Mi Perfil
                   </div>
                 </Link>
               </li>
-            }
+            } */}
             {hasPermission('shareproperties') &&
               <li className="nav-item mt-2">
                 <Link href="/perfil/propiedades-compartidas">
@@ -59,7 +59,7 @@ const PurpleHeader              = () => {
               <li className="nav-item mt-2">
                 <Link href="/perfil/historial-de-inmueble">
                   <div className={`${styles.purpleLinks}  pointer`}>
-                    Historial de Inmuebles
+                    Historial de Inmuebles 
                   </div>
                 </Link>
               </li>

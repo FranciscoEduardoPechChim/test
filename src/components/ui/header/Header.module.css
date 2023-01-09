@@ -200,7 +200,7 @@
   overflow-y: scroll;
   width: 100%;
   min-height: 0px;
-  max-height: 550px;
+  max-height: 350px;
 }
 .notContainer::-webkit-scrollbar {
   width: 5px;

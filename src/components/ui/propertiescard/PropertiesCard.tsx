@@ -16,13 +16,15 @@ interface Props {
   imgs: any;
   isActive: boolean;
   title: string;
-  handleDelete: (pid: string) => Promise<void>;
-  handleStatus: (pid: string, status: boolean) => Promise<void>;
-  handleEdit:   (pid: string) => Promise<void>;
+  isFollower: boolean;
+  handleDelete?: (pid: string) => Promise<void>;
+  handleStatus?: (pid: string, status: boolean) => Promise<void>;
+  handleEdit?:   (pid: string) => Promise<void>;
 }
 
 const PropertiesCard                                                                        = (props: Props) => {
-  const { id, slug, imgs, isActive, title, handleDelete, handleStatus, handleEdit }         = props;
+  const { id, slug, imgs, isActive, title, isFollower, handleDelete, handleStatus, 
+    handleEdit }                                                                            = props;
   const { validRole }                                                                       = useContext(AuthContext);
   const router                                                                              = useRouter();
   const [isRole, setIsRole]                                                                 = useState(false);
@@ -78,7 +80,7 @@ const PropertiesCard                                                            
             </div>
           </div>
         </div>
-        {isRole &&
+        {isRole && (!isFollower) &&
           <div
             className="btn-group"
             role="group"
@@ -90,7 +92,7 @@ const PropertiesCard                                                            
               placement = "top"
             >
               <button
-                onClick={() => handleStatus(id, (isActive) ? false:true)}
+                onClick={() => (handleStatus) ? handleStatus(id, (isActive) ? false:true):null}
                 className={`${styles.customBtn1} btn`}
               />
             </Tooltip>
@@ -98,7 +100,7 @@ const PropertiesCard                                                            
             {isActive &&
               <CopyToClipboard
                 onCopy={compartir}
-                text={`https://red1a1.com/app/propiedades/${slug}`}
+                text={`https://develop.red1a1.com/app/propiedades/${slug}`}
               >
                 <Tooltip
                   title="Copiar"
@@ -114,7 +116,7 @@ const PropertiesCard                                                            
               placement="top"
             >
               <button
-                onClick   = {() => handleEdit(slug)}
+                onClick   = {() => (handleEdit) ? handleEdit(slug):null}
                 type      = "button"
                 className = {`${styles.customBtn3} btn`}
               >
@@ -126,7 +128,7 @@ const PropertiesCard                                                            
               placement="top"
             >
               <button
-                onClick={() => handleDelete(id)}
+                onClick={() => (handleDelete) ? handleDelete(id):null}
                 type="button"
                 className={`${styles.customBtn4} btn`}
               />

@@ -5,6 +5,9 @@ import { useSocket } from "../../hooks/useSocket";
 import { AuthContext } from "../auth/AuthContext";
 import { ChatContext } from "../chat/ChatContext";
 
+//Credencials
+import { url } from '../../credentials/credentials';
+
 interface ContextProps {
   socket: Socket | undefined;
   online: boolean | undefined;
@@ -17,13 +20,7 @@ export const SocketProvider: FC           = ({ children }) => {
   const { auth }                          = useContext(AuthContext);
   const { dispatch }                      = useContext(ChatContext);
   const { socket, online, conectarSocket, 
-    desconectarSocket }                   = useSocket(
-   // "https://red1a1-back.herokuapp.com"
-      //"https://web-production-ead1.up.railway.app",
-    //"https://develop.red1a1.com"
-      "http://localhost:8080", 
-    (access_token) ? access_token:''
-  );
+    desconectarSocket }                   = useSocket(url, (access_token) ? access_token:'');
 
   useEffect(() => {
     if (auth.logged) {

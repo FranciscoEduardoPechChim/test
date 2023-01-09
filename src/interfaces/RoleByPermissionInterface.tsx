@@ -1,15 +1,17 @@
+import { Role } from './RoleInterface';
+import { Permission } from './PermissionInterface';
+
 export interface RoleByPermission {
     _id?:                   string;
-    roleId:                 string;
-    roleName:               string;
-    permissionId:           string;
-    permissionName:         string;
+    roleId:                 Role;
+    permissionId:           Permission;
     deleted?:               boolean;
 }
 
 export interface PermissionsByGroup {
-    _id:                    string;
-    roles:                  string;
-    permissions:            RoleByPermission[];
+    _id?:                   string;
+    role?:                  Role[];
+    roles:                  Role | string;
+    permissions:            RoleByPermission[] | string;
     deleted?:               boolean;
 }

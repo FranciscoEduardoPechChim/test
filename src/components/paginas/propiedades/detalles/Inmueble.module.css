@@ -14,6 +14,10 @@
    color: #13a407;
 }
 
+.fullname:hover {
+   color: slateblue
+}
+
 .inmuebleTipo {
    font-family: "Open Sans";
    font-style: normal;
@@ -76,6 +80,21 @@
    hyphens: auto;
 }
 
+.btnDetalle {
+   border: none;
+   border-radius: 25px;
+   padding: 5px 20px;
+   background-color: #e54a21;
+   color: white;
+   font-family: "Open Sans";
+   font-size: 18px;
+   transition: 250ms;
+ }
+ .btnDetalle:hover {
+   background-color: #7149bc;
+   transition: 250ms;
+ }
+ 
 .acordionContent {
    padding: 0;
 }

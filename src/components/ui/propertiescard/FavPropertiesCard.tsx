@@ -106,7 +106,7 @@ const FavPropertiesCard                                                 = (props
       
             <CopyToClipboard
               onCopy={compartir}
-              text={`https://red1a1.com/app/propiedades/${slug}`}
+              text={`https://develop.red1a1.com/app/propiedades/${slug}`}
               >
                 <Tooltip
                   title     = "Compartir"

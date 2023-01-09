@@ -18,8 +18,6 @@ export const getRolesWithoutPermissions             = async (id: string, access_
             headers: myHeaders
         };
 
-
-
         const response                              = await fetch(`${development}/roles/withoutpermissions/${(id)}`, requestOptions);
         const result:roleResponse                   = await response.json();
       

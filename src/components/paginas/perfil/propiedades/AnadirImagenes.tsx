@@ -80,9 +80,9 @@ const AnadirImagenes                    = (props: Props) => {
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: ['image/png', 'image/jpg', 'image/jpeg', 'image/blob'],
-    maxFiles: 20,
+    maxFiles: 50,
     onDrop: useCallback((acceptedFiles: any, rejectFiles: any) => {
-      if(acceptedFiles.length < 20) {
+      if(acceptedFiles.length < 50) {
 
         acceptedFiles.map((file: any) => {
             Object.assign(file, {
@@ -93,7 +93,7 @@ const AnadirImagenes                    = (props: Props) => {
         });
 
       }else {
-        toast.error('El máximo de imagenes permitido es 20');
+        toast.error('El máximo de imágenes permitido es 50');
         setImages([]);
       }
 

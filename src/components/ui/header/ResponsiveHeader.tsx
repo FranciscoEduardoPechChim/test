@@ -4,20 +4,43 @@ import styles from "./Header.module.css";
 import { AuthContext } from "context/auth/AuthContext";
 import LoginModal from "../authmodal/LoginModal";
 
-const ResponsiveHeader = () => {
+//Middlewares
+import { hasPermission } from '../../../middlewares/roles';
+//Material UI
+import { Box, InputLabel, MenuItem, FormControl, Select, SelectChangeEvent } from '@mui/material';
+//Context
+import { MapContext } from "context/map/MapContext";       
+
+const ResponsiveHeader                      = () => {
   const { auth, abrirLogin, abrirRegistro } = useContext(AuthContext);
-  const [mostrar, setMostrar] = useState(true);
+  const [mostrar, setMostrar]               = useState(true);
+  const { setUbicacionUsuario, 
+    setCoordenadas }                        = useContext(MapContext);
+  const [ location, setLocation ]           = useState(0);
 
-  const cerrarMenu = () => setMostrar(true);
+  const cerrarMenu                          = () => setMostrar(true);
 
-  const openLogin = () => {
+  const openLogin                           = () => {
     cerrarMenu();
     abrirLogin();
   };
 
-  const openRegister = () => {
+  const openRegister                        = () => {
     cerrarMenu();
     abrirRegistro();
+  };
+
+  const handleChangeSelect                  = (event: SelectChangeEvent) => {
+
+    if(Number(event.target.value) == 0) {
+      setUbicacionUsuario({ lat: 19.4326078, lng: -99.133207 }); 
+      setCoordenadas({ lat: 19.4326078, lng: -99.133207 }); 
+    }else {
+      setUbicacionUsuario({ lat: 25.7825453, lng: -80.2994984 }); 
+      setCoordenadas({ lat: 25.7825453, lng: -80.2994984 }); 
+    }
+
+    setLocation(Number(event.target.value));
   };
 
   return (
@@ -56,6 +79,19 @@ const ResponsiveHeader = () => {
             <div className={styles.headerLinkItem} onClick={openLogin}>
               Inicia sesión
             </div>
+            <div className="mx-4">
+              <Select
+                    sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                    labelId   = "demo-simple-select-label"
+                    id        = "demo-simple-select"
+                    value     = {String(location)}
+                    label     = "location"
+                    onChange  = {handleChangeSelect}
+                  >
+                    <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
+                    <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
+              </Select>
+            </div>
           </div>
         ) : (
           <div>
@@ -66,52 +102,73 @@ const ResponsiveHeader = () => {
                 <span className={styles.headerLinkItem}>Inicio</span>
               </Link>
             </div>
-            <div onClick={cerrarMenu}>
-              <Link href="/perfil/mis-propiedades">
-                <span className={styles.headerLinkItem}>Mis propiedades</span>
-              </Link>
-            </div>
-            <div onClick={cerrarMenu}>
-              <Link href="/perfil/mis-favoritos">
-                <span className={styles.headerLinkItem}>Mis favoritos</span>
-              </Link>
-            </div>
-            <div onClick={cerrarMenu}>
-              <Link href="/perfil">
-                <span className={styles.headerLinkItem}>Mi cuenta</span>
-              </Link>
-            </div>
-            <div onClick={cerrarMenu}>
-              <Link href="/perfil/propiedades-compartidas">
-                <span className={styles.headerLinkItem}>
-                  Propiedades compartidas
-                </span>
-              </Link>
-            </div>
-            <div onClick={cerrarMenu}>
-              <Link href="/perfil/historial-de-inmueble">
-                <span className={styles.headerLinkItem}>
-                  Historial de inmueble
-                </span>
-              </Link>
-            </div>
-
-            {auth.role === "Individual" ||
-            auth.role === "Usuario" ||
-            auth.role === "UsuarioPagado" ? null : (
+            {hasPermission('properties') &&
+              <div onClick={cerrarMenu}>
+                <Link href="/perfil/mis-propiedades">
+                  <span className={styles.headerLinkItem}>Mis propiedades</span>
+                </Link>
+              </div>
+            }
+             {hasPermission('admin.favorites') &&
+              <div onClick={cerrarMenu}>
+                <Link href="/perfil/mis-favoritos">
+                  <span className={styles.headerLinkItem}>Mis favoritos</span>
+                </Link>
+              </div>
+            }
+            {hasPermission('profile') &&
+              <div onClick={cerrarMenu}>
+                <Link href="/perfil">
+                  <span className={styles.headerLinkItem}>Mi perfil</span>
+                </Link>
+              </div>
+            }
+            {hasPermission('shareproperties') &&
+              <div onClick={cerrarMenu}>
+                <Link href="/perfil/propiedades-compartidas">
+                  <span className={styles.headerLinkItem}>
+                    Propiedades compartidas
+                  </span>
+                </Link>
+              </div>
+            }
+            {hasPermission('estates') &&
+              <div onClick={cerrarMenu}>
+                <Link href="/perfil/historial-de-inmueble">
+                  <span className={styles.headerLinkItem}>
+                    Historial de inmueble 
+                  </span>
+                </Link>
+              </div>
+            }
+  
+            {(!(auth.role === "Individual" || auth.role === "Usuario" || auth.role === "UsuarioPagado")) && hasPermission('users') &&
               <div onClick={cerrarMenu}>
                 <Link href="/perfil/mis-usuarios">
                   <span className={styles.headerLinkItem}>Mis Usuarios</span>
                 </Link>
               </div>
-            )}
-            {auth.role === "Administrador" ? (
+            }
+            {(auth.role === "Administrador") && hasPermission('admin.dasboard') && 
               <div onClick={cerrarMenu}>
                 <Link href="/dashboard">
                   <span className={styles.headerLinkItem}>Dashboard</span>
                 </Link>
               </div>
-            ) : null}
+            }
+            <div className="mx-4">
+              <Select
+                    sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                    labelId   = "demo-simple-select-label"
+                    id        = "demo-simple-select"
+                    value     = {String(location)}
+                    label     = "location"
+                    onChange  = {handleChangeSelect}
+                  >
+                    <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
+                    <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
+              </Select>
+            </div>
           </div>
         )}
       </div>

@@ -21,6 +21,7 @@ import { useRoleByPermissions } from '../../../../hooks/useRoleByPermissions';
 import styles from "./MyRoleByPermissions.module.css";
 //Validations
 import { isNotEmpty } from '../../../../helpers/validations';
+import { confirmForgotPassword } from "services";
 
 const MyListRoleByPermissions                                                       = () => {
     const access_token                                                              = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
@@ -34,7 +35,7 @@ const MyListRoleByPermissions                                                   
     const [ errorRoleId, setErrorRoleId ]                                           = useState([]);
     const [ errorPermissionId, setErrorPermissionId ]                               = useState([]);
     const [ permissionTagsKey, setPermissionTagsKey ]                               = useState<any[]>([]);
-    const [ permissionTags, setPermissionTags ]                                     = useState<string[]>([]);
+    const [ permissionTags, setPermissionTags ]                                     = useState<any[]>([]);
     const [ permissions, setPermissions ]                                           = useState<any>([]);
     const [ selectRole, setSelectRole ]                                             = useState('');
     const { loadings, roleByPermissions, roles, init, edit, updateRoles }           = useRoleByPermissions((access_token) ? access_token:'');
@@ -42,7 +43,7 @@ const MyListRoleByPermissions                                                   
     const columns = [
         {
             name:       'Roles',
-            selector:   (row:any) => row.roles,
+            selector:   (row:any) => row.roles.role,
             sortable:   true
         },
         {
@@ -50,20 +51,20 @@ const MyListRoleByPermissions                                                   
             selector:   (row:any) => {
                 if(!row.deleted) {
                     for(let i=0; i < row.permissions.length; i++) {
-                        if(!row.permissions[i].deleted) {
-                            return row.permissions[0].permissionName + '...';
+                        if(!row.permissions[i].permissionId.deleted) {
+                          return row.permissions[i].permissionId.name + '...';
                         }
                     }
                 }
 
-                return row.permissions[0].permissionName + '...'; 
+                return 'Desactivado';
             },
             sortable:   true
         },
         {
             name:       'Acciones',
             selector:   (row:any) => row.actions,
-            cell:       (row:any) => <ActionComponent actions={(!row.deleted) ? ['show', 'edit', 'delete']:['restore']} selectAction={selectAction} selectId={selectId} id={row._id} handleChange={(event: SelectChangeEvent, id: string) => handleChangeEvent(event, id)} />,
+            cell:       (row:any) => <ActionComponent actions={(!row.deleted) ? ['show', 'edit', 'delete']:['restore']} selectAction={selectAction} selectId={selectId} id={row.roles._id} handleChange={(event: SelectChangeEvent, id: string) => handleChangeEvent(event, id)} />,
         },
     ];
 
@@ -75,29 +76,29 @@ const MyListRoleByPermissions                                                   
     }
 
     const getRoleByPermission                                                       = async (id: string, access_token: string, value: any) => {
-        const response                                                              = await showRoleByPermission(id, access_token);
-        const responsePermission                                                    = await showPermissionByRole((response) ? response._id:'', access_token);
-        const resultName                                                            = [];  
-        const resultKey                                                             = [];
+       if(id && value && access_token) {
+        const responsePermission                                                    = await showPermissionByRole(id, access_token);
+        const responseRoleAndPermission                                             = await showRoleByPermission(id, access_token);
+        let name                                                                    = [];
+        let keys                                                                    = [];
 
-        await edit((response) ? response._id:'');
-
-        if(response && responsePermission) {
-            setPermissions(responsePermission);
-            setSelectRole(response._id);
-    
-            for(let i=0; i < response.permissions.length; i++) {
-                if(!response.permissions[i].deleted){
-                    resultKey.push(response.permissions[i].permissionId);
-                    resultName.push(response.permissions[i].permissionName);
+        if(typeof responseRoleAndPermission == 'object' && responseRoleAndPermission.permissions && (typeof responseRoleAndPermission.permissions != 'string')) {
+        
+            for(let i=0; i < responseRoleAndPermission.permissions.length; i++) {
+                if(!responseRoleAndPermission.permissions[i].deleted){
+                    keys.push(responseRoleAndPermission.permissions[i].permissionId._id);
+                    name.push(responseRoleAndPermission.permissions[i].permissionId.name);
                 }
             }
-               
-            setPermissionTagsKey(resultKey);
-            setPermissionTags(resultName);
+
+            setPermissionTagsKey(keys);
+            setPermissionTags(name);
+            setPermissions(responsePermission);
+            setSelectRole((responseRoleAndPermission.roles && (typeof responseRoleAndPermission.roles != 'string') && responseRoleAndPermission.roles._id) ? responseRoleAndPermission.roles._id:'');
             setActions(value);
             setModalShow(true);
         }
+       }
     }
 
     const formValidate                                                              = (name: string, message: any) => {
@@ -170,23 +171,24 @@ const MyListRoleByPermissions                                                   
 
     const handleChangeSelectMulti                                                   = (event: SelectChangeEvent<typeof permissionTags>) => {
         const {target: { value }}                                                   = event;
-        const permissionArray                                                       = (typeof value === 'string') ? value.split(',') : value;
-        const result                                                                = [];
+        const array                                                                 = (typeof value === 'string') ? value.split(',') : value;
+        let result                                                                  = [];
 
         for(let i=0; i< permissions.length; i++) {
-            if(permissionArray.includes(permissions[i].name)) {
+            if(array.includes(permissions[i].name)) {
                 result.push(permissions[i]._id);
             }
         }
 
+    
         setPermissionTagsKey(result);
-        setPermissionTags(permissionArray);
+        setPermissionTags(array);
     }
 
     const handleChangeSelect                                                        = async (input: any) => { 
         if(input && access_token) {
             const response                                                          = await showPermissionByRole(input, access_token);
-
+            
             setPermissions(response);
             setSelectRole(input);
         }
@@ -235,7 +237,7 @@ const MyListRoleByPermissions                                                   
                                 columns                     = {columns}
                                 data                        = {roleByPermissions}
                                 sortIcon                    = {<SortIcon />}
-                                noDataComponent             = {<span className='my-4'>Al parecer aún no tienes ningún permiso</span>}
+                                noDataComponent             = {<span className='my-4'>Al parecer aún no tienes ningún rol con permisos</span>}
                                 pagination 
                                 paginationComponentOptions  = {paginationComponentOptions}
                                 subHeader

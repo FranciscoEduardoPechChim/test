@@ -13,32 +13,7 @@ import NotFound from "../404";
 
 //Services
 import { getPropertyByURL } from '../../services/propertyService';
-
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   const resp = await fetch(`${production}/inmuebles/`);
-//   const data = await resp.json();
-
-//   const paths = data.inmuebles.map((path: InmueblesUsuario) => {
-//     return { params: { id: path.slug.toString() } };
-//   });
-
-//   return { paths, fallback: "blocking" };
-// };
-
-// export const getStaticProps: GetStaticProps = async (context) => {
-//   const id = context.params!.id;
-//   const resp = await fetch(`${production}/inmuebles/url/${id}`);
-//   const data = await resp.json();
-
-//   return { props: { inmuebles: data }, revalidate: 15, notFound: !data };
-// };
-
-// interface Props {
-//   inmuebles: {
-//     inmueble: InmueblesUsuario;
-//     ok: boolean;
-//   };
-// }
+import { getRequestSlugAndAuth } from '../../services/requestService';
 
 const Ubicacion: any = dynamic(
   () => import("../../components/paginas/propiedades/detalles/Ubicación"),
@@ -46,24 +21,35 @@ const Ubicacion: any = dynamic(
 );
 
 const Propiedad                                     = () => {
+  const access_token                                = (typeof window !== "undefined") ? localStorage.getItem("token"):""; 
   const router                                      = useRouter();
   const { asPath, query }                           = router;
   const { id }                                      = query;
   const { auth }                                    = useContext(AuthContext);
   const [ property, setProperty ]                   = useState<any>({});
+  const [ isValid, setIsValid ]                     = useState(false);
 
   const init                                        = async () => {
     if(id && (typeof id == 'string')) {
-      const response                                = await getPropertyByURL(id);
+      setIsValid(false);
 
-      if(response && response.data) {
-        setProperty(response.data.properties);
+      const propertyResponse                        = await getPropertyByURL(id);
+      
+      if(propertyResponse && propertyResponse.data) {
+
+        if(auth && auth.uid && access_token) {
+          const requestResponse                     = await getRequestSlugAndAuth(auth.uid, id, access_token);
+
+          if(requestResponse && requestResponse.data) {
+            setIsValid((requestResponse.data.isValid) ? requestResponse.data.isValid:false);
+          }
+        }
+        setProperty(propertyResponse.data.properties);
       }
-    }
+    } 
   }
 
   useEffect(() => {
-    setProperty({});
     init();
   }, [id]);
 
@@ -82,7 +68,7 @@ const Propiedad                                     = () => {
       />
       <Slider inmuebles = {property} />
       <Detalles inmuebles = {property} />
-      <Ubicacion inmuebles = {property} />
+      <Ubicacion inmuebles = {property} isRequest = {isValid}/>
       {auth.uid && (auth.role != 'Usuario' || ((auth.correo == 'Eduardoest@internet360.com.mx') || (auth.correo == 'Eduardoest@i360.com.mx') || (auth.correo == 'francisco@i360.com.mx') || (auth.correo == 'jorge.katz1619@gmail.com'))) && <Contact inmuebles = {property} />}
     </>
   );

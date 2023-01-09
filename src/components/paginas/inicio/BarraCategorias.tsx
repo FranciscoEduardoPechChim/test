@@ -3,9 +3,15 @@ import { Categoria } from "interfaces/InmueblesInterface";
 import { TipoPropiedad } from "interfaces/PropertyType";
 import styles from "./BarraCategoria.module.css";
 import { MapContext } from "context/map/MapContext";
+import { Form } from 'react-bootstrap';
 
 import { useSets } from '../../../hooks/useSets';
 import Loading from '../../ui/loading/Loading';
+
+//Content
+import { AuthContext } from 'context/auth/AuthContext';
+//Hooks
+import { useFollowers } from '../../../hooks/useFollowers';
 
 interface Props {
   setTipoPropiedad: Dispatch<SetStateAction<string>>;
@@ -20,6 +26,10 @@ interface Props {
   setHabitaciones: Dispatch<SetStateAction<number>>;
   set: string;
   setSet: Dispatch<SetStateAction<string>>;
+  status: boolean;
+  setStatus: Dispatch<SetStateAction<boolean>>;
+  agent: string;
+  setAgent: Dispatch<SetStateAction<string>>;
 }
 
 const BarraCategorias = (props: Props) => {
@@ -39,13 +49,15 @@ const BarraCategorias = (props: Props) => {
     maximoConstruidos,
     identification
   } = useContext(MapContext);
-  const { set, setSet, setTipoPropiedad, propertyTypes, categorias, setCategoria, setBanos, setParking, setHabitaciones} = props;
-  const { categoria, tipoPropiedad } = useContext(MapContext);
-  const [selectedPro, setSelected] = useState(tipoPropiedad);
+  const { set, setSet, status, setStatus, agent, setAgent, setTipoPropiedad, propertyTypes, categorias, setCategoria, setBanos, setParking, setHabitaciones} = props;
+  const { categoria, tipoPropiedad }  = useContext(MapContext);
+  const [selectedPro, setSelected]    = useState(tipoPropiedad);
   const [selectedCat, setselectedCat] = useState(categoria);
 
   const access_token                  = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
-  const { loadingSet, sets }          = useSets((access_token) ? access_token:'');
+  const { loadingSet, sets }          = useSets();
+  const { auth }                      = useContext(AuthContext);
+  const { loading, followers }        = useFollowers((auth && auth.uid) ? auth.uid:'', (access_token) ? access_token:'');        
 
   const seleccionarCategoria = (id: string) => {
     setCategoria(id);
@@ -92,6 +104,12 @@ const BarraCategorias = (props: Props) => {
   const isRadioSelectedConjunto = (value: string): boolean => selectedRadioBtnConjunto === value;
   const handleRadioClickConjunto = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSelectedRadioBtnConjunto(e.currentTarget.value)
+  }
+
+  const [selectedRadioBtnFollower, setSelectedRadioBtnFollower] = useState('valueFollower1')
+  const isRadioSelectedFollower   = (value: string): boolean => selectedRadioBtnFollower === value;
+  const handleRadioClickFollower  = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setSelectedRadioBtnFollower(e.currentTarget.value)
   }
 
   return (
@@ -435,6 +453,54 @@ const BarraCategorias = (props: Props) => {
                   </div>
               </form>
             </li>
+            {(access_token) &&
+              <li className="mb-2">
+                <h5 className={styles.TitleFiltros}>Asesores que sigo</h5>
+                <div className="row">
+                  <div className="col-6 d-flex justify-content-start mx-2">
+                    <Form>
+                      <Form.Check 
+                        type            = "switch"
+                        id              = "custom-switch"
+                        defaultChecked  = {status}
+                        onChange        = {() => setStatus(!status)}
+                      />
+                    </Form>
+                  </div>
+                </div>
+                {(status) && 
+                <div className={styles.buttonContainer}>
+                  {(loading) ? <Loading />: 
+                    <form action="">
+                      <input 
+                        onChange  = {(e) => {setAgent('all'); handleRadioClickFollower(e);}}  
+                        type      = "radio" 
+                        id        = "unique" 
+                        value     = "valueFollower1"
+                        checked   = {isRadioSelectedFollower('valueFollower1')}
+                        />
+                      <label className={styles.checked2} htmlFor="unique">Todos</label>
+
+                      {followers && followers.map((value:any, key: number) => {
+                        return (
+                          <>
+                            <input 
+                                onChange  = {(e) => { setAgent(value.owner.uid); handleRadioClickFollower(e);}}
+                                type      = "radio" 
+                                id        = {`follower_${key}`} 
+                                value     = {`value_follower_${key}`}
+                                checked   = {isRadioSelectedFollower(`value_follower_${key}`)}
+                            />
+                            <label className={styles.checked2} htmlFor={`follower_${key}`}>{value.owner.nombre} {value.owner.apellido}</label>
+                          </>
+                        );
+                      })}
+                    </form>
+                  }
+                </div>
+                }
+              </li>
+            }
           </ul>
         )}
         </div>

@@ -9,66 +9,82 @@ import RegisterModal from "../authmodal/AuthModal";
 import { AuthContext } from "../../../context/auth/AuthContext";
 import MisChats from "../../paginas/perfil/chats/MisChats";
 import { SocketContext } from "context/socket/SocketContext";
-import { useSolicitudes } from "hooks/useSolicitudes";
+import { useSolicitudes, useRequests } from "hooks/useSolicitudes";
 import MenuUsuario from "./MenuUsuario";
 import Notificaciones from "./Notificaciones";
 import { ChatContext } from "context/chat/ChatContext";
 
 import { MapContext } from "../../../context/map/MapContext";
-import SortIcon from '@material-ui/icons/ArrowDropDown';
 import { Box, InputLabel, MenuItem, FormControl, Select, SelectChangeEvent } from '@mui/material';
 
+//Context
+import { useIsProperties } from "../../../hooks/useSolicitudes";
 //Middlewares
 import { hasPermission } from "../../../middlewares/roles";
 
-// interface Notificacion {
-//   de: string;
-//   para: string;
-//   nombre: string;
-//   apellido: string;
-//   mensaje: string;
-// }
-
-const Header = () => {
-  const { auth, abrirRegistro, abrirLogin } = useContext(AuthContext);
-  const { showCanvas, handleCloseCanvas, handleShowCanvas } =
-    useContext(ChatContext);
-  const { socket } = useContext(SocketContext);
-  const [mostrarMenu, setMostrarMenu] = useState(false);
-  const target = useRef(null);
-  const [notificaciones, setNotificaciones] = useState(false);
-  const [contador, setContador] = useState(0);
-  const { solicitudes, cargando, setSolicitudes } = useSolicitudes(auth.uid);
-  const notificacionRef = useRef<HTMLDivElement>(null);
-  // const [nuevaNotificacion, setNuevaNotificacion] =
-  //   useState<Notificacion[]>([]);
-  // const uniqueValues = new Set();
-
-  
-  const [ location, setLocation ]                 = useState(0);
-  const { setUbicacionUsuario, setCoordenadas }   = useContext(MapContext);
+const Header                                                = () => {
+  const access_token                                        = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
+  const { auth, abrirRegistro, abrirLogin }                 = useContext(AuthContext);
+  const { showCanvas, handleCloseCanvas, handleShowCanvas } = useContext(ChatContext);
+  const { socket }                                          = useContext(SocketContext);
+  const [mostrarMenu, setMostrarMenu]                       = useState(false);
+  const [notificaciones, setNotificaciones]                 = useState(false);
+  const [contador, setContador]                             = useState(0);
+  //const { solicitudes, cargando, setSolicitudes }           = useSolicitudes(auth.uid);
+  const { requests, loading, setRequests }                  = useRequests((auth && auth.uid)? auth.uid: '', (access_token) ? access_token:'');
+  const { loadingProperties, setIsProperties, isProperties }= useIsProperties((auth && auth.uid)? auth.uid: '', (access_token) ? access_token:'');
+  const [ location, setLocation ]                           = useState(0);
+  const { setUbicacionUsuario, setCoordenadas }             = useContext(MapContext);
+  const notificacionRef                                     = useRef<HTMLDivElement>(null);
+  const target                                              = useRef(null);
 
   useEffect(() => {
-    socket?.on("obtener-solicitud", (solicitud) => {
-      setSolicitudes([...solicitudes, solicitud]);
-      setContador(solicitudes.length + 1);
-      const tl = gsap.timeline();
-
-      tl.to(notificacionRef.current, {
-        y: -5,
-        duration: 0.2,
-        ease: "ease.out",
-      }).to(notificacionRef.current, {
-        y: 0,
-        duration: 0.2,
-        ease: "bounce.out",
+    if(socket) {
+      socket.on("obtener-solicitud", (solicitud) => {
+        setRequests([...requests, solicitud]);
+        setContador(requests.length + 1);
+        const tl = gsap.timeline();
+  
+        tl.to(notificacionRef.current, {
+          y: -5,
+          duration: 0.2,
+          ease: "ease.out",
+        }).to(notificacionRef.current, {
+          y: 0,
+          duration: 0.2,
+          ease: "bounce.out",
+        });
       });
-    });
+
+      socket.on("get-property", (property)      => {
+        if(property && auth && auth.uid) {
+          const properties                      = property.isproperties;
+
+          for(let i=0; i < properties.length; i++) {
+            if(properties[i].user.uid == auth.uid) {
+              setIsProperties([...isProperties, properties[i]]);
+              setContador(isProperties.length + 1);
+            }
+          }
+
+          const tl                              = gsap.timeline();
+          tl.to(notificacionRef.current, {
+            y: -5,
+            duration: 0.2,
+            ease: "ease.out",
+          }).to(notificacionRef.current, {
+            y: 0,
+            duration: 0.2,
+            ease: "bounce.out",
+          });
+        }
+      });
+    }
   }, [socket]);
 
   useEffect(() => {
-    setContador(solicitudes.length);
-  }, [solicitudes.length]);
+    setContador(requests.length + isProperties.length);
+  }, [requests.length, isProperties.length]);
 
 const handleChangeSelect = (event: SelectChangeEvent) => {
 
@@ -116,8 +132,8 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
                 label     = "location"
                 onChange  = {handleChangeSelect}
               >
-                <MenuItem value={0}>Ciudad de México</MenuItem>
-                <MenuItem value={1}>Miami</MenuItem>
+                <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
+                <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
               </Select>
 
               <div
@@ -139,12 +155,12 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
                   label     = "location"
                   onChange  = {handleChangeSelect}
                 >
-                  <MenuItem value={0}>Ciudad de México</MenuItem>
-                  <MenuItem value={1}>Miami</MenuItem>
+                  <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
+                  <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
               </Select>
               <Link href='/'>
                 <div className={`${styles.navEnlace} pointer`} style={{marginTop: '20px'}}>
-                  Inicio
+                  Inicio 
                 </div>
               </Link>
 
@@ -163,15 +179,16 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
 
               {hasPermission('notifications') &&
                 <Notificaciones
-                  notificaciones={notificaciones}
-                  setNotificaciones={setNotificaciones}
-                  target={target}
-                  cargando={cargando}
-                  solicitudes={solicitudes}
-                  setSolicitudes={setSolicitudes}
-                  contador={contador}
-                  setContador={setContador}
-                  notificacionRef={notificacionRef}
+                  notificaciones          = {notificaciones}
+                  setNotificaciones       = {setNotificaciones}
+                  target                  = {target}
+                  cargando                = {loading || loadingProperties}
+                  solicitudes             = {requests}
+                  setSolicitudes          = {setRequests}
+                  contador                = {contador}
+                  setContador             = {setContador}
+                  notificacionRef         = {notificacionRef}
+                  isProperties            = {isProperties}
                 />
               }
             </Nav>

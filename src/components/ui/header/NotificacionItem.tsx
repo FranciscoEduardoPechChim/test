@@ -5,25 +5,32 @@ import Loading from "../loading/Loading";
 import styles from "./Header.module.css";
 import Link from "next/link";
 
+//Interfaces
+import { IsProperties } from "interfaces/SolicitudInteface";
+
 interface Props {
   target: MutableRefObject<null>;
   cargando: boolean;
   solicitudes: Solicitud[];
   notificaciones: boolean;
+  isProperties: IsProperties[];
   goToProperty: (slug: string) => Promise<boolean>;
-  aprobarSolicitud: (
-    id: string,
-    titulo: string,
-    img: string,
-    correo: string
-  ) => Promise<void>;
-  rechazarSolicitud: (
-    id: string,
-    titulo: string,
-    img: string,
-    correo: string
-  ) => Promise<void>;
+  handleProperties: (id: string, slug: string) => void;
+  statusRequest: (id: string, status: string) => void;
+  // aprobarSolicitud: (
+  //   id: string,
+  //   titulo: string,
+  //   img: string,
+  //   correo: string
+  // ) => Promise<void>;
+  // rechazarSolicitud: (
+  //   id: string,
+  //   titulo: string,
+  //   img: string,
+  //   correo: string
+  // ) => Promise<void>;
   goToSolicitudes: () => void;
+
 }
 
 const NotificacionItem: FC<Props> = (props) => {
@@ -33,9 +40,12 @@ const NotificacionItem: FC<Props> = (props) => {
     solicitudes,
     notificaciones,
     goToProperty,
-    aprobarSolicitud,
-    rechazarSolicitud,
+    // aprobarSolicitud,
+    // rechazarSolicitud,
+    statusRequest,
     goToSolicitudes,
+    isProperties,
+    handleProperties
   } = props;
   return (
     <Overlay target={target.current} show={notificaciones} placement="right">
@@ -51,7 +61,7 @@ const NotificacionItem: FC<Props> = (props) => {
             <Loading />
           ) : (
             <>
-              {solicitudes.length === 0 ? (
+              {(solicitudes.length +  isProperties.length) === 0 ? (
                 <div
                   className="text-center py-5"
                   style={{ color: "#7A7A7A", fontWeight: "500" }}
@@ -62,14 +72,15 @@ const NotificacionItem: FC<Props> = (props) => {
                 <>
                   <div className={styles.headerNotif}>Notificaciones</div>
                   <div className={styles.notContainer}>
-                    {solicitudes?.map((solicitud) => (
+                    {solicitudes && solicitudes.map((solicitud:any, key: number) => {
+                      return (
                       <div
                         className={
                           solicitud.estado === "Pendiente"
                             ? styles.pendiente
                             : styles.noPendiente
                         }
-                        key={solicitud._id}
+                        key={key}
                       >
                         <div className={styles.notificacionContainer}>
                           <table>
@@ -136,7 +147,7 @@ const NotificacionItem: FC<Props> = (props) => {
                                 )}
                                 <span className={`${styles.propNotifi} pointer`}>
                                   <Link
-                                    href={`https://red1a1.com/app/propiedades/${solicitud.slug ? solicitud.slug : solicitud.inmueble.slug}`}>
+                                    href={`https://develop.red1a1.com/app/propiedades/${solicitud.slug ? solicitud.slug : solicitud.inmueble.slug}`}>
                                     
                                       {solicitud.titulo ? solicitud.titulo : solicitud.inmueble ? solicitud.inmueble.titulo : ''}
                                     
@@ -163,19 +174,10 @@ const NotificacionItem: FC<Props> = (props) => {
                             </tr>
                           </table>
 
-                          {solicitud.estado === "Pendiente" ? (
+                          {(solicitud.estado === "Pendiente") &&
                             <div className="d-flex justify-content-center mt-2">
                               <button
-                                onClick={() =>
-                                  aprobarSolicitud(
-                                    solicitud._id,
-                                    solicitud.inmueble.titulo,
-                                    solicitud.inmueble
-                                      ? solicitud.inmueble.imgs[0]
-                                      : "",
-                                    solicitud.usuario.correo
-                                  )
-                                }
+                                onClick={() => statusRequest(solicitud._id, 'Aprobado')}
                                 className={`${styles.btnApprove} me-2`}
                               >
                                 <i
@@ -183,16 +185,7 @@ const NotificacionItem: FC<Props> = (props) => {
                                 ></i>
                               </button>
                               <button
-                                onClick={() =>
-                                  rechazarSolicitud(
-                                    solicitud._id,
-                                    solicitud.inmueble.titulo,
-                                    solicitud.inmueble
-                                      ? solicitud.inmueble.imgs[0]
-                                      : "",
-                                    solicitud.usuario.correo
-                                  )
-                                }
+                                onClick={() => statusRequest(solicitud._id, 'Rechazado')}
                                 className={`${styles.btnReject} me-2`}
                               >
                                 <i
@@ -200,14 +193,45 @@ const NotificacionItem: FC<Props> = (props) => {
                                 ></i>
                               </button>
                             </div>
-                          ) : null}
+                          }
                         </div>
-                      </div>
-                    ))}
+                      </div>);
+                    })}
+                    {isProperties && isProperties.map((item:any, key: number) => {
+                      return (item.isValid) ? (
+                        <div className = { styles.pendiente } key = {key} >
+                          <div className={styles.notificacionContainer}>
+                            <table>
+                              <tr>
+                                <td>
+                                  <>
+                                    <b>
+                                      {(item && item.owner && item.owner.nombre && item.owner.apellido) ?
+                                       item.owner.nombre + ' ' + item.owner.apellido + ' ':''
+                                      }
+                                    </b>
+                                    ha creado un nuevo inmueble:{" "}
+                                  </>
+                                  <span
+                                    className={`${styles.propH} pointer`}
+                                    onClick={() =>
+                                      handleProperties(item._id, item.property.slug)
+                                    }
+                                  >
+                                    {(item && item.property) ? item.property.titulo:''}
+                                  </span> 
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      ):null;  
+                    })
+                    }
                   </div>
                 </>
               )}
-              {solicitudes.length === 0 ? null : (
+              {(solicitudes && solicitudes.length !== 0) &&
                 <div className="d-flex justify-content-center py-2">
                   <div
                     className={`${styles.footVer} pointer`}
@@ -216,7 +240,7 @@ const NotificacionItem: FC<Props> = (props) => {
                     Ver todas las solicitudes
                   </div>
                 </div>
-              )}
+              }
             </>
           )}
         </div>

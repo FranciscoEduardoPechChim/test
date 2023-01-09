@@ -74,6 +74,22 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.owner {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  color: #5e5e5e;
+  text-decoration:none;
+}
+.owner:hover {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  color: #7149bc;
+  text-decoration:none;
+}
 .precio {
   font-family: "Open Sans";
   font-style: normal;

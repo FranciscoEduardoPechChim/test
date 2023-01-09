@@ -102,7 +102,7 @@ export const confirmForgotPassword              = async (id: string | string[] |
     }
 }
 
-// //DELETE
+//DELETE
 
 //UPDATE
 export const sendPassword                       = async (email: string):Promise<recoveryPassword | undefined> => {

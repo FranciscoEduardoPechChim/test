@@ -20,8 +20,9 @@ const MiListaPropiedades                          = () => {
   const { removeProperty, changeStatusProperty }  = useContext(InmuebleContext);
   const [desde, setDesde]                         = useState(0);
   const { properties, loading, total, 
-        setProperties, setLimit, init }           = useUserProperties((auth.uid) ? auth.uid:'', desde, (access_token) ? access_token:'');
+        setProperties, setLimit, init }           = useUserProperties((auth.uid) ? auth.uid:'', desde, 12, (access_token) ? access_token:'');
 
+  // const { properties1 }                           = useFollowerProperties((auth.uid) ? auth.uid:'', 0, (access_token) ? access_token:'');
   const [page, setPage]                           = useState(0);
   const [rowsPerPage, setRowsPerPage]             = useState(12);
 
@@ -63,34 +64,6 @@ const MiListaPropiedades                          = () => {
     }
   }
 
-  // const handleActivar = async (pid: string) => {
-  //   await actualizarInmueble({ publicado: true }, pid);
-
-  //   const inmuebleActualizado = properties?.map((inmueble:any) => {
-  //     if (inmueble._id === pid) {
-  //       return { ...inmueble, publicado: true };
-  //     }
-
-  //     return inmueble;
-  //   });
-
-  //   setProperties(inmuebleActualizado);
-  // };
-
-  // const handleDesactivar = async (pid: string) => {
-  //   await actualizarInmueble({ publicado: false }, pid);
-
-  //   const inmuebleActualizado = properties?.map((inmueble:any) => {
-  //     if (inmueble._id === pid) {
-  //       return { ...inmueble, publicado: false };
-  //     }
-
-  //     return inmueble;
-  //   });
-
-  //   setProperties(inmuebleActualizado);
-  // };
-
   return (
     <Container>
       <Row>
@@ -104,7 +77,10 @@ const MiListaPropiedades                          = () => {
               </h1>
             ) : (
               <>
-                {properties?.map((inmueble:any, key: number) => (
+                <div className={`${styles.colorTotal} d-flex justify-content-end`}>
+                    TOTAL: {total}
+                </div>
+                {properties && properties.map((inmueble:any, key: number) => (
                   <PropertiesCard
                     key           = {key}
                     id            = {inmueble._id}
@@ -112,6 +88,7 @@ const MiListaPropiedades                          = () => {
                     title         = {inmueble.titulo}
                     imgs          = {inmueble.imgs}
                     isActive      = {inmueble.publicado}
+                    isFollower    = {false}
                     handleDelete  = {handleDelete}
                     handleStatus  = {handleStatus}
                     handleEdit    = {handleEdit}

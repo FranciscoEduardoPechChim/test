@@ -1,0 +1,101 @@
+.imgCard {
+    width:              100%;
+    height:             150px;
+}
+
+@media (max-width: 350px) {
+    .container {
+        height:             23rem;
+    }
+}
+@media (min-width: 351px) and (max-width: 575px) {
+    .container {
+        height:             19rem;
+    }
+}
+@media (min-width: 576px) and (max-width: 767px) {
+    .container {
+        height:             22rem;
+    }
+}
+@media (min-width: 768px) {
+    .container {
+        height:             19rem;
+    }
+}
+
+.containerImg {
+    position:           relative; 
+    display:            inline-block; 
+    text-align:         center;
+    width:              100%;
+}
+
+.textPosition{
+    position:           absolute;
+    color:              white;
+    background:         #444343;
+    padding-left:       5px;
+    padding-right:      5px;
+    border-radius:      5px;
+    top:                10px;
+    left:               10px;
+}
+
+.textPositionBottom {
+    position:           absolute;
+    color:              white;
+    background:         #444343;
+    padding-left:       5px;
+    padding-right:      5px;
+    border-radius:      5px;
+    top:                125px;
+    left:               0px;
+}
+
+.textPositionTop {
+    position:           absolute;
+    top:                10px;
+    right:              10px;
+}
+
+.iconHeart {
+    font-size:          large;
+}
+
+.containerPrice {
+    margin-top:         -12px;
+    font-size:          medium;
+    font-weight:        bold;
+}
+
+.containerInfo {
+    margin-top:         0;
+}
+
+.spanInfo {
+    margin-top:         -2.5px;
+    font-weight:        bold;
+}
+
+.containerTitle {
+    font-weight:        bold;
+}
+
+.spamContact {
+    color:              #4899F5;
+}
+
+.spamContact:hover {
+    color:              #FFC300;
+}
+
+
+.spamChat {
+    color:              #7149bc;
+}
+
+.spamChat:hover {
+    color:              #FFC300;
+}
+

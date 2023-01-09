@@ -6,12 +6,11 @@ import { production, development } from 'credentials';
 //POST
 
 //GET
-export const getSets                                = async (access_token: string):Promise<setResponse|undefined> => {
+export const getSets                                = async ():Promise<setResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();
         myHeaders.append("Content-Type", "application/json");
         myHeaders.append("X-Requested-With", "XMLHttpRequest");
-        myHeaders.append("Authorization", `Bearer ${access_token}`);
 
         const requestOptions                        = {
             method: 'GET',

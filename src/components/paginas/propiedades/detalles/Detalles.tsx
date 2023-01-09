@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { Accordion, Form } from "react-bootstrap";
+import { useRouter } from "next/router";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { formatPrice } from "../../../../helpers/formatPrice";
 import { publicadoHace } from "../../../../helpers/horaMes";
@@ -12,6 +13,8 @@ import { toast } from "react-toastify";
 import { updatePropertyByAlias } from '../../../../services/propertyService';
 //Helpers
 import { validate } from '../../../../helpers/response';
+//Middlewares
+import { isUser, isBasic } from "middlewares/roles";
 
 interface Props {
   inmuebles: InmueblesUsuario;
@@ -23,6 +26,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
   const [isRole, setIsRole]             = useState(false);
   const [alias, setAlias]               = useState('');   
   const [result, setResult]             = useState('');
+  const router                          = useRouter();
 
   useEffect(() => {
     const initRole                      = async () => {
@@ -53,6 +57,12 @@ const Detalles                          = ({ inmuebles }: Props) => {
         setResult(alias);
       }
 
+    }
+  }
+
+  const handleOwner                    = (owner:string) => {
+    if(owner) {
+      router.push(`/perfil/${owner}`);
     }
   }
 
@@ -114,12 +124,12 @@ const Detalles                          = ({ inmuebles }: Props) => {
                           </div>
                           <div
                             className={`${styles.inmuebleSubcontent} mb-1`}
-                            style={{ fontSize: "16px" }}
+                            style={{ fontSize: "24px" }}
                           >
                             {(inmuebles.alias || result)
                               ? ((inmuebles.alias) ? inmuebles.alias:(result) ? result:'')
                               : 
-                              (isRole) ? 
+                              (isRole && (auth && (auth.uid == inmuebles.usuario.uid))) ? 
                               <Form>
                                 <Form.Control defaultValue={alias} id="alias" type="text" name="alias" maxLength={255} placeholder="House one" onChange={(event:any) => setAlias(event.target.value) } onBlur={() => onSubmit()} />
                               </Form>
@@ -743,14 +753,27 @@ const Detalles                          = ({ inmuebles }: Props) => {
                           />
                         </div>
                         {/* <Modaltitle titulo="Juan Pérez Hernández"/> */}
+
                         <div className={styles.perfilCardNombre}>
-                          {inmuebles.usuario.nombre}{" "}
-                          {inmuebles.usuario.apellido}
+                            {inmuebles.usuario.nombre}{" "}
+                            {inmuebles.usuario.apellido}    
                         </div>
+                        
+
                         <div className={styles.perfilCardLine}></div>
                         <div className={styles.perfilCardCiudad}>
                           {inmuebles.usuario.direccionFisica}
                         </div>
+                        {(access_token && (typeof window !== "undefined") && (auth && (inmuebles.usuario.uid != auth.uid)) && (!isUser())) && 
+                        <div className="my-2">
+                          <button
+                            className={styles.btnDetalle}
+                            onClick={() => handleOwner((inmuebles.usuario.uid)? inmuebles.usuario.uid: '')}
+                          >
+                            Ver perfil
+                          </button>
+                        </div>
+                        }
                       </div>
                     </td>
                   </tr>

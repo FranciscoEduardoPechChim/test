@@ -91,21 +91,19 @@ export const useInmueble = (id: string) => {
   }, []);
 
   return { inmueble, cargando, imgs, setImgs };
-};
+}; 
 
-export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, rooms: number, set: string) => {
-  const access_token                            = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
-  const router                                  = useRouter();
+export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, rooms: number, set: string, status: boolean, agent: string, userId: string) => {
   const [properties,setProperties]              = useState<any>([]);
   const [loading,setLoading]                    = useState(true);
   const { minimoTerreno, maximoTerreno, 
     minimoConstruidos, maximoConstruidos, 
-    minimoPrecio, maximoPrecio, identification} = useContext(MapContext);
-  const { auth }                                = useContext(AuthContext);
-
+    minimoPrecio, maximoPrecio, identification,
+    setTotal }                                  = useContext(MapContext);
+ 
     const init                                  = async () => {
-      if(southEast && northEast && southWest && northEast && category && type) {
-        console.log('24vf');
+      if(southEast && northEast && southWest && northEast && category && type && userId) {
+        let total                               = 0;
         const response                          = await getPropertiesByCoords(
                                                     (typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
                                                     (typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
@@ -116,8 +114,10 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
                                                     (typeof northWest.lat == 'number' && (northWest.lat != 0)) ? northWest.lat:1,
                                                     (typeof northWest.lng == 'number' && (northWest.lng != 0)) ? northWest.lng:1, 
                                                     category, 
-                                                    type);
-                                                    
+                                                    type,
+                                                    status,
+                                                    agent,
+                                                    userId);
 
         if(response && response.data) {
           const { data }                        = response;
@@ -191,9 +191,13 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
             });
           }
 
+          total                                 = propertiesTotal.length;
           setProperties(propertiesTotal);
-          setLoading(false);
         }
+
+        setTotal(total);
+        setLoading(false);       
+     
       }
     }
 
@@ -216,6 +220,9 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
       maximoConstruidos,
       minimoPrecio,
       maximoPrecio,
+      status,
+      agent,
+      set
     ]);
 
     return { 

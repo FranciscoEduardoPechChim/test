@@ -142,6 +142,9 @@ const CompartidasCard = () => {
             <Loading />
           ) : (
             <>
+              <div className={`${styles.colorTotal} d-flex justify-content-end`}>
+                  TOTAL: {total}
+              </div>
               {compartidas?.map((compartida) => (
                 <Col
                   key={compartida._id}
@@ -276,7 +279,7 @@ const CompartidasCard = () => {
 
                                   <CopyToClipboard
                                     onCopy={compartir}
-                                    text={`https://red1a1.com/app/propiedades/${compartida.inmueble.slug}`}
+                                    text={`https://develop.red1a1.com/app/propiedades/${compartida.inmueble.slug}`}
                                   >
                                     <button className={`${styles.btnShare}`} />
                                   </CopyToClipboard>

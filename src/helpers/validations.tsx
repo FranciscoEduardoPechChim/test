@@ -39,7 +39,7 @@ export const isMaxPercentage    = (data: number, max: number, type: number) => {
 }
 
 export const isBoolean          = (data:any) => {
-    return (typeof data != 'boolean') ? 'El campo debe ser tipo booleano':true;
+    return (typeof data != 'boolean') ? 'El campo debe ser tipo booleano':'';
 }
 
 export const  isLength          = (minLength:number, maxLength:number, data:string) => {

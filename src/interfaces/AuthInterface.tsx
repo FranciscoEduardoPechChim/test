@@ -25,6 +25,8 @@ export interface Auth {
   google: true | undefined;
   recibirCorreo: boolean;
   ownerId: string | null;
+  lat?: number;
+  lng?: number;
 }
 
 export interface Resp {

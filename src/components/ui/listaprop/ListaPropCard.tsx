@@ -22,7 +22,7 @@ const ListaPropCard = (props: Props) => {
         <div className={styles.topIcons1}>
           <CopyToClipboard
             onCopy={compartir}
-            text={`https://red1a1.com/app/propiedades/${inmueble.slug}`}
+            text={`https://develop.red1a1.com/app/propiedades/${inmueble.slug}`}
           >
             <button type="button" className={`${styles.iconShare} btn me-1`} />
           </CopyToClipboard>

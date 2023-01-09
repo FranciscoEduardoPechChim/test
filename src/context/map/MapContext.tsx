@@ -53,6 +53,12 @@ interface ContextProps {
   setMaximoPrecio: Dispatch<SetStateAction<number>>;
   identification: string;
   setIdentification: Dispatch<SetStateAction<string>>;
+  status: boolean;
+  setStatus: Dispatch<SetStateAction<boolean>>;
+  agent: string;
+  setAgent: Dispatch<SetStateAction<string>>;
+  total: number;
+  setTotal: Dispatch<SetStateAction<number>>;
 }
 
 export interface Bounds {
@@ -133,6 +139,9 @@ export const MapProvider: FC = ({ children }) => {
   const [minimoPrecio, setMinimoPrecio]           = useState(0);
   const [maximoPrecio, setMaximoPrecio]           = useState(10000000);
   const [identification, setIdentification]       = useState('');
+  const [status, setStatus]                       = useState(false);
+  const [agent, setAgent]                         = useState('all');
+  const [total, setTotal]                         = useState(0);
 
   return (
     <MapContext.Provider
@@ -178,7 +187,13 @@ export const MapProvider: FC = ({ children }) => {
         setMaximoPrecio,
         maximoPrecio,
         identification,
-        setIdentification
+        setIdentification,
+        status,
+        setStatus,
+        agent,
+        setAgent,
+        total,
+        setTotal
       }}
     >
       {children}

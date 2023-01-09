@@ -1,0 +1,39 @@
+
+.input { 
+    height: 32px;
+    width: 200px;
+    border-radius: 3px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border: 1px solid #e5e5e5;
+    padding: 0 32px 0 16px;
+}
+
+.input:hover {
+    cursor: pointer;
+}
+
+.customSelect {
+    font-family: "Open Sans";
+    font-size: 18px;
+    border-radius: 7px;
+  }
+  .customSelect:focus {
+    box-shadow: none;
+    border: 1px solid tomato;
+  }
+  
+  .titulo {
+    font-size: 70px;
+    color: #ccc;
+    margin: 150px 0;
+  }
+  
+  .colorTotal {
+    color: #7149bc;
+    font-size: medium;
+    font-weight: 700;
+  }
+
