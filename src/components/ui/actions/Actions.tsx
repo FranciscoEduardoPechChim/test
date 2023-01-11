@@ -24,7 +24,7 @@ const ActionComponent           = ({ actions, id, selectAction, selectId, handle
         <Box>
             <FormControl fullWidth size="small">
                 <Select
-                    sx          = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                    sx          = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' } }}
                     labelId     = "demo-simple-select-label"
                     id          = "demo-simple-select"
                     value       = {(selectId == id) ? selectAction: ''}

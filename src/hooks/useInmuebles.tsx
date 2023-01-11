@@ -26,7 +26,7 @@ import { AllInmuebles, Inmueble } from "interfaces";
 
 //Services
 import { getPropertiesByCoords } from '../services/propertyService';
-
+import { showRealEstate } from '../services/userService';
 
 export const useInmuebles = () => {
   const { dirMapa } = useContext(MapContext);
@@ -99,116 +99,131 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
   const { minimoTerreno, maximoTerreno, 
     minimoConstruidos, maximoConstruidos, 
     minimoPrecio, maximoPrecio, identification,
-    setTotal }                                  = useContext(MapContext);
+    setTotal, property }                        = useContext(MapContext);
  
     const init                                  = async () => {
-      if(southEast && northEast && southWest && northEast && category && type && userId) {
-        let total                               = 0;
-        const response                          = await getPropertiesByCoords(
-                                                    (typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
-                                                    (typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
-                                                    (typeof southWest.lat == 'number' && (southWest.lat != 0)) ? southWest.lat:1, 
-                                                    (typeof southWest.lng == 'number' && (southWest.lng != 0)) ? southWest.lng:1, 
-                                                    (typeof northEast.lat == 'number' && (northEast.lat != 0)) ? northEast.lat:1, 
-                                                    (typeof northEast.lng == 'number' && (northEast.lng != 0)) ? northEast.lng:1, 
-                                                    (typeof northWest.lat == 'number' && (northWest.lat != 0)) ? northWest.lat:1,
-                                                    (typeof northWest.lng == 'number' && (northWest.lng != 0)) ? northWest.lng:1, 
-                                                    category, 
-                                                    type,
-                                                    status,
-                                                    agent,
-                                                    userId);
+      setLoading(true);
+      let total                                 = 0;
+    
+        if((property == 0) && category && type && userId) {
+          const responseProperty                = await getPropertiesByCoords(
+                                                      ((southEast) && typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
+                                                      ((southEast) && typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
+                                                      ((southWest) && typeof southWest.lat == 'number' && (southWest.lat != 0)) ? southWest.lat:1, 
+                                                      ((southWest) && typeof southWest.lng == 'number' && (southWest.lng != 0)) ? southWest.lng:1, 
+                                                      ((northEast) && typeof northEast.lat == 'number' && (northEast.lat != 0)) ? northEast.lat:1, 
+                                                      ((northEast) && typeof northEast.lng == 'number' && (northEast.lng != 0)) ? northEast.lng:1, 
+                                                      ((northWest) && typeof northWest.lat == 'number' && (northWest.lat != 0)) ? northWest.lat:1,
+                                                      ((northWest) && typeof northWest.lng == 'number' && (northWest.lng != 0)) ? northWest.lng:1, 
+                                                      category, 
+                                                      type,
+                                                      status,
+                                                      agent,
+                                                      userId);
 
-        if(response && response.data) {
-          const { data }                        = response;
-          let propertiesTotal                   = (data.properties).filter((property:any) => {
-            if(property.publicado == true){
-              return property;
+          if(responseProperty && responseProperty.data) {
+            const { data }                        = responseProperty;
+            let propertiesTotal                   = (data.properties).filter((property:any) => {
+              if(property.publicado == true){
+                return property;
+              }
+            });
+
+            if(rooms >= 0) {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if(property.habitaciones >= rooms) {
+                  return property;
+                }
+              });
             }
-          });
 
-          if(rooms >= 0) {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if(property.habitaciones >= rooms) {
-                return property;
-              }
-            });
-          }
+            if(bathroom >= 0) {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if(property.baños >= bathroom) {
+                  return property;
+                }
+              });
+            }
 
-          if(bathroom >= 0) {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if(property.baños >= bathroom) {
-                return property;
-              }
-            });
-          }
+            if(parking >= 0) {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if(property.parking >= parking) {
+                  return property;
+                }
+              });
+            }
 
-          if(parking >= 0) {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if(property.parking >= parking) {
-                return property;
-              }
-            });
-          }
+            if(set != '') {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if(property.set == set) {
+                  return property;
+                }
+              });
+            }
 
-          if(set != '') {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if(property.set == set) {
-                return property;
-              }
-            });
-          }
+            if((Number(minimoPrecio) >= 0) && (Number(maximoPrecio) > Number(minimoPrecio))) {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if((property.precio >= Number(minimoPrecio)) && (property.precio <= Number(maximoPrecio))) {
+                  return property;
+                }
+              });
+            }
 
-          if((Number(minimoPrecio) >= 0) && (Number(maximoPrecio) > Number(minimoPrecio))) {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if((property.precio >= Number(minimoPrecio)) && (property.precio <= Number(maximoPrecio))) {
-                return property;
-              }
-            });
-          }
+            if((Number(minimoTerreno) >= 0) && (Number(maximoTerreno) > Number(minimoTerreno))) {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if((property.m2Terreno >= Number(minimoTerreno)) && (property.m2Terreno <= Number(maximoTerreno))) {
+                  return property;
+                }
+              });
+            }
 
-          if((Number(minimoTerreno) >= 0) && (Number(maximoTerreno) > Number(minimoTerreno))) {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if((property.m2Terreno >= Number(minimoTerreno)) && (property.m2Terreno <= Number(maximoTerreno))) {
-                return property;
-              }
-            });
-          }
+            if((Number(minimoConstruidos) >= 0) && (Number(maximoConstruidos) > Number(minimoConstruidos))) {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if((property.m2Construidos >= Number(minimoConstruidos)) && (property.m2Construidos <= Number(maximoConstruidos))) {
+                  return property;
+                }
+              });
+            }
+  
+            if(identification != '') {
+              propertiesTotal                     = propertiesTotal.filter((property:any) => {
+                if(identification == property.alias) {
+                  return property;
+                }
+              });
+            }
 
-          if((Number(minimoConstruidos) >= 0) && (Number(maximoConstruidos) > Number(minimoConstruidos))) {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if((property.m2Construidos >= Number(minimoConstruidos)) && (property.m2Construidos <= Number(maximoConstruidos))) {
-                return property;
-              }
-            });
+            total                                 = propertiesTotal.length;
+            setProperties(propertiesTotal);
           }
- 
-          if(identification != '') {
-            propertiesTotal                     = propertiesTotal.filter((property:any) => {
-              if(identification == property.alias) {
-                return property;
-              }
-            });
-          }
+        }else if(property == 1) {
+          const responseRealEstate              = await showRealEstate(
+                                                    ((southEast) && typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
+                                                    ((southEast) && typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
+                                                    ((southWest) && typeof southWest.lat == 'number' && (southWest.lat != 0)) ? southWest.lat:1, 
+                                                    ((southWest) && typeof southWest.lng == 'number' && (southWest.lng != 0)) ? southWest.lng:1, 
+                                                    ((northEast) && typeof northEast.lat == 'number' && (northEast.lat != 0)) ? northEast.lat:1, 
+                                                    ((northEast) && typeof northEast.lng == 'number' && (northEast.lng != 0)) ? northEast.lng:1, 
+                                                    ((northWest) && typeof northWest.lat == 'number' && (northWest.lat != 0)) ? northWest.lat:1,
+                                                    ((northWest) && typeof northWest.lng == 'number' && (northWest.lng != 0)) ? northWest.lng:1, 
+                                                  );
+          
+          if(responseRealEstate && responseRealEstate.data) {
+            const { users }                     = responseRealEstate.data;
+  
+            setProperties(users);
 
-          total                                 = propertiesTotal.length;
-          setProperties(propertiesTotal);
+            total                               = properties.length;
+          }
         }
 
-        setTotal(total);
-        setLoading(false);       
-     
-      }
+      setTotal(total);
+      setLoading(false);       
     }
 
     useEffect(() => {
       init();
     }, [
-      southEast,
-      northWest,
-      southWest,
-      northEast,
-      coords,
       type,
       category,
       bathroom,
@@ -222,12 +237,13 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
       maximoPrecio,
       status,
       agent,
-      set
+      set,
+      property
     ]);
 
     return { 
-      inmuebles: properties, 
-      cargando: loading 
+      inmuebles:  properties,
+      cargando:   loading
     };
 }
 

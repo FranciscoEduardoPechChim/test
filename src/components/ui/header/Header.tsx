@@ -34,10 +34,11 @@ const Header                                                = () => {
   const { requests, loading, setRequests }                  = useRequests((auth && auth.uid)? auth.uid: '', (access_token) ? access_token:'');
   const { loadingProperties, setIsProperties, isProperties }= useIsProperties((auth && auth.uid)? auth.uid: '', (access_token) ? access_token:'');
   const [ location, setLocation ]                           = useState(0);
-  const { setUbicacionUsuario, setCoordenadas }             = useContext(MapContext);
+  const { setUbicacionUsuario, setCoordenadas, property,
+    setProperty }                                           = useContext(MapContext);
   const notificacionRef                                     = useRef<HTMLDivElement>(null);
   const target                                              = useRef(null);
-
+  
   useEffect(() => {
     if(socket) {
       socket.on("obtener-solicitud", (solicitud) => {
@@ -86,7 +87,8 @@ const Header                                                = () => {
     setContador(requests.length + isProperties.length);
   }, [requests.length, isProperties.length]);
 
-const handleChangeSelect = (event: SelectChangeEvent) => {
+  const handleChangeSelect                                  = (event: SelectChangeEvent) => {
+    event.preventDefault();
 
     if(Number(event.target.value) == 0) {
       setUbicacionUsuario({ lat: 19.4326078, lng: -99.133207 }); 
@@ -97,7 +99,13 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
     }
 
     setLocation(Number(event.target.value));
-  };
+  }
+
+  const handleChangePropertiesSelect                        = (event: SelectChangeEvent) => {
+    event.preventDefault();
+    
+    setProperty(Number(event.target.value));
+  }
 
   // useEffect(() => {
   //   socket?.on("obtener-notificacion", (notificacion) => {
@@ -105,8 +113,6 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
   //     setNuevaNotificacion((noti) => [...noti, notificacion]);
   //   });
   // }, []);
-
-
 
   return (
     <Navbar className={styles.navStyle} bg="light" expand="sm">
@@ -125,7 +131,7 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
           {!auth.logged ? (
             <Nav className="ms-auto my-2" navbarScroll>
               <Select
-                sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }}}
                 labelId   = "demo-simple-select-label"
                 id        = "demo-simple-select"
                 value     = {String(location)}
@@ -134,6 +140,18 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
               >
                 <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
                 <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
+              </Select>
+
+              <Select
+                sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }}}
+                labelId   = "simple-select-label"
+                id        = "simple-select"
+                value     = {String(property)}
+                label     = "property"
+                onChange  = {handleChangePropertiesSelect}
+              >
+                <MenuItem value={0}>Inmuebles</MenuItem>
+                <MenuItem value={1}>Inmobilarias</MenuItem>
               </Select>
 
               <div
@@ -148,7 +166,7 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
           ) : (
             <Nav className="ms-auto my-2" navbarScroll>
                <Select
-                  sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                  sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }}}
                   labelId   = "demo-simple-select-label"
                   id        = "demo-simple-select"
                   value     = {String(location)}
@@ -158,9 +176,22 @@ const handleChangeSelect = (event: SelectChangeEvent) => {
                   <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
                   <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
               </Select>
+
+              <Select
+                sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }}}
+                labelId   = "simple-select-label"
+                id        = "simple-select"
+                value     = {String(property)}
+                label     = "property"
+                onChange  = {handleChangePropertiesSelect}
+              >
+                <MenuItem value={0}>Inmuebles</MenuItem>
+                <MenuItem value={1}>Inmobilarias</MenuItem>
+              </Select>
+              
               <Link href='/'>
                 <div className={`${styles.navEnlace} pointer`} style={{marginTop: '20px'}}>
-                  Inicio 
+                  Inicio  
                 </div>
               </Link>
 

@@ -7,20 +7,34 @@
     .container {
         height:             23rem;
     }
+    .containerWithoutToken {
+        height:             21rem;
+    }
 }
 @media (min-width: 351px) and (max-width: 575px) {
     .container {
         height:             19rem;
+    }
+    .containerWithoutToken {
+        height:             17rem;
     }
 }
 @media (min-width: 576px) and (max-width: 767px) {
     .container {
         height:             22rem;
     }
+
+    .containerWithoutToken {
+        height:             20rem;
+    }
 }
 @media (min-width: 768px) {
     .container {
         height:             19rem;
+    }
+
+    .containerWithoutToken {
+        height:             17rem;
     }
 }
 

@@ -19,7 +19,7 @@
 
 .imgCard {
   width: 300px;
-  height: cover;
+  height: auto;
 }
 .title {
   font-family: "Open Sans";
@@ -88,6 +88,14 @@
   font-weight: bold;
   font-size: 16px;
   color: #7149bc;
+  text-decoration:none;
+}
+.ownerRealEstate {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  color: #5e5e5e;
   text-decoration:none;
 }
 .precio {

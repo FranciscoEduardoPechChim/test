@@ -1,9 +1,15 @@
 import { MapContext } from "context/map/MapContext";
 import { useContext } from "react";
 import styles from "./Inicio.module.css";
+import Loading from "components/ui/loading/Loading";
 
-const BuscarZona = () => {
-  const { filtros, total } = useContext(MapContext);
+interface Props {
+  total:    number,
+  loading:  boolean
+}
+
+const BuscarZona = ({total, loading}: Props) => {
+  const { filtros } = useContext(MapContext);
   return (
     <div
       className={`${
@@ -16,9 +22,12 @@ const BuscarZona = () => {
         </div>
       </div>
       <div className="row my-1">
+        {(loading) ? 
+        <Loading />:
         <div className="col-12">
-          Cantidad: {total}
-        </div>
+           Cantidad: {total}
+        </div>    
+        }
       </div>
 
     </div>

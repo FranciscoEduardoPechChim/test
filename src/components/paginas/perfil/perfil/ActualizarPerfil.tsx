@@ -27,7 +27,7 @@ import Loading from "components/ui/loading/Loading";
 //Credentials
 import { rentas, casasC } from '../../../../credentials/credentials';
 //Helpers
-import { isString, isNotEmpty, isInteger } from "helpers/validations";
+import { isString, isNotEmpty, isInteger, isDifferent } from "helpers/validations";
 
 interface Props {
   auth:               any,
@@ -305,7 +305,7 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
     const formLastName                              = formValidate('lastName', [isNotEmpty(formulario.lastName), isString(formulario.lastName)]);
     const formPhone                                 = formValidate('phone', [isInteger(formulario.phone)]);
     const formOfficePhone                           = formValidate('OfficePhone', [isInteger(formulario.phoneOffice)]);
-    const formLocation                              = formValidate('location', [isNotEmpty((location) ? location.label:''), isString((location) ? location.label:'')]);
+    const formLocation                              = formValidate('location', [isNotEmpty((location) ? location.label:''), isString((location) ? location.label:''), isDifferent((location) ? location.location.lat:0, 0)]);
 
     if(formName || formLastName || formPhone || formOfficePhone || formLocation) {
         return false;

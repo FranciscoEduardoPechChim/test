@@ -30,6 +30,10 @@ export const isInteger          = (data:any) => {
     return ((typeof data != 'number') && Number.isInteger(data)) ? 'El campo debe ser tipo entero':'';
 }
 
+export const isDifferent        = (data: number, min: number) => {
+    return (data != min) ? 'El campo debe ser distinto de ' + min:'';
+}
+
 export const isMin              = (data:number, min: number) => {
     return (data < min) ? 'El campo debe tener un minímo de ' + min:'';
 }

@@ -127,6 +127,25 @@ export const getPropertiesByUser                    = async (id: string, limit: 
         console.log("Error:", error);
     }
 }
+export const getPropertiesByUserWithoutToken        = async (id: string, limit: number, offset: number, order: string, user: string, userFavorite: string):Promise<propertyResponse|undefined> => {
+    try {
+        var myHeaders                               = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+
+        const requestOptions                        = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                              = await fetch(`${development}/inmuebles/userwithouttoken/${id}?limit=${limit}&offset=${offset}&order=${order}&userId=${user}&userFavorite=${userFavorite}`, requestOptions);
+        const result:propertyResponse               = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
 export const getPropertiesByFollowers               = async (id: string, limit: number, offset: number, status: number, userId: string, access_token: string):Promise<propertyResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();

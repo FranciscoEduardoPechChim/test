@@ -59,6 +59,8 @@ interface ContextProps {
   setAgent: Dispatch<SetStateAction<string>>;
   total: number;
   setTotal: Dispatch<SetStateAction<number>>;
+  property: number;
+  setProperty: Dispatch<SetStateAction<number>>;
 }
 
 export interface Bounds {
@@ -142,6 +144,7 @@ export const MapProvider: FC = ({ children }) => {
   const [status, setStatus]                       = useState(false);
   const [agent, setAgent]                         = useState('all');
   const [total, setTotal]                         = useState(0);
+  const [property, setProperty]                   = useState(0);
 
   return (
     <MapContext.Provider
@@ -193,7 +196,9 @@ export const MapProvider: FC = ({ children }) => {
         agent,
         setAgent,
         total,
-        setTotal
+        setTotal,
+        property,
+        setProperty
       }}
     >
       {children}

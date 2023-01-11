@@ -13,14 +13,14 @@ import { storeFavorite, destroyFavorite } from "../../../../services/favoriteSer
 import { requestProperty } from "../../../../services/requestService";
 import { storeFollower } from "../../../../services/followerService";
 //Middlewares
-import { hasPermission } from "../../../../middlewares/roles";
+import { hasPermission, isUser } from "../../../../middlewares/roles";
 //Interfaces
 import { Auth } from "interfaces/AuthInterface";
 import { Inmueble } from "interfaces";
 //Helpers
 import { validate } from "../../../../helpers/response";
 //Hooks
-import { useUserProperties } from "hooks/useUserInfo";
+import { useUserWithoutTokenProperties } from "hooks/useUserInfo";
 //Context
 import { InmuebleContext } from "context/inmuebles/InmuebleContext";
 import { SocketContext } from "context/socket/SocketContext";
@@ -42,7 +42,7 @@ const Perfil                                    = ({data}:Props) => {
   const [user, setUser]                         = useState((data && (typeof data != 'undefined')) ? data:auth);
   const [offset, setOffset]                     = useState(0);
   const { loading, properties, init,
-  setLimit, setProperties, total }              = useUserProperties((user && user.uid) ? user.uid:'', offset, 6, (access_token) ? access_token:'');
+  setLimit, setProperties, total }              = useUserWithoutTokenProperties((user && user.uid) ? user.uid:'', offset, 6);
   const [picture, setPicture]                   = useState("");
   const [hover, setHover]                       = useState(false);
   const [cargando, setCargando]                 = useState(false);
@@ -145,6 +145,10 @@ const Perfil                                    = ({data}:Props) => {
     }
   }
 
+  const handleProperty                          = async (slug: string) => {
+    router.push('/propiedades/' + slug);
+  }
+
   const followUser                              = async () => {
     if(auth && auth.uid && user && user.uid && (auth.uid != user.uid) && access_token) {
       const response                            = await storeFollower(auth.uid, user.uid, access_token);
@@ -230,12 +234,17 @@ const Perfil                                    = ({data}:Props) => {
             </div>
           }
 
-          <div className={styles.empresa}>{(typeof user.nombreInmobiliaria != 'undefined') ? user.nombreInmobiliaria:'Sin nombre de inmobiliaria'}</div>
-          <div className={styles.correo}>{(typeof user.correo != 'undefined') ? user.correo:'Sin correo electrónico'}</div>
-          <div className={styles.telefono}>{(typeof user.telefonoPersonal != 'undefined') ? user.telefonoPersonal:'Sin número de teléfono'}</div>
-          <div className={styles.telefono}>{(typeof user.direccionFisica != 'undefined') ? user.direccionFisica:'Sin dirección física'}</div>
+          <div className={styles.empresa}>{(typeof user.nombreInmobiliaria == 'string') ? user.nombreInmobiliaria:'Sin nombre de inmobiliaria'}</div>
           
-          {(data && (typeof data != 'undefined')) && 
+          {access_token && (!isUser())  &&
+            <>
+              <div className={styles.correo}>{(typeof user.correo == 'string') ? user.correo:'Sin correo electrónico'}</div>
+              <div className={styles.telefono}>{(typeof user.telefonoPersonal == 'number') ? user.telefonoPersonal:'Sin número de teléfono'}</div>
+              <div className={styles.telefono}>{(typeof user.direccionFisica == 'string') ? user.direccionFisica:'Sin dirección física'}</div>
+            </>
+          }
+
+          {(data && (typeof data != 'undefined') && access_token) && 
             <div className="row mb-1 mt-3">
               <div className="col-12 d-flex justify-content-center">
                 <Button titulo="Seguir" style={{width: 200, height: 60}} btn="Secondary" onClick={() => followUser()} />
@@ -298,9 +307,12 @@ const Perfil                                    = ({data}:Props) => {
                 <div key={key} className="col-sm-6 col-md-6 col-lg-4 col-xl-4 col-12 mb-5 px-4">
                   <Cards
                     property        = {item}
+                    accessToken     = {access_token}
+                    isUser          = {isUser()}
                     handleFavorite  = {(input:string, temporal: string, valid: boolean) => handleFavorite(input, temporal, valid)}
                     handleShare     = {(input:string, temporal: string) => handleShare(input, temporal)}
                     handleChat      = {(temporal: string) => handleChat(temporal)}
+                    handleProperty  = {(input:string) => handleProperty(input)}
                   />
                 </div>
               );

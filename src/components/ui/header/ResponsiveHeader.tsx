@@ -15,7 +15,7 @@ const ResponsiveHeader                      = () => {
   const { auth, abrirLogin, abrirRegistro } = useContext(AuthContext);
   const [mostrar, setMostrar]               = useState(true);
   const { setUbicacionUsuario, 
-    setCoordenadas }                        = useContext(MapContext);
+    setCoordenadas, property, setProperty } = useContext(MapContext);
   const [ location, setLocation ]           = useState(0);
 
   const cerrarMenu                          = () => setMostrar(true);
@@ -23,12 +23,12 @@ const ResponsiveHeader                      = () => {
   const openLogin                           = () => {
     cerrarMenu();
     abrirLogin();
-  };
+  }
 
   const openRegister                        = () => {
     cerrarMenu();
     abrirRegistro();
-  };
+  }
 
   const handleChangeSelect                  = (event: SelectChangeEvent) => {
 
@@ -41,7 +41,11 @@ const ResponsiveHeader                      = () => {
     }
 
     setLocation(Number(event.target.value));
-  };
+  }
+
+  const handleChangePropertiesSelect        = (event: SelectChangeEvent) => {
+    setProperty(Number(event.target.value));
+  }
 
   return (
     <div className={styles.respNavbar}>
@@ -79,9 +83,9 @@ const ResponsiveHeader                      = () => {
             <div className={styles.headerLinkItem} onClick={openLogin}>
               Inicia sesión
             </div>
-            <div className="mx-4">
+            <div className="mx-3">
               <Select
-                    sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                    sx        = {{ '.MuiOutlinedInput-notchedOutline': { border: 'none' } }}
                     labelId   = "demo-simple-select-label"
                     id        = "demo-simple-select"
                     value     = {String(location)}
@@ -90,6 +94,19 @@ const ResponsiveHeader                      = () => {
                   >
                     <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
                     <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
+              </Select>
+            </div>
+            <div className="mx-3">
+              <Select
+                sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }, color: 'white', fontSize: '1.5rem', marginTop: '-0.5rem'}}
+                labelId   = "simple-select-label"
+                id        = "simple-select"
+                value     = {String(property)}
+                label     = "property"
+                onChange  = {handleChangePropertiesSelect}
+              >
+                <MenuItem value={0}>Inmuebles</MenuItem>
+                <MenuItem value={1}>Inmobilarias</MenuItem>
               </Select>
             </div>
           </div>
@@ -167,6 +184,19 @@ const ResponsiveHeader                      = () => {
                   >
                     <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
                     <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
+              </Select>
+            </div>
+            <div className="mx-3">
+              <Select
+                sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }, color: 'white', fontSize: '1.5rem', marginTop: '-0.5rem'}}
+                labelId   = "simple-select-label"
+                id        = "simple-select"
+                value     = {String(property)}
+                label     = "property"
+                onChange  = {handleChangePropertiesSelect}
+              >
+                <MenuItem value={0}>Inmuebles</MenuItem>
+                <MenuItem value={1}>Inmobilarias</MenuItem>
               </Select>
             </div>
           </div>

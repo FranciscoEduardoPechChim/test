@@ -74,6 +74,44 @@ export const showUser                           = async (id:string, access_token
         console.log("Error:", error);
     }
 }
+export const showWithoutUser                    = async (id: string):Promise<userResponse|undefined> => {
+    try {
+        var myHeaders                           = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+
+        var requestOptions                      = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                          = await fetch(`${development}/usuarios/userwithoutpayment/${id}`, requestOptions);
+        const result:userResponse               = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
+export const showRealEstate                     = async (lat_south_east: number, lng_south_east: number, lat_south_west: number, lng_south_west: number, lat_north_east: number, lng_north_east: number, lat_north_west: number, lng_north_west: number):Promise<userResponse|undefined> => {
+    try {
+        var myHeaders                           = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+
+        var requestOptions                      = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                          = await fetch(`${development}/usuarios/test/realestate?lat_south_east=${lat_south_east}&lng_south_east=${lng_south_east}&lat_south_west=${lat_south_west}&lng_south_west=${lng_south_west}&lat_north_east=${lat_north_east}&lng_north_east=${lng_north_east}&lat_north_west=${lat_north_west}&lng_north_west=${lng_north_west}`, requestOptions);
+        const result:userResponse               = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
 
 //DELETE
 export const destroyUser                        = async (id: string, changeId: string, access_token:string):Promise<userResponse|undefined> => {

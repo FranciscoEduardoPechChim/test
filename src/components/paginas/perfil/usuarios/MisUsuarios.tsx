@@ -391,28 +391,52 @@ const MisUsuarios                                                   = () => {
                                 </Form.Group>
                               </Col>
                               {actions && (actions == 'create') &&
-                                <Col md={6} sm xs={12} className="my-2">
-                                  <Form.Group >
-                                    <Form.Label>Contraseña*</Form.Label>
-                                      <div className={styles.relative}>
-                                          <Form.Control
-                                            autoComplete    = "off"
-                                            value           = {password}
-                                            onChange        = {handleChange}
-                                            name            = "password"
-                                            type            = {(showPassword) ? "text":"password"}
-                                            maxLength       = {255}
-                                          />
-                                          <i
-                                            onClick         = {showPasswordInput}
-                                            className       = {`${ showPassword ? "bi bi-eye-slash" : "bi bi-eye"} ${styles.mostrarContraseña}`}
-                                          />
-                                      </div>
-                                      {(errorPassword) && (errorPassword.length != 0) && 
-                                        errorPassword.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })           
-                                      }
-                                  </Form.Group>
-                                </Col>
+                                <>
+                                  <Col md={6} sm xs={12} className="my-2">
+                                    <Form.Group >
+                                      <Form.Label>Contraseña*</Form.Label>
+                                        <div className={styles.relative}>
+                                            <Form.Control
+                                              autoComplete    = "off"
+                                              value           = {password}
+                                              onChange        = {handleChange}
+                                              name            = "password"
+                                              type            = {(showPassword) ? "text":"password"}
+                                              maxLength       = {255}
+                                            />
+                                            <i
+                                              onClick         = {showPasswordInput}
+                                              className       = {`${ showPassword ? "bi bi-eye-slash" : "bi bi-eye"} ${styles.mostrarContraseña}`}
+                                            />
+                                        </div>
+                                        {(errorPassword) && (errorPassword.length != 0) && 
+                                          errorPassword.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })           
+                                        }
+                                    </Form.Group>
+                                  </Col>
+                                  <Col md={6} sm xs={12} className="my-2">
+                                    <Form.Group >
+                                      <Form.Label>Confirmar contraseña*</Form.Label>
+                                          <div className={styles.relative}>
+                                            <Form.Control
+                                              autoComplete    = "off"
+                                              value           = {confirmPassword}
+                                              onChange        = {handleChange}
+                                              name            = "confirmPassword"
+                                              type            = {(showConfirmPassword) ? "text":"password"}
+                                              maxLength       = {255}
+                                            />
+                                            <i
+                                              onClick         = {showConfirmPasswordInput}
+                                              className       = {`${ showConfirmPassword ? "bi bi-eye-slash" : "bi bi-eye"} ${styles.mostrarContraseña}`}
+                                            />
+                                          </div>
+                                        {(errorConfirmPassword) && (errorConfirmPassword.length != 0) && 
+                                          errorConfirmPassword.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })           
+                                        }
+                                    </Form.Group>
+                                  </Col>
+                                </>
                               }
                               {actions && (actions == 'edit') &&
                                 <Col md={6} sm xs={12} className={styles.resetpassword}>

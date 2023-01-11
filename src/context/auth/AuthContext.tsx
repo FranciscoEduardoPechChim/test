@@ -23,7 +23,7 @@ import { RespActualizar } from "../../interfaces/UserInterface";
 //Services
 import { session, signup, sendPassword, sendEmailWelcome} from '../../services/authService';
 import { hasPermission } from '../../services/rolebypermissionService';
-import { storeUser, updateUser, destroyUser, showUser, updateProfile } from '../../services/userService';
+import { storeUser, updateUser, destroyUser, showUser, showWithoutUser, updateProfile } from '../../services/userService';
 //Helpers
 import { validate } from '../../helpers/response';
 //Extras
@@ -40,6 +40,7 @@ interface ContextProps {
   editUser:         (id: string, name: string, lastName: string, email: string, password: string, confirmPassword: string, access_token:string) => Promise<boolean | undefined>;
   deleteUser:       (id: string, changeId: string, access_token: string) => Promise<boolean | undefined>;
   getUser:          (id: string, access_token: string) => Promise<Auth | Auth[] | undefined>;
+  userWithoutToken: (id: string) => Promise<Auth | Auth[] | undefined>;
   editProfile:      (id: string, name: string, profileCompany: string | null, phone: number | null, officePhone: number | null, lastName: string, companyName: string | null, 
     companyLocation: string, companyLat: number, companyLng: number, website: string | null, facebook: string | null, instagram: string | null, twitter: string | null, youtube: string | null,
     linkedin: string | null, isZone: boolean, nameZone: string | null, latZone: string | null, lngZone: string | null, rangeZone: string | null, categoryZone: string | null, typeZone: string | null, roomsZone: string | null,
@@ -401,6 +402,15 @@ export const AuthProvider: FC = ({ children }) => {
       }
     }
   }
+  const userWithoutToken                                    = async (id: string) => {
+    if(id) {
+      const response                                        = await showWithoutUser(id);
+
+      if(response && response.data){
+        return response.data.users;
+      }
+    }
+  }
   const editProfile                                         = async (id: string, name: string, profileCompany: string | null, phone: number | null, officePhone: number | null, lastName: string, companyName: string | null, 
     companyLocation: string, companyLat: number, companyLng: number, website: string | null, facebook: string | null, instagram: string | null, twitter: string | null, youtube: string | null,
     linkedin: string | null, isZone: boolean, nameZone: string | null, latZone: string | null, lngZone: string | null, rangeZone: string | null, categoryZone: string | null, typeZone: string | null, roomsZone: string | null,
@@ -423,7 +433,6 @@ export const AuthProvider: FC = ({ children }) => {
 
         if(response && response.data) {
           
-          console.log(response.data);
           Swal.fire({
             title: '',
             html: response.msg,
@@ -841,7 +850,8 @@ export const AuthProvider: FC = ({ children }) => {
         cerrarPasswordForget,
         forgotPassword,
         getUser,
-        editProfile
+        editProfile,
+        userWithoutToken
       }}
     >
       {children}

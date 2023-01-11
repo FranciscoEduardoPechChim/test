@@ -288,3 +288,12 @@
   line-height: 59px;
   margin-left: 25px;
 }
+
+
+.selectFlag {
+  box-shadow: 'none'
+}
+
+.selectFlag:focus {
+  box-shadow: 'none'
+}
