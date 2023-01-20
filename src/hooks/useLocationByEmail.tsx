@@ -64,11 +64,11 @@ export const useLocationByEmail                             = (id: string, acces
                 });
 
                 const currentCategories                     = locationbyemails.map((item:any) => {
-                    return item.category._id;
+                    return (item.category) ? item.category._id:'all';
                 });
 
                 const currentTypes                          = locationbyemails.map((item:any) => {
-                    return item.type._id;
+                    return (item.type) ? item.type._id:'all';
                 });
      
                 setLocationEmailArray(currentLocationEmails);

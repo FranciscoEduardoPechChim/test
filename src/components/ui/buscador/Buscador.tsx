@@ -19,7 +19,6 @@ const Buscador = () => {
         lat: suggest.location.lat,
         lng: suggest.location.lng,
       });
-
     // !suggest
     //   ? setCoordenadas({ lat: 25.7825453, lng: -80.2994984 })
     //   : setCoordenadas({
@@ -32,6 +31,8 @@ const Buscador = () => {
     !suggest ? setDirMapa(null) : setDirMapa(suggest.label);
 
     !suggest ? setZoom(5) : setZoom(12);
+
+    console.log('1');
   };
 
   return (

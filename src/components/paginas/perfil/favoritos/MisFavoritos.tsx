@@ -54,6 +54,9 @@ const MiListaFavoritos = () => {
 
   return (
     <Container>
+      <div className={`${styles.colorTotal} d-flex justify-content-end`}>
+          TOTAL: {total}
+      </div>
       <Row>
         {cargando ? (
           <Loading />
@@ -65,9 +68,6 @@ const MiListaFavoritos = () => {
               </div>
             ) : (
               <>
-               <div className={`${styles.colorTotal} d-flex justify-content-end`}>
-                    TOTAL: {total}
-                </div>
                 {misFavoritos.map((favorito) => (
                   <FavPropertiesCard
                     key={favorito._id}

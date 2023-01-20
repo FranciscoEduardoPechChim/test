@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { Solicitud } from "interfaces/SolicitudInteface";
 import { IsProperties } from "interfaces/SolicitudInteface";
 import { fetchAceptarRechazarSolicitud } from "helpers/fetch";
+import { Overlay, Popover, OverlayTrigger } from "react-bootstrap";
 import { AuthContext } from "context/auth/AuthContext";
 import NotificacionItem from "./NotificacionItem";
 import { production } from "credentials/credentials";
@@ -20,22 +21,21 @@ import { requestStatusProperty, updateIsProperties } from '../../../services/req
 import { validate } from '../../../helpers/response';
 
 interface Props {
-  notificaciones: boolean;
-  setNotificaciones: Dispatch<SetStateAction<boolean>>;
-  target: MutableRefObject<null>;
+  target: any;
   cargando: boolean;
   solicitudes: Solicitud[];
   contador: number;
   setContador: Dispatch<SetStateAction<number>>;
-  notificacionRef: RefObject<HTMLDivElement>;
+  notificacionRef: any;
   setSolicitudes: Dispatch<SetStateAction<Solicitud[]>>;
   isProperties: IsProperties[];
+  setMostrarMenu: Dispatch<SetStateAction<boolean>>;
 }
 
 const Notificaciones                                  = (props: Props) => {
-  const { notificaciones, setNotificaciones, target, 
-    cargando, solicitudes, contador, setContador,
-    notificacionRef, setSolicitudes, isProperties }   = props;
+  const { target, cargando, solicitudes, contador, 
+    setContador, notificacionRef, setSolicitudes, 
+    isProperties, setMostrarMenu }                    = props;
 
   const access_token                                  = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
   const { auth }                                      = useContext(AuthContext);
@@ -43,11 +43,8 @@ const Notificaciones                                  = (props: Props) => {
 
   const goToProperty                                  = (slug: string) => router.push(`propiedades/${slug}`);
 
-  const mostrarNotificaciones                         = () => { setNotificaciones(!notificaciones); };
-
   const goToSolicitudes                               = () => {
     router.push("/perfil/propiedades-compartidas");
-    setNotificaciones(false);
   }
 
   const statusRequest                                 = async (id: string, status: string) => {
@@ -93,101 +90,35 @@ const Notificaciones                                  = (props: Props) => {
       }
     }
   }
-  // const aprobarSolicitud = async (
-  //   id: string,
-  //   titulo: string,
-  //   img: string,
-  //   correo: string
-  // ) => {
-  //   const aprobacion = {
-  //     estado: "Aprobado",
-  //   };
-
-  //   const res = await fetchAceptarRechazarSolicitud(
-  //     `solicitud/aceptar/${id}`,
-  //     aprobacion
-  //   );
-
-  //   const body = {
-  //     nombre: auth.nombre,
-  //     apellido: auth.apellido,
-  //     titulo,
-  //     img,
-  //     correo,
-  //   };
-
-  //   if (res.ok) {
-  //     await fetch(`${production}/correos/solicitud-aprobada`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-type": "application/json",
-  //       },
-  //       body: JSON.stringify(body),
-  //     });
-  //     const solicitudAprobada: Solicitud[] = solicitudes?.map((solicitud) => {
-  //       if (solicitud._id === id) {
-  //         return { ...solicitud, estado: "Aprobado" };
-  //       }
-  //       return solicitud;
-  //     });
-  //     setSolicitudes(solicitudAprobada);
-  //     setContador((prev) => prev - 1);
-  //     toast.success(res.msg);
-  //   }
-  // };
-
-  // const rechazarSolicitud = async (
-  //   id: string,
-  //   titulo: string,
-  //   img: string,
-  //   correo: string
-  // ) => {
-  //   const rechazo = {
-  //     estado: "Rechazado",
-  //   };
-
-  //   const body = {
-  //     nombre: auth.nombre,
-  //     apellido: auth.apellido,
-  //     titulo,
-  //     img,
-  //     correo,
-  //   };
-
-  //   const res = await fetchAceptarRechazarSolicitud(
-  //     `solicitud/rechazar/${id}`,
-  //     rechazo
-  //   );
-
-  //   if (res.ok) {
-  //     await fetch(`${production}/correos/solicitud-rechazada`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-type": "application/json",
-  //       },
-  //       body: JSON.stringify(body),
-  //     });
-
-  //     const solicitudRechazada: Solicitud[] = solicitudes?.map((solicitud) => {
-  //       if (solicitud._id === id) {
-  //         return { ...solicitud, estado: "Rechazado" };
-  //       }
-  //       return solicitud;
-  //     });
-  //     setContador((prev) => prev - 1);
-  //     setSolicitudes(solicitudRechazada);
-
-  //     toast.success(res.msg);
-  //   }
-  // };
+  
+  // const popover                                       = (
+  //   <Popover id="popover-basic">
+  //     <Popover.Body>
+         
+  //     </Popover.Body>
+  //   </Popover>
+  // );
 
   return (
     <>
-      <div className="text-center" ref={notificacionRef}>
+     <NotificacionItem
+        target              = {target}
+        targetNotification  = {notificacionRef}
+        contador            = {contador}
+        cargando            = {cargando}
+        solicitudes         = {solicitudes}
+        goToProperty        = {goToProperty}
+        statusRequest       = {statusRequest}
+        goToSolicitudes     = {goToSolicitudes}
+        isProperties        = {isProperties}
+        handleProperties    = {handleProperties}
+      />
+    
+      {/* <div className="text-center" ref={notificacionRef}>
         <div
-          className="ms-3"
-          onClick={mostrarNotificaciones}
-          style={{
+          className = "ms-3"
+          onClick   = {() => console.log('13')}
+          style     = {{
             border: "2.5px solid #7149bc",
             borderRadius: "50%",
             padding: "0px 6px",
@@ -215,12 +146,12 @@ const Notificaciones                                  = (props: Props) => {
             {contador}
           </span>
         ) : null}
-      </div>
-      <NotificacionItem
+      </div> */}
+      {/* <NotificacionItem
         target            = {target}
         cargando          = {cargando}
         solicitudes       = {solicitudes}
-        notificaciones    = {notificaciones}
+        notificaciones    = {true}
         goToProperty      = {goToProperty}
         // aprobarSolicitud  = {aprobarSolicitud}
         // rechazarSolicitud = {rechazarSolicitud}
@@ -228,7 +159,7 @@ const Notificaciones                                  = (props: Props) => {
         goToSolicitudes   = {goToSolicitudes}
         isProperties      = {isProperties}
         handleProperties  = {handleProperties}
-      />
+      /> */}
     </>
   );
 };

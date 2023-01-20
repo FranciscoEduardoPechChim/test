@@ -2,7 +2,7 @@
 import React, { useContext, useState, useMemo, FormEvent } from 'react'
 import { SelectChangeEvent } from '@mui/material/Select';
 import SortIcon from '@material-ui/icons/ArrowDownward';
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Form } from "react-bootstrap";
 import Card from '@material-ui/core/Card';
 import styles from './Follower.module.css'
 //Hooks
@@ -24,9 +24,7 @@ import { isNotEmpty, isBoolean } from '../../../../helpers/validations';
 const MyFollowers                                           = () => {
     const access_token                                      = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
     const { auth }                                          = useContext(AuthContext);
-    const { createFollower, editFollower, deleteFollower, 
-        showFollower }                                      = useContext(FollowerContext);
-
+    const { editFollower, deleteFollower, showFollower }    = useContext(FollowerContext);
     const [ filterText, setFilterText ]                     = useState('');
     const [ selectAction, setSelectAction ]                 = useState('');
     const [ selectId, setSelectId ]                         = useState('');
@@ -35,20 +33,21 @@ const MyFollowers                                           = () => {
     const [ errorNotification, setErrorNotification ]       = useState([]);
     const [ errorEmail, setErrorEmail ]                     = useState([]);
     const [ data, setData ]                                 = useState({});
+    const [ isFollower, setIsFollower ]                     = useState(false);
     const [ selectNotification, setSelectNotification ]     = useState<boolean>(true);
     const [ selectEmail, setSelectEmail ]                   = useState<boolean>(true);
     const [ owner, setOwner]                                = useState('');
-    const { loading, followers, init }                      = useFollowers((auth && auth.uid) ? auth.uid:'', (access_token) ? access_token:'');
+    const { loading, followers, followme, init }            = useFollowers((auth && auth.uid) ? auth.uid:'', (access_token) ? access_token:'');
 
     const columns = [
         {
-            name:       'Asesor inmobiliario',
-            selector:   (row:any) => row.owner.nombre + ' ' + row.owner.apellido,
+            name:       (isFollower) ? 'Asesor que me sigue':'Asesor inmobiliario',
+            selector:   (row:any) => (isFollower) ? row.user.nombre + ' ' + row.user.apellido:row.owner.nombre + ' ' + row.owner.apellido,
             sortable:   true
         },
         {
             name:       'Correo electrónico',
-            selector:   (row:any) => row.owner.correo,
+            selector:   (row:any) => (isFollower) ? row.user.correo:row.owner.correo,
             sortable:   true
         },
         {
@@ -64,7 +63,7 @@ const MyFollowers                                           = () => {
         {
             name:       'Acciones',
             selector:   (row:any) => row.actions,
-            cell:       (row:any) => <ActionComponent actions={['show', 'edit', 'delete']} selectAction={selectAction} selectId={selectId} id={row._id} handleChange={(event: SelectChangeEvent, id: string) => handleChangeEvent(event, id)} />,
+            cell:       (row:any) => (isFollower) ? 'Sin acciones':<ActionComponent actions={['show', 'edit', 'delete']} selectAction={selectAction} selectId={selectId} id={row._id} handleChange={(event: SelectChangeEvent, id: string) => handleChangeEvent(event, id)} />,
         },
     ];
 
@@ -75,8 +74,12 @@ const MyFollowers                                           = () => {
         selectAllRowsItemText: 'Todos',
     };
 
-    const filteredItems                                     = followers.filter((item:any) => {
-        return ((item.owner.nombre && item.owner.nombre.toLowerCase().includes(filterText.toLowerCase()))    
+    const filteredItems                                     = ((isFollower) ? followme:followers).filter((item:any) => {
+        return (isFollower) ?        
+            ((item.user.nombre && item.user.nombre.toLowerCase().includes(filterText.toLowerCase()))    
+            || (item.user.apellido && item.user.apellido.toLowerCase().includes(filterText.toLowerCase()))
+            || (item.user.correo && item.user.correo.toLowerCase().includes(filterText.toLowerCase()))):
+            ((item.owner.nombre && item.owner.nombre.toLowerCase().includes(filterText.toLowerCase()))    
             || (item.owner.apellido && item.owner.apellido.toLowerCase().includes(filterText.toLowerCase()))
             || (item.owner.correo && item.owner.correo.toLowerCase().includes(filterText.toLowerCase())))
     });
@@ -189,6 +192,19 @@ const MyFollowers                                           = () => {
                 </Row>
                 <Row>              
                     <Card className="my-5">
+                        <Row>
+                            <Col className='my-2 mx-2'>
+                                <Form>
+                                    <Form.Check 
+                                        type            = "switch"
+                                        id              = "custom-switch"
+                                        defaultChecked  = {isFollower}
+                                        label           = {<span className={styles.modalLabels}>Asesores que me siguen</span>}
+                                        onChange        = {() => setIsFollower(!isFollower)}
+                                        />
+                                </Form>
+                            </Col>
+                        </Row> 
                         <Row className="justify-content-center">
                             <DataTable
                                 columns                     = {columns}

@@ -1,11 +1,9 @@
 //export const production = "https://red1a1-develop.herokuapp.com/api";
 //export const development = "https://red1a1-develop.herokuapp.com/api"; 
 
-// export const url              = "http://localhost:8080";
-// export const production       = url + "/api";
-// export const development      = url + "/api"; 
-
-export const url          = "https://web-production-ead1.up.railway.app";
+// export const url              = "http://localhost:8080"; //local
+export const url          = "https://web-production-ead1.up.railway.app"; // develop
+// export const url           = "https://production-production-cede.up.railway.app"; //production
 export const production   = url + "/api";
 export const development  = url + "/api"; 
 

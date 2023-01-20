@@ -83,7 +83,7 @@ const ResponsiveHeader                      = () => {
             <div className={styles.headerLinkItem} onClick={openLogin}>
               Inicia sesión
             </div>
-            <div className="mx-3">
+            {/* <div className="mx-3">
               <Select
                     sx        = {{ '.MuiOutlinedInput-notchedOutline': { border: 'none' } }}
                     labelId   = "demo-simple-select-label"
@@ -108,6 +108,50 @@ const ResponsiveHeader                      = () => {
                 <MenuItem value={0}>Inmuebles</MenuItem>
                 <MenuItem value={1}>Inmobilarias</MenuItem>
               </Select>
+            </div> */}
+            <div className="mx-3">
+              <Select
+                    sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
+                    labelId   = "demo-simple-select-label"
+                    id        = "demo-simple-select"
+                    value     = {String(location)}
+                    label     = "location"
+                    onChange  = {handleChangeSelect}
+                  >
+                    <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
+                    <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
+              </Select> 
+              {/* <DropdownButton 
+                  className = {`mt-2`}
+                  title     = {<img width={30} height={25} src={(String(location) == '0') ? 'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png':'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} />}
+                  onSelect  = {(e:any) => handleChangeSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(location) == '0') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(location) == '1') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></Dropdown.Item>
+              </DropdownButton> */}
+            </div>
+            <div className="mx-3">
+              <Select
+                sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }, color: 'white', fontSize: '1.5rem', marginTop: '-0.5rem'}}
+                labelId   = "simple-select-label"
+                id        = "simple-select"
+                value     = {String(property)}
+                label     = "property"
+                onChange  = {handleChangePropertiesSelect}
+              >
+                <MenuItem value={0}>Inmuebles</MenuItem>
+                <MenuItem value={1}>Inmobilarias</MenuItem>
+              </Select> 
+
+              
+              {/* <DropdownButton 
+                  className = {`mt-2`}
+                  title     = {(String(property) == '0') ? <span style={{ fontSize: 17}}>Inmuebles</span>:<span style={{ fontSize: 17}}>Inmobilarias</span>}
+                  onSelect  = {(e:any) => handleChangePropertiesSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(property) == '0') ? true:false}><span style={{ fontSize: 17}}>Inmuebles</span></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(property) == '1') ? true:false}><span style={{ fontSize: 17}}>Inmobilarias</span></Dropdown.Item>
+              </DropdownButton> */}
             </div>
           </div>
         ) : (
@@ -173,7 +217,7 @@ const ResponsiveHeader                      = () => {
                 </Link>
               </div>
             }
-            <div className="mx-4">
+            <div className="mx-3">
               <Select
                     sx        = {{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
                     labelId   = "demo-simple-select-label"
@@ -184,7 +228,15 @@ const ResponsiveHeader                      = () => {
                   >
                     <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
                     <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
-              </Select>
+              </Select> 
+              {/* <DropdownButton 
+                  className = {`mt-2`}
+                  title     = {<img width={30} height={25} src={(String(location) == '0') ? 'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png':'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} />}
+                  onSelect  = {(e:any) => handleChangeSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(location) == '0') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(location) == '1') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></Dropdown.Item>
+              </DropdownButton> */}
             </div>
             <div className="mx-3">
               <Select
@@ -197,7 +249,17 @@ const ResponsiveHeader                      = () => {
               >
                 <MenuItem value={0}>Inmuebles</MenuItem>
                 <MenuItem value={1}>Inmobilarias</MenuItem>
-              </Select>
+              </Select> 
+
+{/*               
+              <DropdownButton 
+                  className = {`mt-3`}
+                  title     = {(String(property) == '0') ? <span style={{ fontSize: 24}}>Inmuebles</span>:<span style={{ fontSize: 17}}>Inmobilarias</span>}
+                  onSelect  = {(e:any) => handleChangePropertiesSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(property) == '0') ? true:false}><span style={{ fontSize: 17}}>Inmuebles</span></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(property) == '1') ? true:false}><span style={{ fontSize: 17}}>Inmobilarias</span></Dropdown.Item>
+              </DropdownButton> */}
             </div>
           </div>
         )}

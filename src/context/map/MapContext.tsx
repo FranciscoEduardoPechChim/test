@@ -116,6 +116,18 @@ export const MapProvider: FC = ({ children }) => {
   const [filtros, setFiltros] = useState(false);
   const [ocultarBottomNav, setOcultarBottomNav] = useState(true);
 
+  const [minimoTerreno, setMinimoTerreno]         = useState(0);
+  const [maximoTerreno, setMaximoTerreno]         = useState(10000);
+  const [minimoConstruidos, setMinimoConstruidos] = useState(0);
+  const [maximoConstruidos, setMaximoConstruidos] = useState(10000);
+  const [minimoPrecio, setMinimoPrecio]           = useState(0);
+  const [maximoPrecio, setMaximoPrecio]           = useState(10000000000);
+  const [identification, setIdentification]       = useState('');
+  const [status, setStatus]                       = useState(false);
+  const [agent, setAgent]                         = useState('all');
+  const [total, setTotal]                         = useState(0);
+  const [property, setProperty]                   = useState(0);
+
   useEffect(() => {
     obtenerUbicacionUsuario().then((lngLat) => {
       setUbicacionUsuario({ lat: lngLat.lat, lng: lngLat.lng });
@@ -132,19 +144,6 @@ export const MapProvider: FC = ({ children }) => {
     //   : setZoom(6);
 
   }, [coordenadas]);
-
-
-  const [minimoTerreno, setMinimoTerreno]         = useState(0);
-  const [maximoTerreno, setMaximoTerreno]         = useState(10000);
-  const [minimoConstruidos, setMinimoConstruidos] = useState(0);
-  const [maximoConstruidos, setMaximoConstruidos] = useState(10000);
-  const [minimoPrecio, setMinimoPrecio]           = useState(0);
-  const [maximoPrecio, setMaximoPrecio]           = useState(10000000);
-  const [identification, setIdentification]       = useState('');
-  const [status, setStatus]                       = useState(false);
-  const [agent, setAgent]                         = useState('all');
-  const [total, setTotal]                         = useState(0);
-  const [property, setProperty]                   = useState(0);
 
   return (
     <MapContext.Provider

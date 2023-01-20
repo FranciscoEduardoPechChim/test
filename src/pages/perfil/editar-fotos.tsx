@@ -14,7 +14,6 @@ const EditarFotos = () => {
     const { idInmueble } = useContext(InmuebleContext);
     const router = useRouter();
     const { cargando } = useInmueble(idInmueble);
-    console.log(idInmueble);
 
     return (
         <>

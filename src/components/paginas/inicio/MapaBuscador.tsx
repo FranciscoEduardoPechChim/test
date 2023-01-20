@@ -34,20 +34,17 @@ const MapaUbicacion = () => {
     coordenadas,
     zoom,
     setCoordenadas,
-    southEast,
     setSouthEast,
-    northWest,
     setNorthWest,
-    southWest,
     setSouthWest,
-    northEast,
     setNorthEast,
     categoria,
     tipoPropiedad,
     setCategoria,
     setTipoPropiedad,
     filtros,
-    property
+    property,
+    
   } = useContext(MapContext);
   const [set, setSet]                   = useState('');
   const [seleccionado, setSeleccionado] = useState('');
@@ -61,11 +58,6 @@ const MapaUbicacion = () => {
   const { auth }                        = useContext(AuthContext);
   const mapRef                          = useRef<GoogleMap>(null);
   const { inmuebles, cargando }         = usePropertiesByCoords(
-    southEast,
-    northWest,
-    southWest,
-    northEast,
-    coordenadas,
     categoria,
     tipoPropiedad,
     banos,
@@ -124,7 +116,7 @@ const MapaUbicacion = () => {
 
   useEffect(() => {
     onBoundsChange();
-  }, [coordenadas]);
+  }, []);
 
   return (
     <>

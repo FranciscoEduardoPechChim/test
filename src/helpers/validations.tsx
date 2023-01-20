@@ -31,7 +31,7 @@ export const isInteger          = (data:any) => {
 }
 
 export const isDifferent        = (data: number, min: number) => {
-    return (data != min) ? 'El campo debe ser distinto de ' + min:'';
+    return (data == min) ? 'El campo debe ser distinto de ' + min:'';
 }
 
 export const isMin              = (data:number, min: number) => {

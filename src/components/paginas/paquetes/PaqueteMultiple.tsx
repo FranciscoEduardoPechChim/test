@@ -879,7 +879,7 @@ const PaqueteMultiple                                                   = (props
                 <div className="row d-flex justify-content-center">
                   <div className="col-8">
                     <ul className={`${styles.S3labels}`}>
-                      <li>Para continuar oprimir el botón &quot GENERAR REFERENCIA &quot.</li>
+                      <li>Para continuar oprimir el botón GENERAR REFERENCIA </li>
                       <li>Se envíara un correo electrónico con la referencia.</li>
                       <li>Pagar referencia en un plazo menor a 7 días hábiles.</li>
                       <li>Tomar fotografía y subir en el apartado de <b>Referencias.</b></li>
@@ -889,7 +889,7 @@ const PaqueteMultiple                                                   = (props
                 <div className="row d-flex justify-content-center">
                   <div className="col-8">
                     <ul className={`${styles.S3labels}`}>
-                      <li>Para continuar oprimir el botón &quot GENERAR REFERENCIA POR OXXO &quot.</li>
+                      <li>Para continuar oprimir el botón GENERAR REFERENCIA POR OXXO </li>
                       <li>Se envíara un correo electrónico con la referencia y un PDF.</li>
                       <li>Pagar referencia en un plazo menor a 7 días hábiles.</li>
                       <li>Tomar fotografía y subir en el apartado de <b>Referencias.</b></li>

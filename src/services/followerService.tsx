@@ -40,7 +40,7 @@ export const getFollowerByUser                      = async (id: string, access_
         myHeaders.append("Authorization", `Bearer ${access_token}`);
 
         const requestOptions                        = {
-            method: 'GET',
+            method: 'GET', 
             headers: myHeaders
         };
 

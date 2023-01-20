@@ -46,6 +46,14 @@
   padding: 14px 18px 14px 18px;
   text-decoration: none;
 }
+.menuContainer {
+  background-color:   #ffffff;
+  width:              200px;
+  border-radius:      10px;
+  box-shadow:         0px 0px 13px rgba(0, 0, 0, 0.25);
+  z-index:            10;
+  display:            block;
+}
 .menu {
   background-color: #ffffff;
   border-radius: 10px;
@@ -104,10 +112,10 @@
   border-radius: 10px;
   box-shadow: 0px 0px 13px rgba(0, 0, 0, 0.25);
   width: 400px;
-  margin-top: 83px;
   z-index: 10;
-  margin-left: -360px;
+  display: block;
   background-color: white;
+  max-width: 400px;
 }
 .pendiente {
   background-color: #edf2f9;
@@ -244,18 +252,15 @@
   box-shadow: 0px 2px 8px -3px rgba(0, 0, 0, 0.83);
 }
 
-@media (max-width: 575px) {
+@media (max-width: 991px) {
   .notificaciones {
-    margin-top: 260px;
-    margin-left: -60px;
+    display: none;
+  }
+  .menuContainer {
+    display: none;
   }
 }
-@media (max-width: 430px) {
-  .notificaciones {
-    margin-left: -80px;
-    width: 315px;
-  }
-}
+
 
 /*Responsive header*/
 
@@ -289,6 +294,10 @@
   margin-left: 25px;
 }
 
+.dropdownWithoutBorder {
+  border: none;
+  outline: none
+}
 
 .selectFlag {
   box-shadow: 'none'

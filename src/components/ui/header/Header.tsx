@@ -1,6 +1,7 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { HtmlHTMLAttributes, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { useRouter } from "next/router";
+import { Container, Nav, Navbar} from "react-bootstrap";
 import { gsap } from "gsap";
 import Button from "../button/Button";
 import styles from "./Header.module.css";
@@ -15,8 +16,7 @@ import Notificaciones from "./Notificaciones";
 import { ChatContext } from "context/chat/ChatContext";
 
 import { MapContext } from "../../../context/map/MapContext";
-import { Box, InputLabel, MenuItem, FormControl, Select, SelectChangeEvent } from '@mui/material';
-
+import { Box, InputLabel, FormControl, SelectChangeEvent, Select, MenuItem } from '@mui/material';
 //Context
 import { useIsProperties } from "../../../hooks/useSolicitudes";
 //Middlewares
@@ -83,12 +83,21 @@ const Header                                                = () => {
     }
   }, [socket]);
 
+  // useEffect(() => {
+  //     if(notificaciones) {
+  //       setMostrarMenu(!notificaciones);
+  //     }
+  //     if(mostrarMenu) {
+  //       setNotificaciones(!mostrarMenu);
+  //     }
+    
+  // }, [mostrarMenu, notificaciones]);
+
   useEffect(() => {
     setContador(requests.length + isProperties.length);
   }, [requests.length, isProperties.length]);
 
   const handleChangeSelect                                  = (event: SelectChangeEvent) => {
-    event.preventDefault();
 
     if(Number(event.target.value) == 0) {
       setUbicacionUsuario({ lat: 19.4326078, lng: -99.133207 }); 
@@ -98,12 +107,11 @@ const Header                                                = () => {
       setCoordenadas({ lat: 25.7825453, lng: -80.2994984 }); 
     }
 
+    
     setLocation(Number(event.target.value));
   }
-
   const handleChangePropertiesSelect                        = (event: SelectChangeEvent) => {
-    event.preventDefault();
-    
+
     setProperty(Number(event.target.value));
   }
 
@@ -118,7 +126,7 @@ const Header                                                = () => {
     <Navbar className={styles.navStyle} bg="light" expand="sm">
       <Container>
         <div className="my-2">
-          <Link href="/">
+          <Link href="/" >
             <img
               src="/images/logos/red1-color.png"
               alt="Red 1 a 1"
@@ -140,7 +148,7 @@ const Header                                                = () => {
               >
                 <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
                 <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
-              </Select>
+              </Select> 
 
               <Select
                 sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }}}
@@ -152,7 +160,28 @@ const Header                                                = () => {
               >
                 <MenuItem value={0}>Inmuebles</MenuItem>
                 <MenuItem value={1}>Inmobilarias</MenuItem>
-              </Select>
+              </Select> 
+
+              {/* <DropdownButton 
+                  className = {`mt-2 mx-1`}
+                  variant   = {'light'}
+                  title     = {<img width={30} height={25} src={(String(location) == '0') ? 'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png':'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} />}
+                  onSelect  = {(e:any) => handleChangeSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(location) == '0') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(location) == '1') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></Dropdown.Item>
+              </DropdownButton>
+
+              <DropdownButton 
+                  className = {`mt-2 mx-1`}
+                  // style     = {{fontSize: 50}}
+                  variant   = {'light'}
+                  title     = {(String(property) == '0') ? <span style={{ fontSize: 17}}>Inmuebles</span>:<span style={{ fontSize: 17}}>Inmobilarias</span>}
+                  onSelect  = {(e:any) => handleChangePropertiesSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(property) == '0') ? true:false}><span style={{ fontSize: 17}}>Inmuebles</span></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(property) == '1') ? true:false}><span style={{ fontSize: 17}}>Inmobilarias</span></Dropdown.Item>
+              </DropdownButton> */}
 
               <div
                 onClick={abrirRegistro}
@@ -176,6 +205,29 @@ const Header                                                = () => {
                   <MenuItem value={0}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></MenuItem>
                   <MenuItem value={1}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></MenuItem>
               </Select>
+
+              {/* <DropdownButton 
+                  className = {`mt-2 mx-1`}
+                  style     = {{ border: 'none'}}
+                  variant   = {'light'}
+                  title     = {<img width={30} height={25} src={(String(location) == '0') ? 'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png':'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} />}
+                  onSelect  = {(e:any) => handleChangeSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(location) == '0') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-mexico-48_1_gi2dq6.png'} /></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(location) == '1') ? true:false}><img width={30} height={25} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671232286/images/icons8-united-states-48_pxsiqh.png'} /></Dropdown.Item>
+              </DropdownButton>
+
+              <DropdownButton 
+                  className = {`mt-2 mx-1`}
+                  // style     = {{fontSize: 50}}
+                  variant   = {'light'}
+                  title     = {(String(property) == '0') ? <span style={{ fontSize: 17}}>Inmuebles</span>:<span style={{ fontSize: 17}}>Inmobilarias</span>}
+                  onSelect  = {(e:any) => handleChangePropertiesSelect(String(e))}
+              >
+                <Dropdown.Item eventKey="0" active={(String(property) == '0') ? true:false}><span style={{ fontSize: 17}}>Inmuebles</span></Dropdown.Item>
+                <Dropdown.Item eventKey="1" active={(String(property) == '1') ? true:false}><span style={{ fontSize: 17}}>Inmobilarias</span></Dropdown.Item>
+              </DropdownButton> */}
+              
 
               <Select
                 sx        = {{'.MuiOutlinedInput-notchedOutline': { border: 'none' }}}
@@ -202,16 +254,11 @@ const Header                                                = () => {
               }
 
               <MenuUsuario
-                setMostrarMenu={setMostrarMenu}
-                target={target}
-                setNotificaciones={setNotificaciones}
-                mostrarMenu={mostrarMenu}
+                target              = {target}
               />
 
               {hasPermission('notifications') &&
                 <Notificaciones
-                  notificaciones          = {notificaciones}
-                  setNotificaciones       = {setNotificaciones}
                   target                  = {target}
                   cargando                = {loading || loadingProperties}
                   solicitudes             = {requests}
@@ -220,6 +267,7 @@ const Header                                                = () => {
                   setContador             = {setContador}
                   notificacionRef         = {notificacionRef}
                   isProperties            = {isProperties}
+                  setMostrarMenu          = {setMostrarMenu}
                 />
               }
             </Nav>

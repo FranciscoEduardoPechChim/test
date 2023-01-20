@@ -61,6 +61,8 @@ export interface Inmueble {
   isFavorite?: boolean;
   owner?: string;
   isNewProperty?: boolean;
+  isVideo?: boolean;
+  video?: string;
 }
 
 export interface Categoria {

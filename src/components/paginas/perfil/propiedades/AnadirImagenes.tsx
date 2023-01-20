@@ -75,7 +75,6 @@ const AnadirImagenes                    = (props: Props) => {
   const [select, setSelect]             = useState(-1);
   const [change, setChange]             = useState(-1);
   const [showModal, setShowModal]       = useState(false);
-
   const { usuariosPorDir }              = useUsuariosPorDir(direccionInm);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -149,7 +148,7 @@ const AnadirImagenes                    = (props: Props) => {
   const thumbs = images.map((file: any, i: number) => (
     <div style={thumb} key={i}>
       <div style={thumbInner}>
-        <span style={{position: 'absolute', color: 'black', fontWeight: 'bolder'}}>{i + 1}</span>
+        <span style={{position: 'absolute', color: 'black', fontWeight: 'bolder', marginTop: '-1.7rem'}}>{i + 1}</span>
         <img src={(action == 'create') ? file.preview:((typeof file == 'string') ? file:file.preview)} onClick={() => loadImages(i)} style={img} />
         <img
           className={`${styles.btnicon} pointer`}
@@ -213,6 +212,7 @@ const AnadirImagenes                    = (props: Props) => {
 
   return (
     <>
+    
       {
         <>
           {(!opciones) &&(
@@ -228,9 +228,12 @@ const AnadirImagenes                    = (props: Props) => {
                     style={{ width: '70%' }}
                   />
                 </div>
+                <div className='text-center' style={{ marginTop: '-1rem', marginBottom: '1.5rem' }}>En el caso de ordenar imágenes es necesio oprimir sobre dicha imagen</div>
               </div>
+  
               <div className="text-center mt-2">{thumbs}</div>
               {cargando ? <Loading /> : null}
+              
             </>
           )}
         </>
@@ -249,12 +252,12 @@ const AnadirImagenes                    = (props: Props) => {
             <Button 
               titulo  = "Anterior" 
               onClick = {() => handlePrevStep(2)} 
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           <span className="mx-2" />
             <Button 
               titulo  = {(action == 'create') ? "Crear":"Actualizar"}
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           </div>
       </div> 

@@ -29,7 +29,7 @@ import Swal from "sweetalert2";
 
 const MisUsuarios                                                   = () => {
   const access_token                                                = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
-  const { auth, createUser, editUser, deleteUser }                  = useContext(AuthContext);
+  const { auth, createUser, editUser, deleteChangeUser, deleteUser }= useContext(AuthContext);
   const { users, loading, init, setLoading }                        = useMyUsersById((auth.uid) ? auth.uid:'', (access_token) ? access_token:'');
   const [ showPassword, setShowPassword ]                           = useState(false);
   const [ showConfirmPassword, setShowConfirmPassword ]             = useState(false);
@@ -191,7 +191,20 @@ const MisUsuarios                                                   = () => {
                 confirmButtonText: 'De acuerdo'
               }).then(async (result) => {
                 if (result.isConfirmed) {
-                  setShowModal(true);
+
+                  if(auth && auth.uid && (userArray.length == 0)) {
+                    setLoading(true);
+                    const isValid                                   = await deleteChangeUser(users[0].uid, auth.uid, (access_token) ? access_token:"");
+                    
+                    if(isValid) {
+                      init();
+                      cardClose();
+                    }
+                    
+                    setLoading(false);
+                  }else {
+                    setShowModal(true);
+                  }
                 }else if(result.isDismissed) {
                   cardClose();
                 }
@@ -260,7 +273,7 @@ const MisUsuarios                                                   = () => {
 
     setLoading(true);
     
-    const isValid                                                   = await deleteUser(selectId, changeUser, (access_token) ? access_token:"");
+    const isValid                                                   = await deleteChangeUser(selectId, changeUser, (access_token) ? access_token:"");
 
     if(isValid) {
       setLoading(false);

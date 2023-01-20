@@ -1,6 +1,6 @@
 import { useContext, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Container, Form } from "react-bootstrap";
+import { Container, Form, Modal } from "react-bootstrap";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import Button from "../../../ui/button/Button";
 import styles from "./Perfil.module.css";
@@ -21,12 +21,18 @@ import { Inmueble } from "interfaces";
 import { validate } from "../../../../helpers/response";
 //Hooks
 import { useUserWithoutTokenProperties } from "hooks/useUserInfo";
+import { useTipoPropiedad, useCategories } from '../../../../hooks/useCategories';
+import { useSets } from "hooks/useSets";
 //Context
 import { InmuebleContext } from "context/inmuebles/InmuebleContext";
 import { SocketContext } from "context/socket/SocketContext";
 import { ChatContext } from "context/chat/ChatContext";
 //Material UI
 import TablePagination from '@material-ui/core/TablePagination';
+//Components
+import Modaltitle from "../../../ui/modaltitle/Modaltitle";
+//Extras
+import { casasC, rentas } from "credentials";
 
 interface Props {
   data?:        Auth
@@ -41,13 +47,46 @@ const Perfil                                    = ({data}:Props) => {
   const { chat }                                = useContext(ChatContext);
   const [user, setUser]                         = useState((data && (typeof data != 'undefined')) ? data:auth);
   const [offset, setOffset]                     = useState(0);
-  const { loading, properties, init,
-  setLimit, setProperties, total }              = useUserWithoutTokenProperties((user && user.uid) ? user.uid:'', offset, 6);
+  const { loading, propertyTypes, 
+    obtenerTipoPropiedad }                      = useTipoPropiedad();
+  const { cargando, categorias, 
+    obtenerCategorias }                         = useCategories();
+  const { loadingSet, sets }                    = useSets();
+  const [quantity, setQuantity]                 = useState([0,1,2,3,4]);
+  const [type, setType]                         = useState(casasC);
+  const [category, setCategory]                 = useState(rentas);
+  const [room, setRoom]                         = useState(0);
+  const [bath, setBath]                         = useState(0);
+  const [garage, setGarage]                     = useState(0);
+  const [price, setPrice]                       = useState({min: 0, max: 10000000000});
+  const [ground, setGround]                     = useState({min: 0, max: 10000});
+  const [build, setBuild]                       = useState({min: 0, max: 10000});
+  const [set, setSet]                           = useState('all');
+  const { loadingProperties, properties, init, 
+  setLimit, setProperties, total }              = useUserWithoutTokenProperties(
+    (user && user.uid) ? user.uid:'', 
+    offset, 
+    6,
+    type,
+    category,
+    room,
+    bath,
+    garage, 
+    price.min,
+    price.max,
+    ground.min,
+    ground.max,
+    build.min,
+    build.max,
+    set,
+    1
+  );
   const [picture, setPicture]                   = useState("");
   const [hover, setHover]                       = useState(false);
-  const [cargando, setCargando]                 = useState(false);
+  const [cargandos, setCargandos]                 = useState(false);
   const [page, setPage]                         = useState(0);
   const [rowsPerPage, setRowsPerPage]           = useState(6);
+  const [showFilter, setShowFilter]             = useState(false);
   const inputFile                               = useRef<HTMLInputElement>(null);
   const misPaquetes                             = () => router.push("/perfil/mis-paquetes");
   const misPropiedades                          = () => router.push("/perfil/mis-propiedades");
@@ -58,17 +97,17 @@ const Perfil                                    = ({data}:Props) => {
 
   const handlePicture                           = async (e: any) => {
     e.preventDefault();
-    setCargando(true);
+    setCargandos(true);
     const formData = new FormData();
     formData.append("picture", picture);
 
     await fotoPerfil(formData);
-    setCargando(false);
+    setCargandos(false);
   };
 
   const onMouseEnter                            = () => setHover(true);
   const onMouseLeave                            = () => setHover(false);
-
+ 
   const handleFavorite                          = async (hash: string, owner: string, isFavorite: boolean) => {
     if(auth && auth.uid && hash && owner  && (!isFavorite) && access_token) {
       const response                            = await storeFavorite(auth.uid, owner, hash, access_token);
@@ -169,13 +208,18 @@ const Perfil                                    = ({data}:Props) => {
     }
   }
 
+  const modalClose                              = () => {
+    setShowFilter(false);
+  }
+
   useEffect(() => {
     setUserFavorite((auth && auth.uid) ? auth.uid:'');
   }, []);
 
+  console.log(user.img);
   return (
     <Container>
-      {cargando ? <Loading /> : null}
+      {cargandos ? <Loading /> : null}
       <div className="d-flex justify-content-center mb-5">
         <div className="text-center">
           <div className={`${styles.imagencontainer} mt-5 mb-2`}>
@@ -245,11 +289,13 @@ const Perfil                                    = ({data}:Props) => {
           }
 
           {(data && (typeof data != 'undefined') && access_token) && 
-            <div className="row mb-1 mt-3">
-              <div className="col-12 d-flex justify-content-center">
-                <Button titulo="Seguir" style={{width: 200, height: 60}} btn="Secondary" onClick={() => followUser()} />
+            <>
+              <div className="row mt-3">
+                <div className="col-12 d-flex justify-content-center">
+                  <Button titulo="Seguir" style={{width: 200, height: 60}} btn="Secondary" onClick={() => followUser()} />
+                </div>
               </div>
-            </div>
+            </>
           }
         </div>
       </div>
@@ -298,41 +344,235 @@ const Perfil                                    = ({data}:Props) => {
       }
 
       {(data && (typeof data != 'undefined')) && 
-      <>
-        {(loading) ? <Loading />:
-        <> 
-          <div className="row">
-            {(properties) && (properties.length != 0) && properties.map((item: any, key: number) => {
-              return (
-                <div key={key} className="col-sm-6 col-md-6 col-lg-4 col-xl-4 col-12 mb-5 px-4">
-                  <Cards
-                    property        = {item}
-                    accessToken     = {access_token}
-                    isUser          = {isUser()}
-                    handleFavorite  = {(input:string, temporal: string, valid: boolean) => handleFavorite(input, temporal, valid)}
-                    handleShare     = {(input:string, temporal: string) => handleShare(input, temporal)}
-                    handleChat      = {(temporal: string) => handleChat(temporal)}
-                    handleProperty  = {(input:string) => handleProperty(input)}
-                  />
+        <>
+          <> 
+              <div className="row mb-2">
+                <div className="col-12 d-flex justify-content-end">
+                  <Button titulo="Filtros" style={{width: 150, height: 55, marginRight: '1rem'}} btn="Filter" onClick={() => setShowFilter(!showFilter)} />
                 </div>
-              );
-            })}
-          </div>
-            <TablePagination
-              component             = "div"
-              count                 = {total}
-              page                  = {page}
-              onPageChange          = {handleChangePage}
-              rowsPerPage           = {rowsPerPage}
-              onRowsPerPageChange   = {handleChangeRowsPerPage}
-              rowsPerPageOptions    = {[6, 12, 24, 48, 96]}
-              labelRowsPerPage      = {'Cantidad'}
-              labelDisplayedRows    = {({ from, to, count }) => `${from}-${to} de ${count}`}
-            />
+              </div>
+              {
+              (loadingProperties) ? <Loading />:
+                ((total == 0)) ?
+                <div className="row">
+                  <div className="col-12">
+                    <h1 className={`${styles.titulo} text-center`}>
+                      Al parecer aún no tienes ningún inmueble
+                    </h1>
+                  </div>
+                </div>:
+                <div className="row">
+                  {(properties) && (properties.length != 0) && properties.map((item: any, key: number) => {
+                    return (
+                      <div key={key} className="col-sm-6 col-md-6 col-lg-4 col-xl-4 col-12 mb-5 px-4">
+                        <Cards
+                          property        = {item}
+                          accessToken     = {access_token}
+                          isUser          = {isUser()}
+                          handleFavorite  = {(input:string, temporal: string, valid: boolean) => handleFavorite(input, temporal, valid)}
+                          handleShare     = {(input:string, temporal: string) => handleShare(input, temporal)}
+                          handleChat      = {(temporal: string) => handleChat(temporal)}
+                          handleProperty  = {(input:string) => handleProperty(input)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              }
+              <TablePagination
+                component             = "div"
+                count                 = {total}
+                page                  = {page}
+                onPageChange          = {handleChangePage}
+                rowsPerPage           = {rowsPerPage}
+                onRowsPerPageChange   = {handleChangeRowsPerPage}
+                rowsPerPageOptions    = {[6, 12, 24, 48, 96]}
+                labelRowsPerPage      = {'Cantidad'}
+                labelDisplayedRows    = {({ from, to, count }) => `${from}-${to} de ${count}`}
+              />
           </>
-          }
-      </>
+        </>
       }
+
+      <Modal show = {showFilter} onHide = {modalClose} contentClassName = {styles.modalS2}>
+        <Modal.Header closeButton className={styles.modalS2header} />
+        <Modal.Body>
+          <div className="row">
+            <div className="col-12">
+              <div className={styles.headTitle}>
+                <Modaltitle titulo={`Filtros`} />
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-12">
+              <div className={`${styles.S2content} text-center mt-4 mb-1`}>
+                Seleccione los filtros deseados 
+              </div>
+            </div>
+          </div>
+          <div className={styles.scrollFilter}>
+            <div className="row">
+              {(cargando) ? <Loading />:
+                <>
+                  <div className="col-12">
+                    <Form.Label className={styles.S3labels} htmlFor="category">Categoría</Form.Label>
+                  </div>
+                  {categorias && (categorias.length != 0) && categorias.map((item:any, key: number ) => {
+                    return (
+                      <div key={key}  className="col-6 d-flex justify-content-center">
+                        <button onClick={() => setCategory(item._id)} type="button" className={(item._id == category ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                          {item.nombre}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </>
+              }
+            </div>
+            <div className="row my-1">
+              {(loading) ? <Loading />:
+                <>
+                  <div className="col-12">
+                    <Form.Label className={styles.S3labels} htmlFor="type">Tipo</Form.Label>
+                  </div>
+                  {propertyTypes && (propertyTypes.length != 0) && propertyTypes.map((item:any, key: number ) => {
+                    return (
+                      <div key={key} className="col-6 d-flex justify-content-center my-1">
+                        <button onClick={() => setType(item._id)} type="button" className={(item._id == type ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                          {item.nombre}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </>
+              }
+            </div>
+            <div className="row my-1">
+              <div className="col-12">
+                <Form.Label className={styles.S3labels} htmlFor="rooms">Recamara(s)</Form.Label>
+              </div>
+              <div className="col-1"></div>
+              {quantity && (quantity.length != 0) && quantity.map((item:any, key: number) => {
+                return (
+                  <div key={key} className="col-2 d-flex justify-content-center my-1">
+                    <button onClick={() => setRoom(Number(item))} type="button" className={(item == room ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                      {item}+
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="row my-1">
+              <div className="col-12">
+                <Form.Label className={styles.S3labels} htmlFor="baths">Baño(s)</Form.Label>
+              </div>
+              <div className="col-1"></div>
+              {quantity && (quantity.length != 0) && quantity.map((item:any, key: number) => {
+                return (
+                  <div key={key} className="col-2 d-flex justify-content-center my-1">
+                    <button onClick={() => setBath(Number(item))} type="button" className={(item == bath ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                      {item}+
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="row my-1">
+              <div className="col-12">
+                <Form.Label className={styles.S3labels} htmlFor="garages">Cochera(s)</Form.Label>
+              </div>
+              <div className="col-1"></div>
+              {quantity && (quantity.length != 0) && quantity.map((item:any, key: number) => {
+                return (
+                  <div key={key} className="col-2 d-flex justify-content-center my-1">
+                    <button onClick={() => setGarage(Number(garage))} type="button" className={(item == garage ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                      {item}+
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="row my-1">
+              <div className="col-12">
+                <Form.Label className={styles.S3labels} htmlFor="prices">Precio</Form.Label>
+              </div>
+              <div className="col-1"></div>
+              <div className="col-5 d-flex justify-content-center">      
+                <Form.Control type="number" autoComplete="off" defaultValue={price.min} min={0} max={price.max} name="min_prices"  placeholder="0" onChange={(e:any) => {
+                  price.min   = Number(e.target.value);
+                  setPrice(price);
+                }} />
+              </div>
+              <div className="col-5 d-flex justify-content-center">
+                <Form.Control type="number" autoComplete="off" defaultValue={price.max} min={price.min} max={10000000000} name="max_prices" placeholder="10000000000" onChange={(e:any) => {
+                  price.max   = Number(e.target.value);
+                  setPrice(price);
+                }} />
+              </div>
+            </div>
+            <div className="row my-1">
+              <div className="col-12">
+                <Form.Label className={styles.S3labels} htmlFor="grounds">Terreno</Form.Label>
+              </div>
+              <div className="col-1"></div>
+              <div className="col-5 d-flex justify-content-center">      
+                <Form.Control type="number" autoComplete="off" defaultValue={ground.min} min={0} max={ground.max} name="min_grounds" placeholder="0" onChange={(e:any) => {
+                  ground.min   = Number(e.target.value);
+                  setGround(price);
+                }} />
+              </div>
+              <div className="col-5 d-flex justify-content-center">
+                <Form.Control type="number" autoComplete="off" defaultValue={ground.max} min={ground.min} max={10000} name="max_grounds" placeholder="10000" onChange={(e:any) => {
+                  ground.max   = Number(e.target.value);
+                  setGround(ground);
+                }} />
+              </div>
+            </div>
+            <div className="row my-1">
+              {(loadingSet) ? <Loading />:
+                <>
+                  <div className="col-12">
+                    <Form.Label className={styles.S3labels} htmlFor="sets">Conjunto</Form.Label>
+                  </div>
+                  <div className="col-6 d-flex justify-content-center my-1">
+                    <button onClick={() => setSet('all')} type="button" className={((set == 'all') ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                      Todos
+                    </button>
+                  </div>
+                  {sets && (sets.length != 0) && sets.map((item:any, key: number ) => {
+                    return (
+                      <div key={key} className="col-6 d-flex justify-content-center my-1">
+                        <button onClick={() => setSet(item._id)} type="button" className={(item._id == set ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                          {item.nombre}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </>
+              }
+            </div>
+            <div className="row my-1">
+              <div className="col-12">
+                <Form.Label className={styles.S3labels} htmlFor="builds">Construidos</Form.Label>
+              </div>
+              <div className="col-1"></div>
+              <div className="col-5 d-flex justify-content-center">      
+                <Form.Control type="number" autoComplete="off" defaultValue={build.min} min={0} max={build.max} name="min_bluids" placeholder="0" onChange={(e:any) => {
+                  build.min = Number(e.target.value);
+                  setBuild(build);
+                }} />
+              </div>
+              <div className="col-5 d-flex justify-content-center">
+                <Form.Control type="number" autoComplete="off" defaultValue={build.max} min={build.min} max={10000} name="max_bluids" placeholder="10000" onChange={(e:any) => {
+                  build.max = Number(e.target.value);
+                  setBuild(build);
+                }} />
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
    
     </Container>
   );

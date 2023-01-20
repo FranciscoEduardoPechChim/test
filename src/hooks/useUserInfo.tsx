@@ -4,9 +4,10 @@ import { production, development } from '../credentials/credentials';
 import { InmueblesUsuario } from '../interfaces/CrearInmuebleInterface';
 import { HistorialUsuario, PedidosUsuario } from '../interfaces/Historial';
 import { Usuario, UsuariosDir } from '../interfaces/UserInterface';
+import dayjs, { Dayjs } from 'dayjs';
 
 //Services
-import { showUsersByOwner } from '../services/userService';
+import { showUsersByOwner, showUsers } from '../services/userService';
 import { getPropertiesByUser, getPropertiesByUserWithoutToken, getPropertiesByFollowers } from '../services/propertyService';
 
 export const useUserInfo = (uid: string | undefined | null) => {
@@ -63,7 +64,7 @@ export const useUserProperties                        = (id: string, offset: num
   };
 }
 
-export const useUserWithoutTokenProperties            = (id: string, offset: number, max: number) => {
+export const useUserWithoutTokenProperties            = (id: string, offset: number, max: number, type: string, category: string, room: number, bath: number, garage: number, minPrice: number, maxPrice: number, minGround: number, maxGround: number, minBuild: number, maxBuild: number, set: string, isToken: number) => {
   const [properties, setProperties]                   = useState<any>();
   const [limit, setLimit]                             = useState(max);
   const [loading, setLoading]                         = useState(true);
@@ -71,8 +72,8 @@ export const useUserWithoutTokenProperties            = (id: string, offset: num
   const { orden, user, userFavorite }                 = useContext(InmuebleContext)
 
   const init                                          = async () => {
-    if(id && String(offset)) {
-      const response                                  = await getPropertiesByUserWithoutToken(id, limit, offset, orden, user, userFavorite);
+    if(id && String(offset) && type && category && String(room) && String(bath) && String(garage) && set && String(minPrice) && String(maxPrice) && String(minGround) && String(maxGround) && String(minBuild) && String(maxBuild) && String(isToken)) {
+      const response                                  = await getPropertiesByUserWithoutToken(id, limit, offset, orden, user, userFavorite, type, category, room, bath, garage, minPrice, maxPrice, minGround, maxGround, minBuild, maxBuild, set, isToken);
 
       if(response && response.data) {
         setProperties(response.data.properties);
@@ -84,11 +85,11 @@ export const useUserWithoutTokenProperties            = (id: string, offset: num
 
   useEffect(() => {
     init();
-  }, [orden, total, id, limit, offset, user]);
+  }, [orden, total, id, limit, offset, user, type, category, room, bath, garage, minPrice, maxPrice, minGround, maxGround, minBuild, maxBuild, set]);
 
   return { 
     properties:                                       properties, 
-    loading:                                          loading, 
+    loadingProperties:                                loading, 
     total:                                            total, 
     setProperties:                                    setProperties, 
     setLimit:                                         setLimit,
@@ -127,6 +128,37 @@ export const useFollowerProperties                    = (id: string, offset: num
     setLimit:                                         setLimit,
     init:                                             init
   };
+}
+
+export const useUsers                                 = (offset: number, limit: number, startDate: Dayjs | null, endDate: Dayjs | null,  access_token:string) => {
+  const [users, setUsers]                             = useState<any>([]);
+  const [total, setTotal]                             = useState(0);
+  const [loading, setLoading]                         = useState(true);
+
+  const init                                          = async () => {
+    if(access_token) {
+      setLoading(true);
+      
+      const response                                  = await showUsers(offset, limit, startDate, endDate, access_token);
+
+      if(response && response.data) {
+        setUsers(response.data.users);
+        setTotal((response.data.total) ? response.data.total:0);
+      }
+
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    init();
+  },[offset, limit, startDate, endDate, access_token]);
+
+  return {
+    users:          users,
+    loading:        loading,
+    total:          total
+  }
 }
 
 export const useUserInmuebles = (uid: string | undefined | null, desde = 0) => {

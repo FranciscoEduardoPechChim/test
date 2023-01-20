@@ -39,6 +39,7 @@ const Referencias = () => {
   const [desde, setDesde]                           = useState(0);
   const { referencia, setReferencia }               = useReferenciaNumero(seleccionado);
 
+  console.log(referencia);
   const { formulario, handleChange }                = useForm({
     numero: ""
   });

@@ -30,12 +30,12 @@ const VentanaChat = () => {
 
   const minimizarVentana = () => setMinimizarChat(!minimizarChat);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit    = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (mensaje.length === 0) return;
 
-    const nuevoMensaje = {
+    const nuevoMensaje  = {
       remitente: auth.uid,
       mensaje,
       para: chatState.chatActivo,
@@ -49,6 +49,7 @@ const VentanaChat = () => {
       apellido: auth.apellido,
       mensaje,
     };
+
 
     socket?.emit("mensaje-personal", nuevoMensaje);
     socket?.emit("nueva-notificacion", notificacion);
@@ -118,8 +119,8 @@ const VentanaChat = () => {
                       </div>
 
                       <>
-                        {chatState.mensajes.map((mensaje: any) => (
-                          <div key={mensaje._id} ref={scrollToBotom}>
+                        {chatState.mensajes.map((mensaje: any, key: number) => (
+                          <div key={key} ref={scrollToBotom}>
                             <div ref={scrollTo}>
                               <Mensaje
                                 mensaje={mensaje}
@@ -140,13 +141,13 @@ const VentanaChat = () => {
                         <Form onSubmit={handleSubmit}>
                           <div className="input-group">
                             <input
-                              type="text"
-                              className={`${styles.messageBox} form-control`}
-                              placeholder="Mensaje..."
-                              value={mensaje}
-                              onChange={handleChange}
-                              name="mensaje"
-                              autoComplete="off"
+                              type          = "text"
+                              className     = {`${styles.messageBox} form-control`}
+                              placeholder   = "Mensaje..."
+                              value         = {mensaje}
+                              onChange      = {handleChange}
+                              name          = "mensaje"
+                              autoComplete  = "off"
                             />
                             <span
                               className={`${styles.btnEnviar} input-group-text`}

@@ -9,6 +9,17 @@ export type userResponse    = {
 }
 
 export type user            = { 
-    "users":                Auth[] | Auth
+    "users":                Auth[] | Auth,
+    "total"?:               number
 }
 
+export type profileResponse = {
+    "ok"?:                  boolean,
+    "msg"?:                 string,
+    "data"?:                profile,
+    "errors"?:              Errors[]
+}
+
+export type profile         = { 
+    "user":                 Auth
+}

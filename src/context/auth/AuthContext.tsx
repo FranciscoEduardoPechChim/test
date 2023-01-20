@@ -23,7 +23,7 @@ import { RespActualizar } from "../../interfaces/UserInterface";
 //Services
 import { session, signup, sendPassword, sendEmailWelcome} from '../../services/authService';
 import { hasPermission } from '../../services/rolebypermissionService';
-import { storeUser, updateUser, destroyUser, showUser, showWithoutUser, updateProfile } from '../../services/userService';
+import { storeUser, updateUser, destroyChangeUser, destroyUser, showUser, showWithoutUser, updateProfile } from '../../services/userService';
 //Helpers
 import { validate } from '../../helpers/response';
 //Extras
@@ -38,14 +38,14 @@ interface ContextProps {
   validRole:        () =>  Promise<boolean | undefined>;
   createUser:       (name: string, lastName: string, email: string, password: string, confirmPassword: string, ownerId: string, access_token:string) => Promise<boolean | undefined>;
   editUser:         (id: string, name: string, lastName: string, email: string, password: string, confirmPassword: string, access_token:string) => Promise<boolean | undefined>;
-  deleteUser:       (id: string, changeId: string, access_token: string) => Promise<boolean | undefined>;
-  getUser:          (id: string, access_token: string) => Promise<Auth | Auth[] | undefined>;
+  deleteChangeUser: (id: string, changeId: string, access_token: string) => Promise<boolean | undefined>;
+  deleteUser:       (id: string, access_token: string) => Promise<boolean | undefined>;getUser:          (id: string, access_token: string) => Promise<Auth | Auth[] | undefined>;
   userWithoutToken: (id: string) => Promise<Auth | Auth[] | undefined>;
   editProfile:      (id: string, name: string, profileCompany: string | null, phone: number | null, officePhone: number | null, lastName: string, companyName: string | null, 
     companyLocation: string, companyLat: number, companyLng: number, website: string | null, facebook: string | null, instagram: string | null, twitter: string | null, youtube: string | null,
     linkedin: string | null, isZone: boolean, nameZone: string | null, latZone: string | null, lngZone: string | null, rangeZone: string | null, categoryZone: string | null, typeZone: string | null, roomsZone: string | null,
     bathsZone: string | null, garagesZone: string | null, minPriceZone: string | null, maxPriceZone: string | null, minGroundZone: string | null, maxGroundZone: string | null, setZone: string | null, minBuildZone: string | null,
-    maxBuildZone: string | null, access_token: string) => Promise<boolean | undefined>;
+    maxBuildZone: string | null, isLocation: boolean, showModalPassword: boolean, password: string, confirmPassword: string, access_token: string) => Promise<boolean | undefined>;
   crearUsuario: (
     nombre: string,
     apellido: string,
@@ -166,7 +166,7 @@ export const AuthProvider: FC = ({ children }) => {
         paqueteAdquirido:                                   data.user.paqueteAdquirido,
         usuarios:                                           data.user.usuarios,
         propietario:                                        data.user.propietario,
-        google:                                             undefined,
+        google:                                             data.user.google,
         recibirCorreo:                                      data.user.recibirCorreo,
         ownerId:                                            (data.user.ownerId) ? data.user.ownerId:null,
         lat:                                                (data.user.lat) ? data.user.lat:0,
@@ -361,9 +361,41 @@ export const AuthProvider: FC = ({ children }) => {
       }
     }
   }
-  const deleteUser                                          = async (id: string, changeId: string, access_token: string) => {
+  const deleteUser                                          = async (id: string, access_token: string) => {
     if(id && access_token) {
-      const response                                        = await destroyUser(id, changeId, access_token);
+      const response                                        = await destroyUser(id, access_token);
+
+      //Validation 
+      if(response && response.errors) {
+        validate(response.errors);
+        return false;
+      }
+
+      if(response && response.ok) {
+        toast.error(response.msg);
+        return false;
+      }
+
+      if(response && response.data) {
+        
+        Swal.fire({
+          title: '',
+          html: response.msg,
+          icon: 'success',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar'
+        });
+
+        return true;
+      }
+    }
+  }
+  const deleteChangeUser                                    = async (id: string, changeId: string, access_token: string) => {
+    if(id && access_token) {
+      const response                                        = await destroyChangeUser(id, changeId, access_token);
 
       //Validation 
       if(response && response.errors) {
@@ -415,12 +447,13 @@ export const AuthProvider: FC = ({ children }) => {
     companyLocation: string, companyLat: number, companyLng: number, website: string | null, facebook: string | null, instagram: string | null, twitter: string | null, youtube: string | null,
     linkedin: string | null, isZone: boolean, nameZone: string | null, latZone: string | null, lngZone: string | null, rangeZone: string | null, categoryZone: string | null, typeZone: string | null, roomsZone: string | null,
     bathsZone: string | null, garagesZone: string | null, minPriceZone: string | null, maxPriceZone: string | null, minGroundZone: string | null, maxGroundZone: string | null, setZone: string | null, minBuildZone: string | null,
-    maxBuildZone: string | null, access_token: string) => {
+    maxBuildZone: string | null, isLocation: boolean, showModalPassword: boolean, password: string, confirmPassword: string, access_token: string) => {
       if(id && name && lastName && companyLocation && String(companyLat) && String(companyLng) && access_token) {
         const response                                      = await updateProfile(id, name, profileCompany, phone, officePhone, lastName, companyName, companyLocation, companyLat, companyLng, website, facebook, instagram, twitter, youtube,
                                                               linkedin, isZone, nameZone, latZone, lngZone, rangeZone, categoryZone, typeZone, roomsZone, bathsZone, garagesZone, minPriceZone, maxPriceZone, minGroundZone, maxGroundZone, 
-                                                              setZone, minBuildZone, maxBuildZone, access_token);
+                                                              setZone, minBuildZone, maxBuildZone, isLocation, showModalPassword, password, confirmPassword, access_token);
 
+                                                           
         if(response && response.errors) {
           validate(response.errors);
           return false;
@@ -432,7 +465,41 @@ export const AuthProvider: FC = ({ children }) => {
         }
 
         if(response && response.data) {
-          
+          const { data }                                    = response;
+
+          const current                                     = {
+            uid:                                                auth.uid,
+            checking:                                           auth.checking,
+            logged:                                             auth.logged,
+            nombre:                                             data.user.nombre,
+            apellido:                                           data.user.apellido,
+            correo:                                             data.user.correo,
+            direccionFisica:                                    data.user.direccionFisica,
+            sitioweb:                                           data.user.sitioweb,
+            facebookpage:                                       data.user.facebookpage,
+            instagram:                                          data.user.instagram,
+            nombreInmobiliaria:                                 data.user.nombreInmobiliaria,
+            telefonoOficina:                                    data.user.telefonoOficina,
+            telefonoPersonal:                                   data.user.telefonoPersonal,
+            twitter:                                            data.user.twitter,
+            youtube:                                            data.user.youtube,
+            perfilEmpresarial:                                  data.user.perfilEmpresarial,
+            linkedin:                                           data.user.linkedin,
+            img:                                                auth.img,
+            logo:                                               auth.logo,
+            role:                                               auth.role,
+            paqueteAdquirido:                                   auth.paqueteAdquirido,
+            usuarios:                                           auth.usuarios,
+            propietario:                                        auth.propietario,
+            google:                                             data.user.google,
+            recibirCorreo:                                      data.user.recibirCorreo,
+            ownerId:                                            auth.ownerId,
+            lat:                                                (data.user.lat) ? data.user.lat:0,
+            lng:                                                (data.user.lng) ? data.user.lng:0
+          };
+    
+          setAuth(current);
+
           Swal.fire({
             title: '',
             html: response.msg,
@@ -831,7 +898,7 @@ export const AuthProvider: FC = ({ children }) => {
         verificaToken,
         createUser,
         editUser,
-        deleteUser,
+        deleteChangeUser,
         actualizarPerfil,
         fotoPerfil,
         mostrarLogin,
@@ -851,7 +918,8 @@ export const AuthProvider: FC = ({ children }) => {
         forgotPassword,
         getUser,
         editProfile,
-        userWithoutToken
+        userWithoutToken,
+        deleteUser
       }}
     >
       {children}

@@ -1,13 +1,13 @@
 import Modaltitle2 from "components/ui/modaltitle/Modaltitle2";
 import { ChangeEvent, FormEvent, useContext, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Col, Container, Form, Row, Modal } from "react-bootstrap";
+import { Col, Container, Form, Row, Modal, Button, InputGroup } from "react-bootstrap";
 import RangeSlider from 'react-bootstrap-range-slider';
 import Geosuggest, { Suggest } from "react-geosuggest";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../../context/auth/AuthContext";
 import { useForm } from "../../../../hooks/useForm";
-import Button from "../../../ui/button/Button";
+import Buttons from "../../../ui/button/Button";
 import Modaltitle from "../../../ui/modaltitle/Modaltitle";
 import Titulo from "../../../ui/titulo/Titulo";
 import styles from "./Perfil.module.css";
@@ -17,6 +17,8 @@ import Card from '@material-ui/core/Card';
 import { Tooltip } from "@material-ui/core";
 //Middlewares
 import { isUserByPay } from "middlewares/roles";
+//Content
+import { ChatContext } from "context/chat/ChatContext";
 //Hooks
 import { useCategories, useTipoPropiedad } from '../../../../hooks/useCategories';
 import { useLocationByEmail } from '../../../../hooks/useLocationByEmail';
@@ -27,7 +29,7 @@ import Loading from "components/ui/loading/Loading";
 //Credentials
 import { rentas, casasC } from '../../../../credentials/credentials';
 //Helpers
-import { isString, isNotEmpty, isInteger, isDifferent } from "helpers/validations";
+import { isString, isSamePassword, isLength, isNotEmpty, isInteger, isDifferent } from "helpers/validations";
 
 interface Props {
   auth:               any,
@@ -46,7 +48,8 @@ interface Props {
 
 const ActualizarPerfilForm                          = ({auth, locationEmailArray, setArray, priceArray, groundArray, buildArray, rangeArray, bathsArray, garagesArray, roomsArray, categoryArray, typeArray}:Props) => {
   const access_token                                = (typeof window !== "undefined") ? localStorage.getItem("token"):"";
-  const { editProfile }                             = useContext(AuthContext);
+  const { editProfile, logOut }                     = useContext(AuthContext);
+  const { chatState }                               = useContext(ChatContext);
   const router                                      = useRouter();
   const [checkboxEmail, setCheckboxEmail]           = useState((auth.recibirCorreo) ? auth.recibirCorreo:false);
   const [location, setLocation]                     = useState((auth.direccionFisica && String(auth.lat) && String(auth.lng)) ? {label: auth.direccionFisica, location: {lat: auth.lat, lng: auth.lng}}:null);
@@ -56,22 +59,30 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
   const [locationEmail, setLocationEmail]           = useState<any>((locationEmailArray.length != 0) ? locationEmailArray:[{label: '', location: { lat: 0, lng: 0}}]);
   const geosuggestEl                                = useRef<Geosuggest>(null);
   const [set, setSet]                               = useState((setArray.length != 0) ? setArray:['all']);
-  const [price, setPrice]                           = useState((priceArray.length != 0) ? priceArray:[{min: 0, max: 10000000}]);
+  const [price, setPrice]                           = useState((priceArray.length != 0) ? priceArray:[{min: 0, max: 10000000000}]);
   const [ground, setGround]                         = useState((groundArray.length != 0) ? groundArray:[{min: 0, max: 10000}]);
   const [build, setBuild]                           = useState((buildArray.length) ? buildArray:[{min: 0, max: 10000}]);
   const [range, setRange]                           = useState((rangeArray.length != 0) ? rangeArray:[50]);
   const [bath, setBath]                             = useState((bathsArray.length != 0) ? bathsArray:[0]);
   const [garage, setGarage]                         = useState((garagesArray.length != 0) ? garagesArray:[0]);
   const [room, setRoom]                             = useState((roomsArray.length != 0) ? roomsArray:[0]);
-  const [category, setCategory]                     = useState((categoryArray.length != 0) ? categoryArray:[rentas]);
-  const [type, setType]                             = useState((typeArray.length != 0) ? typeArray:[casasC]);
+  const [category, setCategory]                     = useState((categoryArray.length != 0) ? categoryArray:['all']);
+  const [type, setType]                             = useState((typeArray.length != 0) ? typeArray:['all']);
+  const [showPassword, setShowPassword]             = useState(false);
+  const [showConfirmPassword,setShowConfirmPassword]= useState(false);
+  const [showModalPassword, setShowModalPassword]   = useState(false);
+  const [password, setPassword]                     = useState('');
+  const [confirmPassword, setConfirmPassword]       = useState('');
   const [quantity, setQuantity]                     = useState([0,1,2,3,4]);
+  const [isLocation, setIsLocation]                 = useState(false);
   const [rangeTemp, setRangeTemp]                   = useState(false);
   const [errorName, setErrorName]                   = useState([]);
   const [errorLastName, setErrorLastName]           = useState([]);
   const [errorPhone, setErrorPhone]                 = useState([]);
   const [errorOfficePhone, setErrorOfficePhone]     = useState([]);
   const [errorLocation, setErrorLocation]           = useState([]);
+  const [errorPassword, setErrorPassword]           = useState([]);
+  const [errorConfirmPassword, setErrorConfirmPassword] = useState([]);
   const { loading, propertyTypes, 
     obtenerTipoPropiedad }                          = useTipoPropiedad();
   const { cargando, categorias, obtenerCategorias } = useCategories();
@@ -100,6 +111,7 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
     instagram, twitter, youtube, linkedin }         = formulario;
 
   const onSuggestSelect                             = (suggest: Suggest) => {
+    setIsLocation(true);
     setLocation((suggest) ? {label: suggest.label, location: suggest.location }:null);
   }
 
@@ -151,7 +163,7 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
   }
 
   const modalClose                                  = () => {
-    setErrorName([]); setErrorLastName([]); setErrorPhone([]); setErrorOfficePhone([]); setErrorLocation([]);
+    setErrorName([]); setErrorLastName([]); setErrorPhone([]); setErrorOfficePhone([]); setErrorLocation([]); setErrorConfirmPassword([]); setErrorPassword([]);
     setShowFilter(false);
   }
 
@@ -164,15 +176,15 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
     });
 
     set[locationArray.length]                       = 'all';
-    price[locationArray.length]                     = {min: 0, max: 10000000};
+    price[locationArray.length]                     = {min: 0, max: 10000000000};
     ground[locationArray.length]                    = {min: 0, max: 10000};
     build[locationArray.length]                     = {min: 0, max: 10000};
     range[locationArray.length]                     = 50;
     bath[locationArray.length]                      = 0;
     garage[locationArray.length]                    = 0;
     room[locationArray.length]                      = 0;
-    category[locationArray.length]                  = rentas;
-    type[locationArray.length]                      = casasC;
+    category[locationArray.length]                  = 'all';
+    type[locationArray.length]                      = 'all';
 
     locationArray.push({ label: '', location: { lat: 0, lng: 0}});
 
@@ -291,23 +303,39 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
       case 'location':
         setErrorLocation(messageError);
       return true;
+      case 'password':
+        setErrorPassword(messageError);
+        return true;
+      break;
+      case 'confirmPassword':
+        setErrorConfirmPassword(messageError); 
+        return true;
+      break;
       default:
       return true;
     }
   }
 
+  const logout                                      = () => {
+    logOut();
+    chatState.chatActivo = null;   
+    router.push('/');
+  };
+
   const onSubmit                                    = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setErrorName([]); setErrorLastName([]); setErrorPhone([]); setErrorOfficePhone([]); setErrorLocation([]);
+    setErrorName([]); setErrorLastName([]); setErrorPhone([]); setErrorOfficePhone([]); setErrorLocation([]); setErrorConfirmPassword([]); setErrorPassword([]);
 
     const formName                                  = formValidate('name', [isNotEmpty(formulario.name), isString(formulario.name)]);
     const formLastName                              = formValidate('lastName', [isNotEmpty(formulario.lastName), isString(formulario.lastName)]);
     const formPhone                                 = formValidate('phone', [isInteger(formulario.phone)]);
     const formOfficePhone                           = formValidate('OfficePhone', [isInteger(formulario.phoneOffice)]);
-    const formLocation                              = formValidate('location', [isNotEmpty((location) ? location.label:''), isString((location) ? location.label:''), isDifferent((location) ? location.location.lat:0, 0)]);
+    const formLocation                              = (isLocation) ? formValidate('location', [isNotEmpty((location) ? location.label:''), isString((location) ? location.label:''), isDifferent((location) ? location.location.lat:0, 0)]):false;
+    const formPassword                              = (showModalPassword) ? formValidate('password', [isNotEmpty(password), isLength(4,20, password), isString(password), isSamePassword(password, confirmPassword)]):false;
+    const formConfirmPassword                       = (showModalPassword) ? formValidate('confirmPassword', [isNotEmpty(confirmPassword), isLength(4,20, confirmPassword) ,isString(confirmPassword), isSamePassword(confirmPassword, password)]):false;
 
-    if(formName || formLastName || formPhone || formOfficePhone || formLocation) {
+    if(formName || formLastName || formPhone || formOfficePhone || formLocation || formPassword || formConfirmPassword) {
         return false;
     }
 
@@ -425,10 +453,15 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
                                                       (checkboxEmail) ? typeLocation.join(','):null, (checkboxEmail) ? roomLocation.join(','):null, (checkboxEmail) ? bathLocation.join(','):null, 
                                                       (checkboxEmail) ? garageLocation.join(','):null, (checkboxEmail) ? minPriceLocation.join(','):null, (checkboxEmail) ? maxPriceLocation.join(','):null,
                                                       (checkboxEmail) ? minGroundLocation.join(','):null, (checkboxEmail) ? maxGroundLocation.join(','):null, (checkboxEmail) ? setLocation.join(','):null,
-                                                      (checkboxEmail) ? minBuildLocation.join(','):null, (checkboxEmail) ? maxBuildLocation.join(','):null, (access_token) ? access_token:'');
+                                                      (checkboxEmail) ? minBuildLocation.join(','):null, (checkboxEmail) ? maxBuildLocation.join(','):null, isLocation, showModalPassword,
+                                                      password, confirmPassword, (access_token) ? access_token:'');
 
     if(isValid) {
-      router.push('/perfil');
+      if(showConfirmPassword && password && confirmPassword && (password == confirmPassword)) {
+        logout();
+      }else {
+        router.push('/perfil');
+      }
     }
   }
 
@@ -446,7 +479,7 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
               </Col>
             </Row>
             <Row>
-              <Col sm={12}>
+              <Col sm={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Nombre(s)</Form.Label>
                   <Form.Control
@@ -460,9 +493,7 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
                   })}
                 </Form.Group>
               </Col>
-            </Row>
-            <Row>
-              <Col sm={12}>
+              <Col sm={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Apellidos</Form.Label>
                   <Form.Control
@@ -474,22 +505,6 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
                   {(errorLastName) && (errorLastName.length != 0) && errorLastName.map((value: any, key: any) => {
                     return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>);
                   })}
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Perfil empresarial</Form.Label>
-                  <Form.Control
-                    as          = "textarea"
-                    placeholder = "Descríbase"
-                    value       = {companyProfile}
-                    name        = "companyProfile"
-                    onChange    = {handleChange}
-                    rows        = {3}
-                    style       = {{ resize: 'none'}}
-                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -523,6 +538,84 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
                 </Form.Group>
               </Col>
             </Row>
+            {(auth && (!auth.google)) &&
+              <>
+                <Row className="mb-3 mt-2">
+                    <Col md={6} sm xs={12}>
+                      <Button type="button" variant="outline-warning" style={{width: '100%'}} onClick={() => {setShowModalPassword(!showModalPassword); setPassword(''); setConfirmPassword(''); setShowConfirmPassword(false); setShowPassword(false);}}>Restaurar contraseña</Button>
+                    </Col>
+                </Row>
+                {(showModalPassword) &&
+                  <Row className="mb-3">
+                    <Col md={6} sm xs={12}>
+                        <Form.Group >
+                          <Form.Label>Contraseña</Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                                autoComplete    = "off"
+                                value           = {password}
+                                onChange        = {(e:any) => setPassword(e.target.value)}
+                                name            = "password"
+                                type            = {(showPassword) ? "text":"password"}
+                                maxLength       = {255}
+                                aria-describedby="password"
+                            />
+                            <InputGroup.Text id="password" onClick = {() => setShowPassword(!showPassword)}>
+                              <i
+                                className       = {`${ showPassword ? "bi bi-eye-slash" : "bi bi-eye"} ${styles.mostrarContraseña}`}
+                              />
+                            </InputGroup.Text>
+                          </InputGroup>
+                          {(errorPassword) && (errorPassword.length != 0) && 
+                              errorPassword.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })           
+                          }
+                        </Form.Group>
+                    </Col>
+                    <Col md={6} sm xs={12}>
+                        <Form.Group >
+                          <Form.Label>Confirmar contraseña</Form.Label>
+                          <InputGroup>
+                            <Form.Control
+                                autoComplete    = "off"
+                                value           = {confirmPassword}
+                                onChange        = {(e:any) => setConfirmPassword(e.target.value)}
+                                name            = "confirmPassword"
+                                type            = {(showConfirmPassword) ? "text":"password"}
+                                maxLength       = {255}
+                                aria-describedby="confirmPassword"
+                            />
+                            <InputGroup.Text id="confirmPassword" onClick = {() => setShowConfirmPassword(!showConfirmPassword)}>
+                              <i
+                                className       = {`${ showConfirmPassword ? "bi bi-eye-slash" : "bi bi-eye"} ${styles.mostrarContraseña}`}
+                              />
+                            </InputGroup.Text>
+                          </InputGroup>
+                          {(errorConfirmPassword) && (errorConfirmPassword.length != 0) && 
+                              errorConfirmPassword.map((value:any, key: any) => { return (<div key={key}><span className={'text-danger mb-1'}>{value}</span></div>); })           
+                          }
+                        </Form.Group>
+                    </Col>
+                  </Row>
+                }
+              </>
+            }
+            <Row>
+              <Col sm={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Perfil empresarial</Form.Label>
+                  <Form.Control
+                    as          = "textarea"
+                    placeholder = "Descríbase"
+                    value       = {companyProfile}
+                    name        = "companyProfile"
+                    onChange    = {handleChange}
+                    rows        = {3}
+                    style       = {{ resize: 'none'}}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          
 
             <Row className="mt-4">
               <Col sm={12}>
@@ -801,7 +894,7 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
 
             <Row className="mt-3 mb-4">
               <Col sm={12}>
-                <Button titulo="Actualizar perfil" />
+                <Buttons titulo="Actualizar perfil" />
               </Col>
             </Row>
           </Form>
@@ -832,6 +925,11 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
                   <div className="col-12">
                     <Form.Label className={styles.S3labels} htmlFor="category">Categoría</Form.Label>
                   </div>
+                  <div className="col-6 d-flex justify-content-center mb-2">
+                    <button onClick={() => handleClick('all', 'category')} type="button" className={((category[index] == 'all') ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                      Todos
+                    </button>
+                  </div>
                   {categorias && (categorias.length != 0) && categorias.map((item:any, key: number ) => {
                     return (
                       <div key={key}  className="col-6 d-flex justify-content-center">
@@ -849,6 +947,11 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
                 <>
                   <div className="col-12">
                     <Form.Label className={styles.S3labels} htmlFor="type">Tipo</Form.Label>
+                  </div>
+                  <div className="col-6 d-flex justify-content-center my-1">
+                    <button onClick={() => handleClick('all', 'type')} type="button" className={((type[index] == 'all') ? styles.bottonContainerSelect:styles.bottonContainer)}>
+                      Todos
+                    </button>
                   </div>
                   {propertyTypes && (propertyTypes.length != 0) && propertyTypes.map((item:any, key: number ) => {
                     return (
@@ -916,7 +1019,7 @@ const ActualizarPerfilForm                          = ({auth, locationEmailArray
                 <Form.Control type="number" autoComplete="off" defaultValue={price[index].min} min={0} max={price[index].max} name="min_prices"  placeholder="0" onChange={(e:any) => handleInput(Number(e.target.value), 'min_price')} />
               </div>
               <div className="col-5 d-flex justify-content-center">
-                <Form.Control type="number" autoComplete="off" defaultValue={price[index].max} min={price[index].min} max={10000000} name="max_prices" placeholder="10000000" onChange={(e:any) => handleInput(Number(e.target.value), 'max_price')} />
+                <Form.Control type="number" autoComplete="off" defaultValue={price[index].max} min={price[index].min} max={10000000000} name="max_prices" placeholder="10000000000" onChange={(e:any) => handleInput(Number(e.target.value), 'max_price')} />
               </div>
             </div>
             <div className="row my-1">

@@ -34,6 +34,9 @@ const MyPropertiesFollowers                       = () => {
 
   return (
     <Container>
+      <div className={`${styles.colorTotal} d-flex justify-content-end`}>
+        TOTAL: {total}
+      </div>
       <Row>
         {loading ? (
           <Loading />
@@ -45,9 +48,6 @@ const MyPropertiesFollowers                       = () => {
               </h1>
             ) : (
               <>
-                <div className={`${styles.colorTotal} d-flex justify-content-end`}>
-                    TOTAL: {total}
-                </div>
                 {properties && properties.map((inmueble:any, key: number) => (
                   <PropertiesCard
                     key           = {key}

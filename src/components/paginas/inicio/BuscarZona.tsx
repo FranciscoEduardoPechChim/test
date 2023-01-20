@@ -22,12 +22,9 @@ const BuscarZona = ({total, loading}: Props) => {
         </div>
       </div>
       <div className="row my-1">
-        {(loading) ? 
-        <Loading />:
         <div className="col-12">
            Cantidad: {total}
         </div>    
-        }
       </div>
 
     </div>

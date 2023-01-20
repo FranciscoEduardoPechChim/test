@@ -5,6 +5,7 @@ import { getFollowerByUser } from '../services/followerService';
 
 export const useFollowers                       = (id: string, access_token: string) => {
     const [followers, setFollowers]             = useState<any>([]);
+    const [followme, setFollowme]               = useState<any>([]);
     const [loading, setLoading]                 = useState(false);
 
     const init                                  = async () => {
@@ -14,6 +15,7 @@ export const useFollowers                       = (id: string, access_token: str
             const response                      = await getFollowerByUser(id, access_token);
 
             if(response && response.data) {
+                setFollowme(response.data.followme);
                 setFollowers(response.data.followers);
             }
 
@@ -28,6 +30,7 @@ export const useFollowers                       = (id: string, access_token: str
     return  {
         loading:                        loading,
         followers:                      followers,
+        followme:                       followme,
         init:                           init
     }
 }

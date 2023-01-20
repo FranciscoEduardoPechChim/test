@@ -22,7 +22,7 @@ const SEO = ({ titulo, descripcion = desc, url, img }: Props) => {
       <meta name="keywords" content="Red uno a uno, Red 1 a 1" />
       <link
         rel="canonical"
-        href={url ? `https://develop.red1a1.com/app${url}` : "https://develop.red1a1.com/app"}
+        href={url ? `https://red1a1.com/app${url}` : "https://red1a1.com/app"}
       />
       <link rel="shortcut icon" href="/red.png" type="image/x-icon" />
 
@@ -33,12 +33,12 @@ const SEO = ({ titulo, descripcion = desc, url, img }: Props) => {
       />
       <meta property="og:description" content={descripcion} />
       <meta property="og:image" content={img ? img : logo} />
-      <meta property="og:url" content={`https://develop.red1a1.com${url}`} />
+      <meta property="og:url" content={`https://red1a1.com${url}`} />
       <meta property="og:site_name" content={`Red 1 a 1 | ${titulo}`} />
 
       {/* <!-- Twitter --> */}
       <meta property="twitter:card" content={img ? img : logo} />
-      <meta property="twitter:url" content={`https://develop.red1a1.com${url}`} />
+      <meta property="twitter:url" content={`https://red1a1.com${url}`} />
       <meta
         property="twitter:title"
         content={titulo ? `Red 1 a 1 | ${titulo}` : "Red 1 a 1"}

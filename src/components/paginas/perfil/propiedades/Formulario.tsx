@@ -699,13 +699,13 @@ const Formulario = (props: Props) => {
             <Button 
               titulo  = "Anterior"
               btn     = "Disabled"
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           ) : (
             <Button 
               titulo  = "Anterior" 
               onClick = {() => handlePrevStep(1)} 
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           )}
           <span className="mx-2" />
@@ -713,19 +713,19 @@ const Formulario = (props: Props) => {
             <Button
               titulo  = "Siguiente"
               btn     = "Disabled"
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           ) : (
             (descripcion != '') ? 
             <Button 
               titulo  = "Siguiente" 
               onClick = {() => handleNextStep(3)} 
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />:
             <Button 
               titulo  = "Siguiente" 
               btn     = "Disabled" 
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           )}
         </div>

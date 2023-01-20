@@ -1,5 +1,5 @@
 import { FC, MutableRefObject } from "react";
-import { Overlay } from "react-bootstrap";
+import { Overlay, OverlayTrigger, Popover } from "react-bootstrap";
 import { Solicitud } from "interfaces/SolicitudInteface";
 import Loading from "../loading/Loading";
 import styles from "./Header.module.css";
@@ -10,9 +10,10 @@ import { IsProperties } from "interfaces/SolicitudInteface";
 
 interface Props {
   target: MutableRefObject<null>;
+  contador: number;
+  targetNotification: any;
   cargando: boolean;
   solicitudes: Solicitud[];
-  notificaciones: boolean;
   isProperties: IsProperties[];
   goToProperty: (slug: string) => Promise<boolean>;
   handleProperties: (id: string, slug: string) => void;
@@ -36,27 +37,22 @@ interface Props {
 const NotificacionItem: FC<Props> = (props) => {
   const {
     target,
+    contador,
+    targetNotification,
     cargando,
     solicitudes,
-    notificaciones,
     goToProperty,
-    // aprobarSolicitud,
-    // rechazarSolicitud,
     statusRequest,
     goToSolicitudes,
     isProperties,
     handleProperties
   } = props;
-  return (
-    <Overlay target={target.current} show={notificaciones} placement="right">
-      {({ placement, arrowProps, show: _show, popper, ...props }) => (
-        <div
-          className={styles.notificaciones}
-          {...props}
-          style={{
-            ...props.style,
-          }}
-        >
+
+
+  const popover                                                     = (
+    <Popover id="popover-basic" className={styles.notificaciones}>
+      <Popover.Body>
+        <div>
           {cargando ? (
             <Loading />
           ) : (
@@ -147,10 +143,11 @@ const NotificacionItem: FC<Props> = (props) => {
                                 )}
                                 <span className={`${styles.propNotifi} pointer`}>
                                   <Link
-                                    href={`https://develop.red1a1.com/app/propiedades/${solicitud.slug ? solicitud.slug : solicitud.inmueble.slug}`}>
-                                    
+                                    href      = {`https://red1a1.com/app/propiedades/${solicitud.slug ? solicitud.slug : solicitud.inmueble.slug}`}
+                                  >
+                                    <div onClick = {() => { document.body.click(); }} >  
                                       {solicitud.titulo ? solicitud.titulo : solicitud.inmueble ? solicitud.inmueble.titulo : ''}
-                                    
+                                    </div>
                                   </Link>
                                 </span>
 
@@ -244,8 +241,51 @@ const NotificacionItem: FC<Props> = (props) => {
             </>
           )}
         </div>
-      )}
-    </Overlay>
+      </Popover.Body>
+    </Popover>
+  );
+
+  return (
+      <OverlayTrigger 
+        target          = {targetNotification.current}
+        trigger         = "click"
+        placement       = "bottom" 
+        overlay         = {popover}
+        rootClose       
+        >
+          <div className="text-center">
+            <div
+              className = "ms-3"
+              style     = {{
+                border: "2.5px solid #7149bc",
+                borderRadius: "50%",
+                padding: "0px 6px",
+                boxSizing: "border-box",
+                marginTop: "12px",
+                width: "38px",
+              }}
+            >
+              <i
+                style={{ fontSize: "20px", color: "#7149BC" }}
+                className="bi bi-bell-fill pointer"
+              />
+            </div>
+            {contador > 0 ? (
+              <span
+                style={{
+                  position: "absolute",
+                  top: 30,
+                  marginLeft: 22,
+                  color: "#fff",
+                  fontSize: 8,
+                }}
+                className="px-2 py-1 translate-middle p-2 bg-danger border border-light rounded-circle"
+              >
+                {contador}
+              </span>
+            ) : null}
+          </div>
+      </OverlayTrigger> 
   );
 };
 

@@ -16,7 +16,7 @@ import {
 } from "../../../../context/inmuebles/InmuebleContext";
 import { AuthContext } from "context/auth/AuthContext";
 import { casasC, rentas, conjunto } from "credentials";
-
+import styles from './AgregaImg.module.css';
 
 const FormStepOne: any = dynamic(() => import("./FormStepOne"), { ssr: false });
 
@@ -62,6 +62,7 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
   const [lavadora, setLavadora]                 = useState<any>((action == 'create') ? false:((data && data.lavadora) ? data.lavadora:false));
   const [secadora, setSecadora]                 = useState<any>((action == 'create') ? false:((data && data.secadora) ? data.secadora:false));
   const [images, setImages]                     = useState<any>((action == 'create') ? []:((data && data.imgs && (data.imgs.length > 0)) ? data.imgs:[]));
+  const [isVideo, setIsVideo]                   = useState(false);
   const [removeImages, setRemoveImages]         = useState<any>([]);
 
   const { formulario, handleChange }            = useForm({
@@ -126,7 +127,7 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
             setRemoveImages([...removeImages, data.imgs[i]]);
           }
         }
-        
+
         // Delete images type string
         if(images && (images.length > 0)){
           for(let i = 0; i < images.length; i ++) {
@@ -151,7 +152,6 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
 
           }
         }
-
       }
 
       const response                            = (action == 'create') ?
@@ -273,14 +273,33 @@ const AnadirInmueble                            = ({ action, data }: Props) => {
                 </>
               }
               {(steps === 3) && 
-                <AnadirImagenes 
-                  handlePrevStep  = {handlePrevStep}
-                  images          = {images}
-                  setImages       = {setImages}
-                  removeImages    = {removeImages}
-                  setRemoveImages = {setRemoveImages}
-                  action          = {action}
-                />
+                <>           
+                  {/* <div className='row'>
+                    <div className='col-12'>
+                      <Form>
+                        <Form.Check 
+                          type            = "switch"
+                          id              = "custom-switch"
+                          defaultChecked  = {isVideo}
+                          label           = {<span className={styles.modalLabels}>¿Es un video?</span>}
+                          onChange        = {() => setIsVideo(!isVideo)}
+                        />
+                      </Form>
+                    </div>
+                  </div> */}
+                  {(!isVideo) ? 
+                    <AnadirImagenes 
+                      handlePrevStep  = {handlePrevStep}
+                      images          = {images}
+                      setImages       = {setImages}
+                      removeImages    = {removeImages}
+                      setRemoveImages = {setRemoveImages}
+                      action          = {action}
+                    />
+                    :
+                    null
+                  }
+                </>
               }
             </Form>
           </div>

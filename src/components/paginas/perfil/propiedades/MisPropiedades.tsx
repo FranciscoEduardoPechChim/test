@@ -21,8 +21,6 @@ const MiListaPropiedades                          = () => {
   const [desde, setDesde]                         = useState(0);
   const { properties, loading, total, 
         setProperties, setLimit, init }           = useUserProperties((auth.uid) ? auth.uid:'', desde, 12, (access_token) ? access_token:'');
-
-  // const { properties1 }                           = useFollowerProperties((auth.uid) ? auth.uid:'', 0, (access_token) ? access_token:'');
   const [page, setPage]                           = useState(0);
   const [rowsPerPage, setRowsPerPage]             = useState(12);
 
@@ -66,6 +64,9 @@ const MiListaPropiedades                          = () => {
 
   return (
     <Container>
+      <div className={`${styles.colorTotal} d-flex justify-content-end`}>
+        TOTAL: {total}
+      </div>
       <Row>
         {loading ? (
           <Loading />
@@ -77,9 +78,6 @@ const MiListaPropiedades                          = () => {
               </h1>
             ) : (
               <>
-                <div className={`${styles.colorTotal} d-flex justify-content-end`}>
-                    TOTAL: {total}
-                </div>
                 {properties && properties.map((inmueble:any, key: number) => (
                   <PropertiesCard
                     key           = {key}

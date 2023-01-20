@@ -341,7 +341,7 @@ const BarraCategorias = (props: Props) => {
                   placeholder   = "Máximo" 
                   min           = {0}
                   value         = {maximoPrecio}
-                  onChange      = {(e:any) => setMaximoPrecio((e.target.value != '' && e.target.value != '0') ? e.target.value:'10000000')}
+                  onChange      = {(e:any) => setMaximoPrecio((e.target.value != '' && e.target.value != '0') ? e.target.value:'10000000000')}
                 />
               </form>
             </li>

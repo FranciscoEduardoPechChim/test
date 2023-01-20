@@ -35,7 +35,7 @@ export const SocketProvider: FC           = ({ children }) => {
   }, [auth, desconectarSocket]);
 
   useEffect(() => {
-    socket?.on("mensaje-personal", (mensaje) => {
+    socket?.on("enviar-mensaje-personal", (mensaje) => {
       dispatch({ type: "NuevoMensaje", payload: mensaje });
     });
   }, [socket, dispatch]);

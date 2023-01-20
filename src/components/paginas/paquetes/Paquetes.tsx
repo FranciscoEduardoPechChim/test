@@ -23,8 +23,8 @@ const intermedio = [
 const stripePromise = loadStripe(stripePublicId);
 
 const PaquetesCards = () => {
-  const { paquetes } = usePaquetes();
-
+  const { paquetes } = usePaquetes(1);
+  
   return (
     <Elements
       stripe={stripePromise}

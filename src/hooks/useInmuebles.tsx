@@ -25,7 +25,7 @@ import { Location } from "interfaces/MapInterfaces";
 import { AllInmuebles, Inmueble } from "interfaces";
 
 //Services
-import { getPropertiesByCoords } from '../services/propertyService';
+import { getPropertiesByCoords,  getAllProperties } from '../services/propertyService';
 import { showRealEstate } from '../services/userService';
 
 export const useInmuebles = () => {
@@ -72,6 +72,7 @@ export const useListaInmueble = (limite: number) => {
   return { listaInmuebles, cargando };
 };
 
+
 export const useInmueble = (id: string) => {
   const [inmueble, setInmueble] = useState<InmueblesUsuario>();
   const [cargando, setCargando] = useState(true);
@@ -93,19 +94,19 @@ export const useInmueble = (id: string) => {
   return { inmueble, cargando, imgs, setImgs };
 }; 
 
-export const usePropertiesByCoords              = ( southEast: Bounds, northWest: Bounds, southWest: google.maps.LatLngLiteral | undefined, northEast: google.maps.LatLngLiteral | undefined, coords: Location, category: string, type: string, bathroom: number, parking: number, rooms: number, set: string, status: boolean, agent: string, userId: string) => {
+export const usePropertiesByCoords              = (category: string, type: string, bathroom: number, parking: number, rooms: number, set: string, status: boolean, agent: string, userId: string) => {
   const [properties,setProperties]              = useState<any>([]);
   const [loading,setLoading]                    = useState(true);
   const { minimoTerreno, maximoTerreno, 
     minimoConstruidos, maximoConstruidos, 
     minimoPrecio, maximoPrecio, identification,
-    setTotal, property }                        = useContext(MapContext);
+    setTotal, property, southEast, northWest, 
+    southWest, northEast  }                     = useContext(MapContext);
  
     const init                                  = async () => {
       setLoading(true);
       let total                                 = 0;
-    
-        if((property == 0) && category && type && userId) {
+        if((Number(property) == 0) && category && type && userId) {
           const responseProperty                = await getPropertiesByCoords(
                                                       ((southEast) && typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
                                                       ((southEast) && typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
@@ -118,85 +119,28 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
                                                       category, 
                                                       type,
                                                       status,
+                                                      set,
+                                                      rooms, 
+                                                      bathroom,
+                                                      parking,
+                                                      minimoPrecio,
+                                                      maximoPrecio,
+                                                      minimoTerreno,
+                                                      maximoTerreno,
+                                                      minimoConstruidos,
+                                                      maximoConstruidos,
+                                                      identification,
                                                       agent,
                                                       userId);
 
           if(responseProperty && responseProperty.data) {
-            const { data }                        = responseProperty;
-            let propertiesTotal                   = (data.properties).filter((property:any) => {
-              if(property.publicado == true){
-                return property;
-              }
-            });
-
-            if(rooms >= 0) {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if(property.habitaciones >= rooms) {
-                  return property;
-                }
-              });
-            }
-
-            if(bathroom >= 0) {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if(property.baños >= bathroom) {
-                  return property;
-                }
-              });
-            }
-
-            if(parking >= 0) {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if(property.parking >= parking) {
-                  return property;
-                }
-              });
-            }
-
-            if(set != '') {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if(property.set == set) {
-                  return property;
-                }
-              });
-            }
-
-            if((Number(minimoPrecio) >= 0) && (Number(maximoPrecio) > Number(minimoPrecio))) {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if((property.precio >= Number(minimoPrecio)) && (property.precio <= Number(maximoPrecio))) {
-                  return property;
-                }
-              });
-            }
-
-            if((Number(minimoTerreno) >= 0) && (Number(maximoTerreno) > Number(minimoTerreno))) {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if((property.m2Terreno >= Number(minimoTerreno)) && (property.m2Terreno <= Number(maximoTerreno))) {
-                  return property;
-                }
-              });
-            }
-
-            if((Number(minimoConstruidos) >= 0) && (Number(maximoConstruidos) > Number(minimoConstruidos))) {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if((property.m2Construidos >= Number(minimoConstruidos)) && (property.m2Construidos <= Number(maximoConstruidos))) {
-                  return property;
-                }
-              });
-            }
-  
-            if(identification != '') {
-              propertiesTotal                     = propertiesTotal.filter((property:any) => {
-                if(identification == property.alias) {
-                  return property;
-                }
-              });
-            }
-
-            total                                 = propertiesTotal.length;
-            setProperties(propertiesTotal);
+            const { properties }                = responseProperty.data;
+            total                               = properties.length;
+            setProperties(properties);
           }
-        }else if(property == 1) {
+        }else if(Number(property) == 1) {
+
+          console.log('23456');
           const responseRealEstate              = await showRealEstate(
                                                     ((southEast) && typeof southEast.lat == 'number' && (southEast.lat != 0)) ? southEast.lat:1, 
                                                     ((southEast) && typeof southEast.lng == 'number' && (southEast.lng != 0)) ? southEast.lng:1, 
@@ -224,6 +168,11 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
     useEffect(() => {
       init();
     }, [
+      southEast,
+      northWest, 
+      southWest,
+      northEast,  
+      property,
       type,
       category,
       bathroom,
@@ -237,16 +186,45 @@ export const usePropertiesByCoords              = ( southEast: Bounds, northWest
       maximoPrecio,
       status,
       agent,
-      set,
-      property
+      set
     ]);
 
     return { 
-      inmuebles:  properties,
-      cargando:   loading
+      inmuebles:          properties,
+      cargando:           loading
     };
 }
 
+export const useProperties                      = (access_token: string) => {
+  const [properties,setProperties]              = useState<any>([]);
+  const [total, setTotal]                       = useState(0);
+  const [loading,setLoading]                    = useState(true);
+
+  const init                                    = async () => {
+    if(access_token) {
+      setLoading(true);
+      
+      const response                            = await getAllProperties(access_token);
+
+      if(response && response.data) {
+        setProperties(response.data.properties);
+        setTotal((response.data.total) ? response.data.total:0);
+      }
+
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    init();
+  }, [access_token]);
+
+  return {
+    properties:   properties,
+    total:        total,
+    loading:      loading
+  }
+}
 export const useInmueblesCoordenadas = (
   southEast: Bounds,
   northWest: Bounds,

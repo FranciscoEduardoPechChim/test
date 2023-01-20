@@ -11,6 +11,7 @@ export type followerResponse   = {
 
 export type follower          = { 
     "followers":            Follower[],
+    "followme"?:            Follower[], 
     "total"?:               number
 }
 

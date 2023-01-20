@@ -111,7 +111,7 @@ const Contact               = ({ inmuebles }: Props) => {
                 </>
               }
               <Button
-                titulo  = "iniciar Chat"
+                titulo  = "Iniciar Chat"
                 style   = {{width: 175, height: 50}}
                 onClick = {startChat}
               />

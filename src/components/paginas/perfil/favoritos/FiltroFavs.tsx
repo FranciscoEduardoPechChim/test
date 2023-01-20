@@ -7,12 +7,11 @@ import { useFavoritos } from "../../../../hooks/useFavoritos";
 import Loading from "../../../ui/loading/Loading";
 import styles from "./FiltrosFavs.module.css";
 
-const FiltroFavs = () => {
-  const { auth } = useContext(AuthContext);
-  const { setDueño, dueño } = useContext(InmuebleContext);
-  // const { solicitud, setSolicitud } = useContext(InmuebleContext);
-  const { favoritos, cargando } = useFavoritos(auth.uid);
-  const uniqueValues = new Set();
+const FiltroFavs                  = () => {
+  const { auth }                  = useContext(AuthContext);
+  const { setDueño, dueño }       = useContext(InmuebleContext);
+  const { favoritos, cargando }   = useFavoritos(auth.uid);
+  const uniqueValues              = new Set();
 
   return (
     <>
@@ -31,7 +30,7 @@ const FiltroFavs = () => {
                       value={dueño}
                       onChange={(e) => setDueño(e.target.value)}
                     >
-                      <option value="">Agentes:</option>
+                      <option value="">Todos los agentes</option>
 
                       {favoritos
                         .filter((nombre) => {

@@ -97,7 +97,7 @@ export const ChatProvider: FC               = ({ children }) => {
       }
 
       if(response && response.data) {
-        dispatch({ type: "ActivarChat", payload: from });
+        dispatch({ type: "ActivarChat", payload: to });
         dispatch({ type: "CargarMensajes", payload: response.data.messages });
         setTotal(response.data.total);
         setConversaciones([...conversaciones, response.data.chat]);

@@ -1,7 +1,7 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 import { InfoWindow } from "@react-google-maps/api";
-import SwiperCore, { EffectCube, Pagination, Autoplay } from "swiper";
+import SwiperCore, { EffectCube, Pagination, Autoplay, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-cube";
@@ -23,7 +23,8 @@ import { isUser } from '../../../middlewares/roles';
 //Material UI
 import { Tooltip } from "@material-ui/core";
 
-SwiperCore.use([EffectCube, Pagination, Autoplay]);
+
+SwiperCore.use([EffectCube, Pagination, Autoplay, Navigation]);
 
 interface Props {
   inmueble: InmueblesUsuario;
@@ -72,7 +73,6 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
                   {(!inmueble.imgs) || (inmueble.imgs && (inmueble.imgs.length === 0)) &&
                     <Swiper>
                       <img className={styles.imgCard} src={'https://res.cloudinary.com/dhcyyvrus/image/upload/v1671216616/images/default_image_q4cpoa.jpg'} />
-                      {/* <img className={styles.imgCard} src={(inmueble.imgs.length === 1) ? inmueble.imgs[0]:'/images/content/default_image.jpg'} /> */}
                     </Swiper>
                   }
                   {(inmueble.imgs) && (inmueble.imgs.length !== 0) && (inmueble.imgs.length === 1) ? (
@@ -81,47 +81,85 @@ const InfoWindowMap               = ({ inmueble, handleClose }: Props) => {
                     </Swiper>
                   ) : (
                     <Swiper
-                      effect        = {"cube"}
-                      grabCursor    = {true}
-                      loop          = {true}
-                      autoplay      ={{
-                        delay:                500,
+                      className     = "home_slider"
+                      // slidesPerView = {1}
+                      slidesPerView = {"auto"}
+                      pagination    = {{ clickable: true }}
+                      autoplay      = {{
+                        delay: 5000,
                         disableOnInteraction: false,
                         pauseOnMouseEnter:    true,
                       }}
-                      cubeEffect    ={{
-                        shadow:       true,
-                        slideShadows: true,
-                        shadowOffset: 20,
-                        shadowScale:  0.94,
-                      }}
-                      className     = "mySwiper"
                     >
                       {inmueble.imgs.map((img:any, key:number) => {
-                        const sepracion           = img.split(".");
-                        const extension           = sepracion[sepracion.length - 1];
-                        const extensionesValidas  = ['mp4'];
-
-                        return (
-                          <SwiperSlide key={key}>
-                            {extensionesValidas.includes(extension) ? (
-                              <video
-                                src={img}
-                                controls
-                                controlsList="nodownload"
-                                style={{
-                                  height: 200,
-                                  width: "100%",
-                                  overflow: "hidden",
-                                }}
-                              />
-                            ) : (
-                              <img className={styles.imgCard} src={img} />
-                            )} 
-                          </SwiperSlide>
-                        );
+                        return (<SwiperSlide key={key}><img className={styles.imgCard} src={img} /></SwiperSlide>);
                       })}
                     </Swiper>
+                    // <Swiper
+                    //   centeredSlides= {true}
+                    //   autoplay      = {{
+                    //     delay: 5000,
+                    //     disableOnInteraction: false,
+                    //     pauseOnMouseEnter:    true,
+                    //   }}
+                    //   pagination    = {{
+                    //     clickable: true
+                    //   }}
+                    //   spaceBetween  = {50}
+                    //   navigation    = {true}
+                    //   grabCursor    = {true}
+                    //   className     = "mySwiper"
+                    // >
+                    //   {inmueble.imgs.map((img:any, key:number) => {
+                    //     return (<SwiperSlide key={key}><img className={styles.imgCard} src={img} /></SwiperSlide>);
+                    //   })}
+                      
+                    // </Swiper>
+                    // <Swiper
+                    //   effect        = {"cube"}
+                    //   grabCursor    = {true}
+                    //   loop          = {true}
+                    //   autoplay      ={{
+                    //     delay:                500,
+                    //     disableOnInteraction: false,
+                    //     pauseOnMouseEnter:    true,
+                    //   }}
+                    //   cubeEffect    ={{
+                    //     shadow:       true,
+                    //     slideShadows: true,
+                    //     shadowOffset: 20,
+                    //     shadowScale:  0.94,
+                    //   }}
+                    //   className     = "mySwiper"
+                    // >
+                    //   {inmueble.imgs.map((img:any, key:number) => {
+                    //     const separacion          = img.split(".");
+                    //     const extension           = separacion[separacion.length - 1];
+                    //     const extensionesValidas  = ['mp4'];
+
+     
+                    //     return (
+                    //       <SwiperSlide key={key}>
+                    //         {extensionesValidas.includes(extension) ? (
+                    //           <video
+                    //             src={img}
+                    //             controls
+                    //             controlsList="nodownload"
+                    //             style={{
+                    //               height: 200,
+                    //               width: "100%",
+                    //               overflow: "hidden",
+                    //             }}
+                    //           />
+                    //         ) : (
+                    //           <img className={styles.imgCard} src={img} />
+
+                              
+                    //         )} 
+                    //       </SwiperSlide>
+                    //     );
+                    //   })}
+                    // </Swiper>
                   )}
                 </div>
                 <div className="card-body">

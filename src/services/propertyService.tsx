@@ -107,6 +107,26 @@ export const loadImagesProperty                     = async (action: string, uid
 }
 
 //GET
+export const getAllProperties                       = async (access_token:string):Promise<propertyResponse|undefined> => {
+    try {
+        var myHeaders                               = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("X-Requested-With", "XMLHttpRequest");
+        myHeaders.append("Authorization", `Bearer ${access_token}`);
+
+        const requestOptions                        = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        const response                              = await fetch(`${development}/inmuebles/all/properties`, requestOptions);
+        const result:propertyResponse               = await response.json();
+      
+        return result;
+    } catch (error) {
+        console.log("Error:", error);
+    }
+}
 export const getPropertiesByUser                    = async (id: string, limit: number, offset: number, order: string, user: string, userFavorite: string, access_token: string):Promise<propertyResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();
@@ -127,7 +147,7 @@ export const getPropertiesByUser                    = async (id: string, limit: 
         console.log("Error:", error);
     }
 }
-export const getPropertiesByUserWithoutToken        = async (id: string, limit: number, offset: number, order: string, user: string, userFavorite: string):Promise<propertyResponse|undefined> => {
+export const getPropertiesByUserWithoutToken        = async (id: string, limit: number, offset: number, order: string, user: string, userFavorite: string, type: string, category: string, room: number, bath: number, garage: number, minPrice: number, maxPrice: number, minGround: number, maxGround: number, minBuild: number, maxBuild: number, set: string, isToken: number):Promise<propertyResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -138,7 +158,7 @@ export const getPropertiesByUserWithoutToken        = async (id: string, limit: 
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${development}/inmuebles/userwithouttoken/${id}?limit=${limit}&offset=${offset}&order=${order}&userId=${user}&userFavorite=${userFavorite}`, requestOptions);
+        const response                              = await fetch(`${development}/inmuebles/userwithouttoken/${id}?limit=${limit}&offset=${offset}&order=${order}&userId=${user}&userFavorite=${userFavorite}&type=${type}&category=${category}&room=${room}&bath=${bath}&garage=${garage}&minPrice=${minPrice}&maxPrice=${maxPrice}&minGround=${minGround}&maxGround=${maxGround}&minBuild=${minBuild}&maxBuild=${maxBuild}&set=${set}&isToken=${isToken}`, requestOptions);
         const result:propertyResponse               = await response.json();
       
         return result;
@@ -166,7 +186,7 @@ export const getPropertiesByFollowers               = async (id: string, limit: 
         console.log("Error:", error);
     }
 }
-export const getPropertiesByCoords                  = async (lat_south_east: number, lng_south_east: number, lat_south_west: number, lng_south_west: number, lat_north_east: number, lng_north_east: number, lat_north_west: number, lng_north_west: number, category: string, type: string, status: boolean, agent: string, userId: string):Promise<propertyResponse|undefined> => {
+export const getPropertiesByCoords                  = async (lat_south_east: number, lng_south_east: number, lat_south_west: number, lng_south_west: number, lat_north_east: number, lng_north_east: number, lat_north_west: number, lng_north_west: number, category: string, type: string, status: boolean, set: string, room: number, bath: number, garage: number, minPrice: number, maxPrice: number, minGround: number, maxGround: number, minBuild: number, maxBuild: number, alias: string, agent: string, userId: string):Promise<propertyResponse|undefined> => {
     try {
         var myHeaders                               = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -177,7 +197,7 @@ export const getPropertiesByCoords                  = async (lat_south_east: num
             headers: myHeaders
         };
 
-        const response                              = await fetch(`${development}/inmuebles/properties/coords?lat_south_east=${lat_south_east}&lng_south_east=${lng_south_east}&lat_south_west=${lat_south_west}&lng_south_west=${lng_south_west}&lat_north_east=${lat_north_east}&lng_north_east=${lng_north_east}&lat_north_west=${lat_north_west}&lng_north_west=${lng_north_west}&category=${category}&type=${type}&status=${(status) ? 1:0}&agent=${agent}&userId=${userId}`, requestOptions);
+        const response                              = await fetch(`${development}/inmuebles/properties/coords?lat_south_east=${lat_south_east}&lng_south_east=${lng_south_east}&lat_south_west=${lat_south_west}&lng_south_west=${lng_south_west}&lat_north_east=${lat_north_east}&lng_north_east=${lng_north_east}&lat_north_west=${lat_north_west}&lng_north_west=${lng_north_west}&category=${category}&type=${type}&status=${(status) ? 1:0}&agent=${agent}&userId=${userId}&set=${set}&room=${room}&bath=${bath}&garage=${garage}&minPrice=${minPrice}&maxPrice=${maxPrice}&minGround=${minGround}&maxGround=${maxGround}&miinBuild=${minBuild}&maxBuild=${maxBuild}&alias=${alias}`, requestOptions);
         const result:propertyResponse               = await response.json();
       
         return result;

@@ -42,7 +42,7 @@ const FavPropertiesCard                                                 = (props
   useEffect(() => {
     const initRole                                                      = async () => {
       const role                                                        = await validRole();
-      setIsRole(role); 
+      setIsRole((role) ? role:false); 
     }
 
     initRole();
@@ -106,7 +106,7 @@ const FavPropertiesCard                                                 = (props
       
             <CopyToClipboard
               onCopy={compartir}
-              text={`https://develop.red1a1.com/app/propiedades/${slug}`}
+              text={`https://red1a1.com/app/propiedades/${slug}`}
               >
                 <Tooltip
                   title     = "Compartir"

@@ -251,13 +251,13 @@ const FormStepOne = (props: Props) => {
             <Button 
               titulo  = "Siguiente" 
               btn     = "Disabled" 
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           ) : (
             <Button 
               titulo  = "Siguiente" 
               onClick = {() => handleNextStep(2)} 
-              style   = {{ width: 160, height: 60}}
+              style   = {{ width: 135, height: 60}}
             />
           )}
         </div>

@@ -764,7 +764,7 @@ const Detalles                          = ({ inmuebles }: Props) => {
                         <div className={styles.perfilCardCiudad}>
                           {inmuebles.usuario.direccionFisica}
                         </div>
-                        {(access_token && (typeof window !== "undefined") && (auth && (inmuebles.usuario.uid != auth.uid)) && (!isUser())) && 
+                        {(access_token && (typeof window !== "undefined") && (auth && (inmuebles.usuario.uid != auth.uid))) && 
                         <div className="my-2">
                           <button
                             className={styles.btnDetalle}

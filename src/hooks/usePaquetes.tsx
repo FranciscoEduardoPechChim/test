@@ -22,12 +22,12 @@ export const usePaqueteInd = () => {
   return { paquete, cargando };
 };
 
-export const usePaquetes = () => {
+export const usePaquetes = (from: number) => {
   const [paquetes, setPaquetes] = useState<Paquete[]>([]);
   const [cargando, setCargando] = useState(true);
 
   const obtenerPaquetes = async () => {
-    const resp = await fetch(`${production}/paquetes?desde=1`);
+    const resp = await fetch(`${production}/paquetes?desde=${from}`);
     const data = await resp.json();
 
     setPaquetes(data.paquetes);
