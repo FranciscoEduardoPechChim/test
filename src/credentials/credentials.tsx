@@ -6,7 +6,7 @@ export const url          = "https://web-production-ead1.up.railway.app"; // dev
 // export const url           = "https://production-production-cede.up.railway.app"; //production
 export const production   = url + "/api"; 
 export const development  = url + "/api"; 
-
+ 
 export const rentas = "61e99f0e0d3bd9163e4a4b42";
 export const ventas = "61e99f120d3bd9163e4a4b46";
 export const casasC = "61e99edd0d3bd9163e4a4b3a";
