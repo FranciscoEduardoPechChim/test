@@ -4,7 +4,7 @@ import Main from "components/paginas/dashboard/Main";
 
 interface Props {
   titulo: string;
-}
+} 
 
 const DashboardLayout: FC<Props> = ({ children, titulo }) => {
   const [collapsed, setCollapsed] = useState(false);
